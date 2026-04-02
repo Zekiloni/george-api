@@ -1,0 +1,59 @@
+spring:
+  application:
+    name: george-api
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8686/realms/master
+          jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://${DB_HOST:localhost:5432}/${DB_NAME:george}
+    username: ${DB_USERNAME:g-user}
+    password: ${DB_PASSWORD:g-pw}
+
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 30000
+      connection-timeout: 20000
+      max-lifetime: 1800000
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    # DDL auto settings: update, create, create-drop, none (use 'none' or 'validate' for production)
+    hibernate:
+      ddl-auto: create-drop
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+
+  # Servlet multipart file upload settings
+  servlet:
+    multipart:
+      max-file-size: 3MB
+      max-request-size: 3MB
+
+# Server Configuration
+server:
+  port: ${SERVER_PORT:8084}
+
+# API Configuration
+api:
+  base:
+    path: /api/v1
+
+# Logging
+logging:
+  level:
+    com.vectorhaul.platform.operation: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
+

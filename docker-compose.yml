@@ -1,0 +1,41 @@
+name: 'george'
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    container_name: g-postgres
+    environment:
+      POSTGRES_USER: g-user
+      POSTGRES_PASSWORD: g-pw
+      POSTGRES_DB: g-db
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.4
+    container_name: g-keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_DB: postgres
+      KC_DB_URL_HOST: postgres
+      KC_DB_URL_PORT: 5432
+      KC_DB_URL_DATABASE: g-db
+      KC_DB_USERNAME: g-user
+      KC_DB_PASSWORD: g-pw
+      KC_SPI_THEME_CACHE_THEMES: "false"
+      KC_SPI_THEME_CACHE_TEMPLATES: "false"
+    volumes:
+      # Now maps the JAR from the same folder as docker-compose
+      - ./keywind.jar:/opt/keycloak/providers/keywind.jar
+    command: start-dev
+    ports:
+      - "8686:8080"  # Keycloak admin console
+    depends_on:
+      - postgres
+
+volumes:
+  pgdata:
