@@ -30,12 +30,30 @@ services:
       KC_SPI_THEME_CACHE_TEMPLATES: "false"
     volumes:
       # Now maps the JAR from the same folder as docker-compose
-      - ./keywind.jar:/opt/keycloak/providers/keywind.jar
+      - ./resources/keycloak/keywind.jar:/opt/keycloak/providers/keywind.jar
     command: start-dev
     ports:
       - "8686:8080"  # Keycloak admin console
     depends_on:
       - postgres
+#
+#  btcpayserver:
+#    image: btcpayserver/btcpayserver:2.3.7
+#    restart: unless-stopped
+#    ports:
+#      - "49392:49392"
+#    environment:
+#      - BTCPAY_SERVERURL=https://btcpay.tvojdomain.com
+#      - BTCPAY_NETWORK=mainnet
+#      - BTCPAY_HOST=btcpayserver
+#      - BTCPAY_POSTGRES=postgres
+#      - POSTGRES_HOST=postgres
+#      - POSTGRES_USER=btcpay
+#      - POSTGRES_PASSWORD=StrongPassword123!
+#      - BTCPAY_EXTERNALSERVICES=btc
+#    volumes:
+#      - btcpaydata:/root/.btcpayserver
 
 volumes:
   pgdata:
+  btcpaydata:
