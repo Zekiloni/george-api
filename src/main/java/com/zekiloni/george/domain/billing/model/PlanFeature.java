@@ -1,4 +1,4 @@
-package com.zekiloni.george.domain.subscription.model;
+package com.zekiloni.george.domain.billing.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

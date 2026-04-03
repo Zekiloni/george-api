@@ -1,4 +1,4 @@
-package com.zekiloni.george.infrastructure.adapter.out.persistence.common.entity;
+package com.zekiloni.george.infrastructure.persistence.common.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

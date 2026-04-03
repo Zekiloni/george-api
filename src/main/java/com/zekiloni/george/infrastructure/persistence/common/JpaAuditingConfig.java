@@ -1,4 +1,4 @@
-package com.zekiloni.george.infrastructure.adapter.out.persistence.common;
+package com.zekiloni.george.infrastructure.persistence.common;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +15,7 @@ import java.util.Optional;
 @Configuration
 @EnableJpaAuditing(dateTimeProviderRef = "dateTimeProvider", auditorAwareRef = "auditorProvider")
 public class JpaAuditingConfig {
+    public static final String SYSTEM = "SYSTEM";
 
     @Bean
     public DateTimeProvider dateTimeProvider() {
@@ -28,7 +29,7 @@ public class JpaAuditingConfig {
 
             if (authentication == null || !authentication.isAuthenticated() ||
                     Objects.equals(authentication.getPrincipal(), "anonymousUser")) {
-                return Optional.of("SYSTEM");
+                return Optional.of(SYSTEM);
             }
 
             String username = authentication.getName();

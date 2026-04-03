@@ -1,6 +1,6 @@
-package com.zekiloni.george.infrastructure.adapter.out.persistence.common.entity;
+package com.zekiloni.george.infrastructure.persistence.common.entity;
 
-import com.zekiloni.george.infrastructure.adapter.out.persistence.common.converter.OffsetDateTimeConverter;
+import com.zekiloni.george.infrastructure.persistence.common.converter.OffsetDateTimeConverter;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.EntityListeners;

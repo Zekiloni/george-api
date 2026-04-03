@@ -1,4 +1,4 @@
-package com.zekiloni.george.domain.subscription.model;
+package com.zekiloni.george.domain.billing.model;
 
 import com.zekiloni.george.domain.common.model.Money;
 import com.zekiloni.george.domain.common.model.TimePeriod;

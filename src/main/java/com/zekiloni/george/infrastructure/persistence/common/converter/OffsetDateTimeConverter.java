@@ -1,4 +1,4 @@
-package com.zekiloni.george.infrastructure.adapter.out.persistence.common.converter;
+package com.zekiloni.george.infrastructure.persistence.common.converter;
 
 import jakarta.persistence.AttributeConverter;
 import jakarta.persistence.Converter;

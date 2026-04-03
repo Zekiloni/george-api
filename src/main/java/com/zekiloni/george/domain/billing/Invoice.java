@@ -1,7 +1,7 @@
 package com.zekiloni.george.domain.billing;
 
 import com.zekiloni.george.domain.common.model.Money;
-import com.zekiloni.george.domain.subscription.model.Subscription;
+import com.zekiloni.george.domain.billing.model.Subscription;
 import lombok.Builder;
 import lombok.Data;
 

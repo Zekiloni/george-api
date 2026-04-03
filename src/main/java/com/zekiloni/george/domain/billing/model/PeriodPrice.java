@@ -1,9 +1,13 @@
-package com.zekiloni.george.domain.subscription.model;
+package com.zekiloni.george.domain.billing.model;
 
 import com.zekiloni.george.domain.common.model.Money;
+import com.zekiloni.george.infrastructure.persistence.billing.entity.PeriodPriceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+/**
+ * DTO for {@link PeriodPriceEntity}
+ */
 @Data
 @AllArgsConstructor
 public class PeriodPrice {
