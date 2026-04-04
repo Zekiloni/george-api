@@ -1,16 +1,16 @@
 package com.zekiloni.george.domain.billing.model;
 
+import com.zekiloni.george.infrastructure.output.persistence.billing.entity.PlanEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
- * DTO for {@link com.zekiloni.george.infrastructure.persistence.billing.entity.PlanEntity}
+ * DTO for {@link PlanEntity}
  */
 @Data
 @Builder
@@ -21,8 +21,8 @@ public class Plan {
     private String name;
     private String description;
     private String identifier;
-    private PlanFeature features;
-    private Set<PeriodPrice> pricing = new HashSet<>();
+    private Set<PlanFeature> features;
+    private Set<PeriodPrice> pricing;
     private boolean isActive;
     private boolean isPublic;
     private OffsetDateTime createdAt;

@@ -1,0 +1,32 @@
+package com.zekiloni.george.infrastructure.output.persistence.billing.adapter;
+
+import com.zekiloni.george.application.port.out.PlanRepositoryPort;
+import com.zekiloni.george.domain.billing.model.Plan;
+import com.zekiloni.george.infrastructure.output.persistence.billing.mapper.PlanEntityMapper;
+import com.zekiloni.george.infrastructure.output.persistence.billing.repository.PlanJpaRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
+
+@Component
+@RequiredArgsConstructor
+public class PlanRepositoryPortAdapter implements PlanRepositoryPort {
+    private final PlanJpaRepository jpaRepository;
+    private final PlanEntityMapper mapper;
+
+    @Override
+    public Plan save(Plan plan) {
+        return mapper.toDomain(jpaRepository.save(mapper.toEntity(plan)));
+    }
+
+    @Override
+    public Plan findById(String id) {
+        return jpaRepository.findById(id)
+                .map(mapper::toDomain)
+                .orElse(null);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        jpaRepository.deleteById(id);
+    }
+}
