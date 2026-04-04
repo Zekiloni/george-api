@@ -21,7 +21,7 @@ public class Discount {
 
     private TimePeriod validFor;
 
-    private Set<BillingPeriod> applicablePeriods = new HashSet<>();
+    private Set<BillingPeriod> applicablePeriods;
 
     public Money applyTo(Money original) {
         if (!isValidNow()) return original;

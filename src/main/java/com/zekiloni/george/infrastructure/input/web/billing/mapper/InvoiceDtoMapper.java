@@ -5,7 +5,7 @@ import com.zekiloni.george.domain.billing.model.InvoiceItem;
 import com.zekiloni.george.infrastructure.input.web.billing.dto.*;
 import org.mapstruct.Mapper;
 
-@Mapper
+@Mapper(uses = {PlanDtoMapper.class})
 public interface InvoiceDtoMapper {
     InvoiceDto toDto(Invoice invoice);
 

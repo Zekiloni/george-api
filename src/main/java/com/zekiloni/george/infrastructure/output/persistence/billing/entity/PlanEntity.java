@@ -33,10 +33,4 @@ public class PlanEntity extends BaseEntity {
 
     @Column(name = "is_public", nullable = false)
     private boolean isPublic;
-
-    @Column(name = "created_at")
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
 }
