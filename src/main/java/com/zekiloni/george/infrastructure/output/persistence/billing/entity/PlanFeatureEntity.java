@@ -25,7 +25,4 @@ public class PlanFeatureEntity extends BaseEntity {
     @Column(columnDefinition = "jsonb")
     private Object value;
 
-    @ManyToOne
-    @JoinColumn(name = "plan_id")
-    private PlanEntity plan;
 }

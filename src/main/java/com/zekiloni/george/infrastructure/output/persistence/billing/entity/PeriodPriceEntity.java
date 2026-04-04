@@ -18,8 +18,4 @@ public class PeriodPriceEntity extends BaseEntity {
 
     @Embedded
     private Money price;
-
-    @ManyToOne
-    @JoinColumn(name = "plan_id")
-    private PlanEntity plan;
 }

@@ -22,10 +22,12 @@ public class PlanEntity extends BaseEntity {
     @Column(name = "identifier")
     private String identifier;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "plan_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PlanFeatureEntity> features;
 
-    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "plan_id")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PeriodPriceEntity> pricing;
 
     @Column(name = "is_active", nullable = false)
