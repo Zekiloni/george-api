@@ -24,6 +24,11 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
     }
 
     @Override
+    public boolean isRoot(String tenantId) {
+        return tenantContext.isSystem();
+    }
+
+    @Override
     public boolean validateExistingCurrentSessions() {
         return false;
     }

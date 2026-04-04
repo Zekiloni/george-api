@@ -1,5 +1,6 @@
 package com.zekiloni.george.infrastructure.config.tenant;
 
+import jakarta.persistence.EntityManager;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,9 +23,6 @@ import java.util.Optional;
 public class TenantRequestFilter extends OncePerRequestFilter {
     private final TenantContext tenantContext;
 
-    private static final String ORGANIZATION_CLAIM = "organization";
-    public static final String ID = "id";
-
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -35,7 +33,7 @@ public class TenantRequestFilter extends OncePerRequestFilter {
 
         if (auth instanceof JwtAuthenticationToken jwtAuth) {
             Jwt jwt = jwtAuth.getToken();
-            extractOrganizationId(jwt).ifPresent(tenantContext::setTenantId);
+            tenantContext.setTenantId(jwt.getSubject());
         }
 
         try {
@@ -57,19 +55,5 @@ public class TenantRequestFilter extends OncePerRequestFilter {
         return true;
     }
 
-    private Optional<String> extractOrganizationId(Jwt jwt) {
-        Object organizationObj = jwt.getClaim(ORGANIZATION_CLAIM);
-
-        if (!(organizationObj instanceof Map<?, ?> organizations) || organizations.isEmpty()) {
-            return Optional.empty();
-        }
-
-        return organizations.values().stream()
-                .filter(Map.class::isInstance)
-                .map(v -> ((Map<?, ?>) v).get(ID))
-                .filter(id -> id != null && !id.toString().isBlank())
-                .map(Object::toString)
-                .findFirst();
-    }
 }
 

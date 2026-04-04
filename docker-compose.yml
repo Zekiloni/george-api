@@ -8,7 +8,7 @@ services:
     environment:
       POSTGRES_USER: g-user
       POSTGRES_PASSWORD: g-pw
-      POSTGRES_DB: g-db
+      POSTGRES_DB: postgres
     ports:
       - "5432:5432"
     volumes:
@@ -23,7 +23,7 @@ services:
       KC_DB: postgres
       KC_DB_URL_HOST: postgres
       KC_DB_URL_PORT: 5432
-      KC_DB_URL_DATABASE: g-db
+      KC_DB_URL_DATABASE: keycloak
       KC_DB_USERNAME: g-user
       KC_DB_PASSWORD: g-pw
       KC_SPI_THEME_CACHE_THEMES: "false"

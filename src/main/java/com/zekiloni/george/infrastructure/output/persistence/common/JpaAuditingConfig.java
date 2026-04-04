@@ -12,10 +12,11 @@ import java.time.OffsetDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.zekiloni.george.infrastructure.config.tenant.TenantContext.SYSTEM;
+
 @Configuration
 @EnableJpaAuditing(dateTimeProviderRef = "dateTimeProvider", auditorAwareRef = "auditorProvider")
 public class JpaAuditingConfig {
-    public static final String SYSTEM = "SYSTEM";
 
     @Bean
     public DateTimeProvider dateTimeProvider() {
@@ -32,9 +33,7 @@ public class JpaAuditingConfig {
                 return Optional.of(SYSTEM);
             }
 
-            String username = authentication.getName();
-
-            return Optional.of(username);
+            return Optional.of(authentication.getName());
         };
     }
 }

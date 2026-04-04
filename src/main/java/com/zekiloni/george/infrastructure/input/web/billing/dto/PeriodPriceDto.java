@@ -4,6 +4,7 @@ import com.zekiloni.george.domain.billing.model.BillingPeriod;
 import com.zekiloni.george.infrastructure.input.web.comon.dto.MoneyDto;
 
 public record PeriodPriceDto(
+        String id,
         BillingPeriod period,
         MoneyDto price
 ) {

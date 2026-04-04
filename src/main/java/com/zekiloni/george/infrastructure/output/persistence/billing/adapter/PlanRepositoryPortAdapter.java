@@ -5,7 +5,11 @@ import com.zekiloni.george.domain.billing.model.Plan;
 import com.zekiloni.george.infrastructure.output.persistence.billing.mapper.PlanEntityMapper;
 import com.zekiloni.george.infrastructure.output.persistence.billing.repository.PlanJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
+
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -19,14 +23,19 @@ public class PlanRepositoryPortAdapter implements PlanRepositoryPort {
     }
 
     @Override
-    public Plan findById(String id) {
+    public Optional<Plan> findById(String id) {
         return jpaRepository.findById(id)
-                .map(mapper::toDomain)
-                .orElse(null);
+                .map(mapper::toDomain);
     }
 
     @Override
     public void deleteById(String id) {
         jpaRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<Plan> findAll(Pageable pageable) {
+        return jpaRepository.findAll(pageable)
+                .map(mapper::toDomain);
     }
 }
