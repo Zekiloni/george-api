@@ -3,6 +3,7 @@ package com.zekiloni.george.provisioning.infrastructure.input.web.order.mapper;
 import com.zekiloni.george.provisioning.domain.billing.model.Invoice;
 import com.zekiloni.george.provisioning.domain.billing.model.InvoiceItem;
 import com.zekiloni.george.common.domain.model.Money;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.mapper.OfferingDtoMapper;
 import com.zekiloni.george.provisioning.infrastructure.input.web.order.dto.InvoiceDto;
 import com.zekiloni.george.provisioning.infrastructure.input.web.order.dto.InvoiceItemDto;
 import com.zekiloni.george.common.infrastructure.in.web.dto.MoneyDto;

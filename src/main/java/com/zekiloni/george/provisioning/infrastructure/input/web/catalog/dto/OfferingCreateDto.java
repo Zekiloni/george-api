@@ -2,21 +2,28 @@ package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingType;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public record OfferingCreateDto(
-        String name,
-        String description,
-        String identifier,
-        OfferingType type,
-        OfferingStatus status,
-        List<OfferingCharacteristicCreateDto> characteristics,
-        List<OfferingPriceCreateDto> pricing,
-        DiscountDto discount,
-        OffsetDateTime validFrom,
-        OffsetDateTime validTo
-) {
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class OfferingCreateDto {
+    private String name;
+    private String description;
+    private String identifier;
+    private OfferingType type;
+    private OfferingStatus status;
+    private List<OfferingCharacteristicCreateDto> characteristics;
+    private BillingConfigCreateDto billingConfig;
+    private List<OfferingPriceCreateDto> pricing;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }
 

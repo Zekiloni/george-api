@@ -4,6 +4,8 @@ import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEnti
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "offering_characteristics")
@@ -23,7 +25,8 @@ public class OfferingCharacteristicEntity extends BaseEntity {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "value", columnDefinition = "TEXT")
-    private String value;
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(columnDefinition = "jsonb")
+    private Object value;
 }
 
