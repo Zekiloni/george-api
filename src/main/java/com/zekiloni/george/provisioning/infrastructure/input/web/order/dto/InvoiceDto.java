@@ -1,4 +1,4 @@
-package com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto;
+package com.zekiloni.george.provisioning.infrastructure.input.web.order.dto;
 
 import com.zekiloni.george.provisioning.domain.billing.model.InvoiceStatus;
 import com.zekiloni.george.common.infrastructure.in.web.dto.MoneyDto;

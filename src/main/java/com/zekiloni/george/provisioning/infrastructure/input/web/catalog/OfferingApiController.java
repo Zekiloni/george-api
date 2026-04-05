@@ -2,9 +2,9 @@ package com.zekiloni.george.provisioning.infrastructure.input.web.catalog;
 
 import com.zekiloni.george.provisioning.application.port.in.OfferingCreateUseCase;
 import com.zekiloni.george.provisioning.application.port.in.OfferingQueryUseCase;
-import com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto.OfferingCreateDto;
-import com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto.OfferingDto;
-import com.zekiloni.george.provisioning.infrastructure.input.web.billing.mapper.OfferingDtoMapper;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.OfferingCreateDto;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.OfferingDto;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.mapper.OfferingDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

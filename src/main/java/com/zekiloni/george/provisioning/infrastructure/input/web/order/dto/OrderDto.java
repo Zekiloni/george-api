@@ -1,4 +1,4 @@
-package com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto;
+package com.zekiloni.george.provisioning.infrastructure.input.web.order.dto;
 
 import java.time.OffsetDateTime;
 

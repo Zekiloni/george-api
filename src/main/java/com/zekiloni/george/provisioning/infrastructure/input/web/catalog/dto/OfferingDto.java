@@ -1,10 +1,15 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.*;
+import lombok.*;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class OfferingDto {
     private String id;
     private String name;

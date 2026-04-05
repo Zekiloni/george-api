@@ -3,7 +3,7 @@ package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.mapper
 import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingCharacteristic;
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingPrice;
-import com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto.*;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.*;
 import org.mapstruct.Mapper;
 
 @Mapper
