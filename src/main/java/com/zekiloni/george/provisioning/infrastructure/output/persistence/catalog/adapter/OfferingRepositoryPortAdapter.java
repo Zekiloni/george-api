@@ -54,16 +54,7 @@ public class OfferingRepositoryPortAdapter implements OfferingRepositoryPort {
 
     @Override
     public Optional<Offering> findByIdentifier(String identifier) {
-        return jpaRepository.findByIdentifier(identifier)
-                .map(mapper::toDomain);
-    }
-
-    @Override
-    public List<Offering> findByStatus(String status) {
-        return jpaRepository.findByStatus(status)
-                .stream()
-                .map(mapper::toDomain)
-                .collect(Collectors.toList());
+        return Optional.empty();
     }
 }
 

@@ -17,7 +17,5 @@ public interface OfferingRepositoryPort {
     Page<Offering> findAll(Pageable pageable);
 
     Optional<Offering> findByIdentifier(String identifier);
-
-    List<Offering> findByStatus(String status);
 }
 
