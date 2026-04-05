@@ -1,8 +1,7 @@
-package com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto;
+package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingType;
-import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.BillingConfigCreateDto;
 
 import java.time.OffsetDateTime;
 import java.util.List;
@@ -14,8 +13,10 @@ public record OfferingCreateDto(
         OfferingType type,
         OfferingStatus status,
         List<OfferingCharacteristicCreateDto> characteristics,
-        BillingConfigCreateDto billingConfig,
-        List<OfferingPriceCreateDto> pricing
+        List<OfferingPriceCreateDto> pricing,
+        DiscountDto discount,
+        OffsetDateTime validFrom,
+        OffsetDateTime validTo
 ) {
 }
 

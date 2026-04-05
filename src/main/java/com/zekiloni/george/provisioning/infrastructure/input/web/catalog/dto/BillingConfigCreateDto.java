@@ -1,0 +1,16 @@
+package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
+
+import com.zekiloni.george.provisioning.domain.catalog.model.DurationUnit;
+import com.zekiloni.george.provisioning.domain.catalog.model.OfferingType;
+import lombok.Builder;
+import lombok.Data;
+
+@Data
+@Builder
+public class BillingConfigCreateDto {
+    private OfferingType type;
+    private boolean quantityAllowed;     
+    private Integer maxQuantity;         
+    private boolean durationAllowed;
+    private DurationUnit durationUnit;
+}

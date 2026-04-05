@@ -1,16 +1,13 @@
 package com.zekiloni.george.provisioning.domain.catalog.model;
 
 import com.zekiloni.george.common.domain.model.Money;
-import com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.entity.OfferingPriceEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
-/**
- * DTO for {@link OfferingPriceEntity}
- */
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor

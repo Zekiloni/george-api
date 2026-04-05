@@ -1,4 +1,4 @@
-package com.zekiloni.george.provisioning.infrastructure.input.web.billing;
+package com.zekiloni.george.provisioning.infrastructure.input.web.catalog;
 
 import com.zekiloni.george.provisioning.application.port.in.OfferingCreateUseCase;
 import com.zekiloni.george.provisioning.application.port.in.OfferingQueryUseCase;
@@ -21,7 +21,7 @@ public class OfferingApiController {
 
     @PostMapping
     public ResponseEntity<OfferingDto> createOffering(@RequestBody OfferingCreateDto offeringCreate) {
-        return ResponseEntity.ok(mapper.toDto(createUseCase.create(mapper.toDomain(offeringCreate))));
+        return ResponseEntity.ok(mapper.toDto(createUseCase.handle(mapper.toDomain(offeringCreate))));
     }
 
     @GetMapping

@@ -1,7 +1,6 @@
 package com.zekiloni.george.provisioning.domain.catalog.model;
 
 import com.zekiloni.george.common.domain.model.Money;
-import com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.entity.OfferingEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +10,7 @@ import java.time.OffsetDateTime;
 import java.util.Comparator;
 import java.util.List;
 
-/**
- * DTO for {@link OfferingEntity}
- */
+
 @Data
 @Builder
 @AllArgsConstructor
@@ -21,10 +18,10 @@ import java.util.List;
 public class Offering {
     private String id;
     private String name;
-    private OfferingType type;
-    private OfferingStatus status;
     private String description;
     private String identifier;
+    private OfferingType type;
+    private OfferingStatus status;
     private List<OfferingCharacteristic> characteristics;
     private BillingConfig billingConfig;
     private List<OfferingPrice> pricing;
