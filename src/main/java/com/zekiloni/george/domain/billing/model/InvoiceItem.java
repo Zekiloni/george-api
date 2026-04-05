@@ -12,7 +12,7 @@ public class InvoiceItem {
     private int quantity;
     private Money unitPrice;
     private Money discountAmount;
-    private Plan plan;
+    private Offering offering;
 
     public Money getSubtotalAmount() {
         return unitPrice.multiply(quantity);

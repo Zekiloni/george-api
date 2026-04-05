@@ -12,7 +12,7 @@ import java.util.List;
 public class Invoice {
     private String id;
     private String invoiceNumber;
-    private Subscription subscription;
+    private Order order;
     private InvoiceStatus status;
     private List<InvoiceItem> items;
     private Money subtotal;

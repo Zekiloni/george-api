@@ -10,7 +10,7 @@ public record InvoiceItemDto(
         MoneyDto discountAmount,
         MoneyDto subtotalAmount,
         MoneyDto totalAmount,
-        PlanDto plan
+        OfferingDto offering
 ) {
 }
 

@@ -5,7 +5,7 @@ import jakarta.persistence.Column;
 
 import java.time.OffsetDateTime;
 
-public class TemporalEntity {
+public class TemporalEntity extends BaseEntity {
     @Column(name = "valid_from")
     private OffsetDateTime validFrom;
 

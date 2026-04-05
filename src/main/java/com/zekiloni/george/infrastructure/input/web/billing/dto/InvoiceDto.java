@@ -9,7 +9,7 @@ import java.util.List;
 public record InvoiceDto(
         String id,
         String invoiceNumber,
-        SubscriptionDto subscription,
+        OrderDto order,
         InvoiceStatus status,
         List<InvoiceItemDto> items,
         MoneyDto subtotal,
