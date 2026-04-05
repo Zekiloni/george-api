@@ -69,6 +69,10 @@ public class Money {
         return new Money(this.currency, this.amount.multiply(BigDecimal.valueOf(factor)));
     }
 
+    public Money multiply(BigDecimal factor) {
+        return new Money(this.currency, this.amount.multiply(factor));
+    }
+
     public boolean isGreaterThan(Money other) {
         if (!this.currency.equals(other.currency)) {
             throw new IllegalArgumentException("Cannot compare money with different currencies");

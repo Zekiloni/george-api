@@ -23,13 +23,13 @@ public interface InvoiceDtoMapper {
     }
 
     default MoneyDto map(InvoiceItem item) {
-        return item.getSubtotalAmount() != null ?
-            new MoneyDto(item.getSubtotalAmount().getCurrency(), item.getSubtotalAmount().getAmount()) : null;
+        return item.getSubtotal() != null ?
+            new MoneyDto(item.getSubtotal().getCurrency(), item.getSubtotal().getAmount()) : null;
     }
 
     default MoneyDto mapTotal(InvoiceItem item) {
-        return item.getTotalAmount() != null ?
-            new MoneyDto(item.getTotalAmount().getCurrency(), item.getTotalAmount().getAmount()) : null;
+        return item.getTotal() != null ?
+            new MoneyDto(item.getTotal().getCurrency(), item.getTotal().getAmount()) : null;
     }
 }
 

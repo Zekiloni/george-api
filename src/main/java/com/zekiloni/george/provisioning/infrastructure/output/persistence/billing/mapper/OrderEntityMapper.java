@@ -1,6 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.mapper;
 
-import com.zekiloni.george.provisioning.domain.billing.model.Order;
+import com.zekiloni.george.provisioning.domain.order.model.Order;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.entity.OrderEntity;
 import org.mapstruct.Mapper;
 

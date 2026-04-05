@@ -1,8 +1,8 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.billing.mapper;
 
-import com.zekiloni.george.provisioning.domain.billing.model.Offering;
-import com.zekiloni.george.provisioning.domain.billing.model.OfferingCharacteristic;
-import com.zekiloni.george.provisioning.domain.billing.model.OfferingPrice;
+import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
+import com.zekiloni.george.provisioning.domain.catalog.model.OfferingCharacteristic;
+import com.zekiloni.george.provisioning.domain.catalog.model.OfferingPrice;
 import com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto.*;
 import org.mapstruct.Mapper;
 

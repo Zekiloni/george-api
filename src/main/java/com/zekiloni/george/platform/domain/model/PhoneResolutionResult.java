@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.domain.lead.model;
+package com.zekiloni.george.platform.domain.model;
 
 import lombok.Builder;
 import lombok.Getter;

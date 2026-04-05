@@ -2,7 +2,6 @@ package com.zekiloni.george.workspace.domain.link;
 
 import com.zekiloni.george.workspace.domain.campaign.Campaign;
 import com.zekiloni.george.workspace.domain.campaign.form.entity.FormSubmission;
-import com.zekiloni.george.platform.domain.lead.model.Lead;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

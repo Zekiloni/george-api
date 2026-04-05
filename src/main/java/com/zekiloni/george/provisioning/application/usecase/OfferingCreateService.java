@@ -2,7 +2,7 @@ package com.zekiloni.george.provisioning.application.usecase;
 
 import com.zekiloni.george.provisioning.application.port.in.OfferingCreateUseCase;
 import com.zekiloni.george.provisioning.application.port.out.OfferingRepositoryPort;
-import com.zekiloni.george.provisioning.domain.billing.model.Offering;
+import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

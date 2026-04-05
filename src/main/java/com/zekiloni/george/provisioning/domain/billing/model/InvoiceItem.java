@@ -1,6 +1,7 @@
 package com.zekiloni.george.provisioning.domain.billing.model;
 
 import com.zekiloni.george.common.domain.model.Money;
+import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,17 +9,17 @@ import lombok.Data;
 @Builder
 public class InvoiceItem {
     private String id;
-    private String description;
+    private Offering offering;
     private int quantity;
     private Money unitPrice;
     private Money discountAmount;
-    private Offering offering;
 
-    public Money getSubtotalAmount() {
+    public Money getSubtotal() {
         return unitPrice.multiply(quantity);
     }
 
-    public Money getTotalAmount() {
-        return getSubtotalAmount().subtract(discountAmount);
+    public Money getTotal() {
+        if (discountAmount == null) return getSubtotal();
+        return getSubtotal().subtract(discountAmount);
     }
 }

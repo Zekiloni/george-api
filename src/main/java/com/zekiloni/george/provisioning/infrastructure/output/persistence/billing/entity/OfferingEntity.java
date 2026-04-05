@@ -1,7 +1,7 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.entity;
 
-import com.zekiloni.george.provisioning.domain.billing.model.OfferingStatus;
-import com.zekiloni.george.provisioning.domain.billing.model.OfferingType;
+import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
+import com.zekiloni.george.provisioning.domain.catalog.model.OfferingType;
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Getter;

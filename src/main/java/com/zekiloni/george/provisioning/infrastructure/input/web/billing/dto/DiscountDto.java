@@ -1,7 +1,7 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto;
 
-import com.zekiloni.george.provisioning.domain.billing.model.BillingPeriod;
-import com.zekiloni.george.provisioning.domain.billing.model.DiscountType;
+import com.zekiloni.george.provisioning.domain.catalog.model.BillingPeriod;
+import com.zekiloni.george.provisioning.domain.catalog.model.DiscountType;
 import com.zekiloni.george.common.infrastructure.in.web.dto.TimePeriodDto;
 
 import java.math.BigDecimal;

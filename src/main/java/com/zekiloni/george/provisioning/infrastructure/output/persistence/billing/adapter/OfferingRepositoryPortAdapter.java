@@ -1,7 +1,7 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.adapter;
 
 import com.zekiloni.george.provisioning.application.port.out.OfferingRepositoryPort;
-import com.zekiloni.george.provisioning.domain.billing.model.Offering;
+import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.mapper.OfferingEntityMapper;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.repository.OfferingJpaRepository;
 import lombok.RequiredArgsConstructor;

@@ -2,10 +2,10 @@ package com.zekiloni.george.platform.application.usecase;
 
 import com.zekiloni.george.platform.application.port.in.LeadImportUseCase;
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
-import com.zekiloni.george.platform.domain.lead.model.Lead;
-import com.zekiloni.george.platform.domain.lead.model.PhoneResolutionResult;
-import com.zekiloni.george.platform.domain.lead.service.CountryCodeResolver;
-import com.zekiloni.george.platform.domain.lead.util.PhoneNumberFileReader;
+import com.zekiloni.george.platform.domain.model.Lead;
+import com.zekiloni.george.platform.domain.model.PhoneResolutionResult;
+import com.zekiloni.george.platform.domain.service.CountryCodeResolver;
+import com.zekiloni.george.platform.domain.util.PhoneNumberFileReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 

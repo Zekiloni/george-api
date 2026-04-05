@@ -1,6 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.billing.mapper;
 
-import com.zekiloni.george.provisioning.domain.billing.model.Discount;
+import com.zekiloni.george.provisioning.domain.catalog.model.Discount;
 import com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto.DiscountCreateDto;
 import com.zekiloni.george.provisioning.infrastructure.input.web.billing.dto.DiscountDto;
 import org.mapstruct.Mapper;

@@ -1,4 +1,5 @@
-package com.zekiloni.george.provisioning.domain.billing.model;
+package com.zekiloni.george.platform.domain.model;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,12 +12,13 @@ import java.time.OffsetDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OfferingCharacteristic {
+public class Lead {
     private String id;
-    private String key;
-    private String name;
-    private String description;
-    private Object value;
+    private String country;
+    private String areaCode;
+    private String regionCode;
+    private String location;
+    private String phoneNumber;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.application.port.out;
 
-import com.zekiloni.george.platform.domain.lead.model.Lead;
+import com.zekiloni.george.platform.domain.model.Lead;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

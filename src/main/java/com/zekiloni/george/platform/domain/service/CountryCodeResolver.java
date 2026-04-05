@@ -1,10 +1,10 @@
-package com.zekiloni.george.platform.domain.lead.service;
+package com.zekiloni.george.platform.domain.service;
 
 import com.google.i18n.phonenumbers.NumberParseException;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder;
-import com.zekiloni.george.platform.domain.lead.model.PhoneResolutionResult;
+import com.zekiloni.george.platform.domain.model.PhoneResolutionResult;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;

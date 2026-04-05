@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.domain.lead.util;
+package com.zekiloni.george.platform.domain.util;
 
 import lombok.experimental.UtilityClass;
 

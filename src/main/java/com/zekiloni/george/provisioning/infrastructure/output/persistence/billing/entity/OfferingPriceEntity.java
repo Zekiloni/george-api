@@ -1,6 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.billing.entity;
 
-import com.zekiloni.george.provisioning.domain.billing.model.BillingPeriod;
+import com.zekiloni.george.provisioning.domain.catalog.model.BillingPeriod;
 import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import jakarta.persistence.*;

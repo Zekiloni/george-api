@@ -1,6 +1,6 @@
 package com.zekiloni.george.provisioning.application.port.out;
 
-import com.zekiloni.george.provisioning.domain.billing.model.Order;
+import com.zekiloni.george.provisioning.domain.order.model.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
