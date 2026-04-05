@@ -21,6 +21,7 @@ public class LeadImportService implements LeadImportUseCase {
     @Override
     public void handle(InputStream inputStream) {
         try {
+            // TODO: Big file handling - process in batches, use streaming, etc.
             List<Lead> leads = PhoneNumberFileReader.readPhoneNumbers(inputStream)
                     .stream()
                     .map(countryCodeResolver::resolve)

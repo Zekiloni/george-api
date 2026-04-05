@@ -2,6 +2,7 @@ package com.zekiloni.george.platform.infrastructure.out.persistence.lead.adapter
 
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
 import com.zekiloni.george.platform.domain.lead.model.Lead;
+import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.mapper.LeadEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.repository.LeadJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,8 +29,8 @@ public class LeadRepositoryAdapter implements LeadRepositoryPort {
     }
 
     @Override
-    public Page<Lead> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDomain);
+    public Page<Lead> findAll(Pageable pageable, LeadSpecification specification) {
+        return repository.findAll(specification, pageable).map(mapper::toDomain);
     }
 
     @Override

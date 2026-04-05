@@ -4,6 +4,7 @@ import com.zekiloni.george.platform.application.port.in.LeadImportUseCase;
 import com.zekiloni.george.platform.application.port.in.LeadQueryUseCase;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.LeadDto;
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.LeadDtoMapper;
+import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +24,7 @@ public class LeadApiController {
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> importLeads(@RequestParam("file") MultipartFile file) {
         try {
+            // TODO: handle exceptions properly and return meaningful responses
             importUseCase.handle(file.getInputStream());
             return ResponseEntity.ok().build();
         } catch (Exception e) {
@@ -31,8 +33,7 @@ public class LeadApiController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<LeadDto>> listLeads(Pageable pageable) {
-        Page<LeadDto> map = queryUseCase.handle(pageable).map(mapper::toDto);
-        return ResponseEntity.ok(map);
+    public ResponseEntity<Page<LeadDto>> listLeads(Pageable pageable, LeadSpecification specification) {
+        return ResponseEntity.ok(queryUseCase.handle(pageable, specification).map(mapper::toDto));
     }
 }

@@ -21,9 +21,5 @@ public class Lead {
     private String phoneNumber;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-
-    public boolean getIsSmtp() {
-        return this.phoneNumber.contains("@");
-    }
 }
 
