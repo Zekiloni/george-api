@@ -1,5 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
 
+import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.provisioning.domain.catalog.model.*;
 import lombok.*;
 
@@ -20,6 +21,7 @@ public class OfferingDto {
     private List<OfferingCharacteristicDto> characteristics;
     private BillingConfigDto billingConfig;
     private List<OfferingPriceDto> pricing;
+    private Money price;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

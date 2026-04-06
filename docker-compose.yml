@@ -12,7 +12,13 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U g-user -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.4
@@ -29,31 +35,95 @@ services:
       KC_SPI_THEME_CACHE_THEMES: "false"
       KC_SPI_THEME_CACHE_TEMPLATES: "false"
     volumes:
-      # Now maps the JAR from the same folder as docker-compose
       - ./resources/keycloak/keywind.jar:/opt/keycloak/providers/keywind.jar
     command: start-dev
     ports:
-      - "8686:8080"  # Keycloak admin console
+      - "8686:8080"
     depends_on:
       - postgres
-#
-#  btcpayserver:
-#    image: btcpayserver/btcpayserver:2.3.7
-#    restart: unless-stopped
-#    ports:
-#      - "49392:49392"
-#    environment:
-#      - BTCPAY_SERVERURL=https://btcpay.tvojdomain.com
-#      - BTCPAY_NETWORK=mainnet
-#      - BTCPAY_HOST=btcpayserver
-#      - BTCPAY_POSTGRES=postgres
-#      - POSTGRES_HOST=postgres
-#      - POSTGRES_USER=btcpay
-#      - POSTGRES_PASSWORD=StrongPassword123!
-#      - BTCPAY_EXTERNALSERVICES=btc
-#    volumes:
-#      - btcpaydata:/root/.btcpayserver
+
+  bitcoind:
+    image: btcpayserver/bitcoin:30.2
+    container_name: bitcoind
+    environment:
+      BITCOIN_NETWORK: regtest
+      BITCOIN_EXTRA_ARGS: |
+        regtest=1
+        server=1
+        rpcuser=rpc
+        rpcpassword=rpc
+        rpcallowip=0.0.0.0/0
+        rpcbind=0.0.0.0
+        rpcport=43782
+        port=18444
+        listen=1
+        listenonion=0
+        txindex=1
+        fallbackfee=0.0001
+        # ISKLJUČITE sve što bi moglo tražiti vanjske konekcije
+        dns=0
+        dnsseed=0
+        upnp=0
+        connect=0
+    ports:
+      - "18444:18444"
+      - "43782:43782"
+    volumes:
+      - bitcoin_data:/data
+    command: ["sh", "-c", "sleep 3 && bitcoind -printtoconsole"]
+    healthcheck:
+      test: ["CMD", "bitcoin-cli", "-regtest", "-rpcuser=rpc", "-rpcpassword=rpc", "-rpcconnect=127.0.0.1", "getblockchaininfo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  nbxplorer:
+    image: nicolasdorier/nbxplorer:2.6.3
+    container_name: nbxplorer
+    depends_on:
+      postgres:
+        condition: service_healthy
+      bitcoind:
+        condition: service_healthy
+    environment:
+      NBXPLORER_NETWORK: regtest
+      NBXPLORER_BTCRPCURL: "http://bitcoind:43782"
+      NBXPLORER_BTCRPCUSER: rpc
+      NBXPLORER_BTCRPCPASSWORD: rpc
+      NBXPLORER_POSTGRES: "User ID=g-user;Password=g-pw;Host=postgres;Port=5432;Database=nbxplorer;"
+      NBXPLORER_BIND: 0.0.0.0
+      NBXPLORER_PORT: 32838
+      NBXPLORER_NOAUTH: "true"
+      NBXPLORER_BTCP2PENDPOINT: "bitcoind:18444"
+      NBXPLORER_RETRYINTERVAL: "5s"
+      NBXPLORER_BTCP2PBIND: "0.0.0.0"
+      NBXPLORER_BTCP2PPORT: 18444
+    volumes:
+      - nbxplorer_data:/datadir
+
+  btcpayserver:
+    image: btcpayserver/btcpayserver:2.3.7
+    container_name: btcpayserver
+    ports:
+      - "49392:49392"
+    environment:
+      BTCPAY_NETWORK: regtest
+      BTCPAY_BIND: 0.0.0.0
+      BTCPAY_PORT: 49392
+      BTCPAY_POSTGRES: "User ID=g-user;Password=g-pw;Host=postgres;Port=5432;Database=btcpay;"
+      BTCPAY_BTCEXPLORERURL: "http://nbxplorer:32838"
+      BTCPAY_ALLOWANYHOST: "true"
+      BTCPAY_DISABLE_SSH: "true"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      nbxplorer:
+        condition: service_started
+    volumes:
+      - btcpay_data:/datadir
 
 volumes:
-  pgdata:
-  btcpaydata:
+  btcpay_data:
+  postgres_data:
+  bitcoin_data:
+  nbxplorer_data:
