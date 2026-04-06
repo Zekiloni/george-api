@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.HibernateException;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -17,7 +18,8 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
         String tenant = tenantContext.getTenantId();
 
         if (tenant == null) {
-            throw new HibernateException("No tenant identifier set in TenantContext");
+            log.warn("No tenant identifier found in TenantContext. Defaulting to 'system'.");
+            tenant = TenantContext.SYSTEM;
         }
 
         return tenant;
@@ -25,7 +27,7 @@ public class TenantIdentifierResolver implements CurrentTenantIdentifierResolver
 
     @Override
     public boolean isRoot(String tenantId) {
-        return tenantContext.isSystem();
+        return TenantContext.SYSTEM.equals(tenantId);
     }
 
     @Override

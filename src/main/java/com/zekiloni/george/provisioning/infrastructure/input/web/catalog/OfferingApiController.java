@@ -9,7 +9,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("${api.base.path:/api/v1}/offering")
@@ -19,14 +22,21 @@ public class OfferingApiController {
     private final OfferingQueryUseCase queryUseCase;
     private final OfferingDtoMapper mapper;
 
+    @PreAuthorize("hasRole('admin')")
     @PostMapping
     public ResponseEntity<OfferingDto> createOffering(@RequestBody OfferingCreateDto offeringCreate) {
         return ResponseEntity.ok(mapper.toDto(createUseCase.handle(mapper.toDomain(offeringCreate))));
     }
 
+    @PreAuthorize("hasRole('admin')")
     @GetMapping
     public ResponseEntity<Page<OfferingDto>> getOfferings(Pageable pageable) {
         return ResponseEntity.ok(queryUseCase.getAll(pageable).map(mapper::toDto));
+    }
+
+    @GetMapping("/active")
+    public ResponseEntity<List<OfferingDto>> getActiveOfferings() {
+        return ResponseEntity.ok(queryUseCase.getActive().stream().map(mapper::toDto).toList());
     }
 
     @GetMapping("/{id}")

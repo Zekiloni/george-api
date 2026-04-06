@@ -1,6 +1,7 @@
 package com.zekiloni.george.provisioning.application.port.out;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
+import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -17,5 +18,7 @@ public interface OfferingRepositoryPort {
     Page<Offering> findAll(Pageable pageable);
 
     Optional<Offering> findByIdentifier(String identifier);
+
+    List<Offering> findByStatus(OfferingStatus offeringStatus);
 }
 

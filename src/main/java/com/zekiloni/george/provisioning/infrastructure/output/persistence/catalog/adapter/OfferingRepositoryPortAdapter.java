@@ -2,6 +2,7 @@ package com.zekiloni.george.provisioning.infrastructure.output.persistence.catal
 
 import com.zekiloni.george.provisioning.application.port.out.OfferingRepositoryPort;
 import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
+import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.catalog.mapper.OfferingEntityMapper;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.catalog.repository.OfferingJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,14 @@ public class OfferingRepositoryPortAdapter implements OfferingRepositoryPort {
     @Override
     public Optional<Offering> findByIdentifier(String identifier) {
         return Optional.empty();
+    }
+
+    @Override
+    public List<Offering> findByStatus(OfferingStatus offeringStatus) {
+        return jpaRepository.findAllByStatus(offeringStatus)
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 }
 

@@ -12,18 +12,27 @@ import org.springframework.web.context.WebApplicationContext;
 @Setter
 @Slf4j
 @Component
-@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+//@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TenantContext {
+    private static final ThreadLocal<String> tenantHolder = new ThreadLocal<>();
+
     public static final String SYSTEM = "system";
 
-    private String tenantId;
+    public String getTenantId() {
+        return tenantHolder.get();
+    }
+
+    public void setTenantId(String tenantId) {
+        tenantHolder.set(tenantId);
+    }
 
     public void clear() {
-        this.tenantId = null;
+        tenantHolder.remove();
     }
 
     public boolean isSystem() {
-        return this.tenantId != null && this.tenantId.equals(SYSTEM);
+        String tenantId = getTenantId();
+        return tenantId != null && tenantId.equals(SYSTEM);
     }
 }
 
