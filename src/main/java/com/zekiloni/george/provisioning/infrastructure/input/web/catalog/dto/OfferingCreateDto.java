@@ -1,7 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
-import com.zekiloni.george.provisioning.domain.catalog.model.OfferingType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,7 +17,6 @@ public class OfferingCreateDto {
     private String name;
     private String description;
     private String identifier;
-    private OfferingType type;
     private OfferingStatus status;
     private List<OfferingCharacteristicCreateDto> characteristics;
     private BillingConfigCreateDto billingConfig;

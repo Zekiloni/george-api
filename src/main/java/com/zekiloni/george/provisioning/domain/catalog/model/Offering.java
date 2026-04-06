@@ -20,7 +20,7 @@ public class Offering {
     private String name;
     private String description;
     private String identifier;
-    private OfferingType type;
+    private ServiceSpecification serviceSpecification;
     private OfferingStatus status;
     private List<OfferingCharacteristic> characteristics;
     private BillingConfig billingConfig;
