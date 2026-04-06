@@ -2,14 +2,12 @@ package com.zekiloni.george.provisioning.domain.inventory.model;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.order.model.Order;
-import lombok.Builder;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 
-@Getter
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 public abstract class ServiceAccess {
     private String id;

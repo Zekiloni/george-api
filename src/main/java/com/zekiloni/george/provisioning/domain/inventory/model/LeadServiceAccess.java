@@ -1,10 +1,7 @@
 package com.zekiloni.george.provisioning.domain.inventory.model;
 
 import com.zekiloni.george.platform.domain.model.Lead;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
