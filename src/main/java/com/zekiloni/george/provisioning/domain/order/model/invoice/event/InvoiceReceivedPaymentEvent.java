@@ -37,10 +37,5 @@ public class InvoiceReceivedPaymentEvent extends PaymentEvent {
         this.paymentMethodId = paymentMethodId;
         this.payment = payment;
     }
-
-    @Override
-    public <T> T accept(InvoiceEventVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
 }
 

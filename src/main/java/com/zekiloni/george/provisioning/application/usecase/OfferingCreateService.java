@@ -12,7 +12,7 @@ public class OfferingCreateService implements OfferingCreateUseCase {
     private final OfferingRepositoryPort repository;
 
     @Override
-    public Offering handle(Offering offeringCreate) {
+    public Offering create(Offering offeringCreate) {
         return repository.save(offeringCreate);
     }
 }

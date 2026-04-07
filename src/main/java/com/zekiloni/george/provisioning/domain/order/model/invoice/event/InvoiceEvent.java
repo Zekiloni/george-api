@@ -2,6 +2,8 @@ package com.zekiloni.george.provisioning.domain.order.model.invoice.event;
 
 import com.zekiloni.george.common.domain.model.DomainEvent;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
@@ -11,7 +13,11 @@ import java.util.Map;
  * Sadrži zajedničke podatke za sve invoice evente.
  */
 @Data
+@SuperBuilder
+@NoArgsConstructor
 public abstract class InvoiceEvent implements DomainEvent {
+    public static final String ORDER_ID = "orderId";
+
     protected String deliveryId;
     protected String webhookId;
     protected String originalDeliveryId;
@@ -26,14 +32,13 @@ public abstract class InvoiceEvent implements DomainEvent {
         this.type = type;
     }
 
+    public String getOrderId() {
+        return metadata != null ? (String) metadata.get(ORDER_ID) : null;
+    }
+
     /**
      * Metoda koja omogućava validaciju specifičnog eventa
      */
     public abstract void validate();
-
-    /**
-     * Metoda koja omogućava transformaciju eventa
-     */
-    public abstract <T> T accept(InvoiceEventVisitor<T> visitor);
 }
 

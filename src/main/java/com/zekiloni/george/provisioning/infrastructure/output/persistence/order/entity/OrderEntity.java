@@ -37,4 +37,8 @@ public class OrderEntity extends BaseEntity {
 
     @Column(nullable = false)
     private OrderStatus status;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "invoice_id", referencedColumnName = "id")
+    private InvoiceEntity invoice;
 }

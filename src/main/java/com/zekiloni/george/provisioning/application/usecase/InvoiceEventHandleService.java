@@ -20,15 +20,20 @@ public class InvoiceEventHandleService implements InvoiceEventHandleUseCase {
     public void handle(InvoiceEvent event) {
         log.info("Handling invoice event: {}", event);
         handlers
-                .stream().filter(a -> a.getEventType().isAssignableFrom(event.getClass()))
+                .stream()
+                .filter(a -> a.getEventType().isAssignableFrom(event.getClass()))
                 .findFirst()
                 .ifPresentOrElse(h -> handleWithTypedHandler(h, event),
-                        () -> log.warn("No handler found for event type: {}", event.getClass().getName()));
+                        () -> noHandlerFound(event));
     }
 
     @SuppressWarnings("unchecked")
     private <T extends InvoiceEvent> void handleWithTypedHandler(InvoiceEventHandler<?> handler, InvoiceEvent event) {
         InvoiceEventHandler<T> typedHandler = (InvoiceEventHandler<T>) handler;
         typedHandler.handle((T) event);
+    }
+
+    private void noHandlerFound(InvoiceEvent event) {
+        log.warn("No handler found for event type: {}", event.getClass().getName());
     }
 }

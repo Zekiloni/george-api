@@ -4,7 +4,7 @@ import lombok.Getter;
 import org.hibernate.annotations.TenantId;
 
 @Getter
-public class TenantEntity {
+public class TenantEntity extends BaseEntity {
 
     @TenantId
     private String tenantId;

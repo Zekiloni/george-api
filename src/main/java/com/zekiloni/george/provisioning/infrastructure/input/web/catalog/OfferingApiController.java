@@ -25,7 +25,7 @@ public class OfferingApiController {
     @PreAuthorize("hasRole('admin')")
     @PostMapping
     public ResponseEntity<OfferingDto> createOffering(@RequestBody OfferingCreateDto offeringCreate) {
-        return ResponseEntity.ok(mapper.toDto(createUseCase.handle(mapper.toDomain(offeringCreate))));
+        return ResponseEntity.ok(mapper.toDto(createUseCase.create(mapper.toDomain(offeringCreate))));
     }
 
     @PreAuthorize("hasRole('admin')")

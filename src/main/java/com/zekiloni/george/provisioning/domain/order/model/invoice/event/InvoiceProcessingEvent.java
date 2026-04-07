@@ -41,10 +41,5 @@ public class InvoiceProcessingEvent extends InvoiceEvent {
             throw new IllegalArgumentException("Invoice ID is required for InvoiceProcessingEvent");
         }
     }
-
-    @Override
-    public <T> T accept(InvoiceEventVisitor<T> visitor) {
-        return visitor.visit(this);
-    }
 }
 
