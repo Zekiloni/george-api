@@ -1,9 +1,9 @@
-package com.zekiloni.george.provisioning.domain.catalog.model.characteristic;
+package com.zekiloni.george.provisioning.domain.catalog.model.specification.characteristic;
 
 import com.zekiloni.george.common.domain.model.TimePeriod;
 
+import java.time.OffsetDateTime;
 import java.util.List;
-
 
 public class CharacteristicSpecification {
     private String id;
@@ -29,4 +29,7 @@ public class CharacteristicSpecification {
     private TimePeriod validFor;
     
     private List<CharacteristicValueSpecification> characteristicValueSpecification;
+
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }

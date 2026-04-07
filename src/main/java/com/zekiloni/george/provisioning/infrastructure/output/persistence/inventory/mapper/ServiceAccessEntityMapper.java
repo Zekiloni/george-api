@@ -6,12 +6,13 @@ import com.zekiloni.george.provisioning.domain.inventory.model.SmtpServiceAccess
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.LeadServiceAccessEntity;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.ServiceAccessEntity;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.SmtpServiceAccessEntity;
+import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.mapper.OrderEntityMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.SubclassMappings;
 
-@Mapper
+@Mapper(uses = {OrderEntityMapper.class})
 public interface ServiceAccessEntityMapper {
     @SubclassMappings({
             @SubclassMapping(source = LeadServiceAccessEntity.class, target = LeadServiceAccess.class),

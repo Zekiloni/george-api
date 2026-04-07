@@ -1,8 +1,8 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.mapper;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
-import com.zekiloni.george.provisioning.domain.catalog.model.OfferingCharacteristic;
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingPrice;
+import com.zekiloni.george.provisioning.domain.catalog.model.specification.characteristic.CharacteristicSpecification;
 import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.*;
 import org.mapstruct.Mapper;
 
@@ -12,9 +12,9 @@ public interface OfferingDtoMapper {
 
     OfferingDto toDto(Offering offering);
 
-    OfferingCharacteristic toDomain(OfferingCharacteristicCreateDto dto);
+    CharacteristicSpecification toDomain(OfferingCharacteristicCreateDto dto);
 
-    OfferingCharacteristicDto toDto(OfferingCharacteristic offeringCharacteristic);
+    OfferingCharacteristicDto toDto(CharacteristicSpecification offeringCharacteristic);
 
     OfferingPrice toDomain(OfferingPriceCreateDto dto);
 

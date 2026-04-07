@@ -2,6 +2,7 @@ package com.zekiloni.george.provisioning.infrastructure.output.persistence.catal
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
+import com.zekiloni.george.provisioning.infrastructure.output.persistence.catalog.entity.specification.characteristic.CharacteristicSpecificationEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -11,10 +12,10 @@ import java.util.List;
 @Entity
 @Table(name = "offerings")
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
+@EqualsAndHashCode(callSuper = true, onlyExplicitlyIncluded = true)
 public class OfferingEntity extends BaseEntity {
 
     @Column(name = "name", nullable = false)
@@ -32,7 +33,7 @@ public class OfferingEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "offering_id")
-    private List<OfferingCharacteristicEntity> characteristics;
+    private List<CharacteristicSpecificationEntity> characteristicSpecification;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "billing_config_id")

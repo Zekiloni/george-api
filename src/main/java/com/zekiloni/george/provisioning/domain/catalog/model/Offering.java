@@ -1,6 +1,7 @@
 package com.zekiloni.george.provisioning.domain.catalog.model;
 
 import com.zekiloni.george.common.domain.model.Money;
+import com.zekiloni.george.provisioning.domain.catalog.model.specification.characteristic.CharacteristicSpecification;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -21,8 +22,8 @@ public class Offering {
     private String description;
     private String identifier;
     private ServiceSpecification serviceSpecification;
+    private List<CharacteristicSpecification> characteristicSpecification;
     private OfferingStatus status;
-    private List<OfferingCharacteristic> characteristics;
     private BillingConfig billingConfig;
     private List<OfferingPrice> pricing;
     private OffsetDateTime createdAt;

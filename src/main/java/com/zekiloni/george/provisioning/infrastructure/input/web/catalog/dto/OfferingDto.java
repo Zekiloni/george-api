@@ -18,7 +18,6 @@ public class OfferingDto {
     private String identifier;
     private OfferingType type;
     private OfferingStatus status;
-    private List<OfferingCharacteristicDto> characteristics;
     private BillingConfigDto billingConfig;
     private List<OfferingPriceDto> pricing;
     private Money price;

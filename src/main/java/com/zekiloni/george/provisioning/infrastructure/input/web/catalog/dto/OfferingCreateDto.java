@@ -18,7 +18,6 @@ public class OfferingCreateDto {
     private String description;
     private String identifier;
     private OfferingStatus status;
-    private List<OfferingCharacteristicCreateDto> characteristics;
     private BillingConfigCreateDto billingConfig;
     private List<OfferingPriceCreateDto> pricing;
     private OffsetDateTime createdAt;
