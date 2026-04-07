@@ -1,10 +1,7 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity;
 
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadEntity;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -16,6 +13,8 @@ import java.util.Set;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "lead_service_access")
 public class LeadServiceAccessEntity extends ServiceAccessEntity {
 
     @Builder.Default

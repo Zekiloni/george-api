@@ -13,12 +13,14 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 
-@MappedSuperclass
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@Entity
+@Table(name = "service_access")
+@Inheritance(strategy = InheritanceType.JOINED)
 public abstract class ServiceAccessEntity extends TenantEntity {
 
     @Enumerated(EnumType.STRING)
