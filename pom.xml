@@ -150,7 +150,7 @@
 <!--            <plugin>-->
 <!--                <groupId>org.openapitools</groupId>-->
 <!--                <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                <version>7.21.0</version>-->
+<!--                <version>7.9.0</version>   &lt;!&ndash; 7.9.0 je najstabilniji za BTCPay &ndash;&gt;-->
 <!--                <executions>-->
 <!--                    <execution>-->
 <!--                        <goals>-->
@@ -159,18 +159,33 @@
 <!--                        <configuration>-->
 <!--                            <inputSpec>${project.basedir}/src/main/resources/openapi/btcpay-swagger.json</inputSpec>-->
 <!--                            <generatorName>java</generatorName>-->
-<!--                            <library>resttemplate</library>-->
+<!--                            <library>resttemplate</library>           &lt;!&ndash; preporučeno umesto resttemplate &ndash;&gt;-->
+
 <!--                            <apiPackage>com.george.client.btcpay.api</apiPackage>-->
 <!--                            <modelPackage>com.george.client.btcpay.model</modelPackage>-->
+<!--                            <invokerPackage>com.george.client.btcpay</invokerPackage>-->
+
 <!--                            <skipValidateSpec>true</skipValidateSpec>-->
+
 <!--                            <configOptions>-->
-<!--                                <importMappings>-->
-<!--                                    <importMapping>BigDecimal=java.math.BigDecimal</importMapping>-->
-<!--                                </importMappings>-->
 <!--                                <useJakartaEe>true</useJakartaEe>-->
 <!--                                <openApiNullable>false</openApiNullable>-->
 <!--                                <generateBuilders>true</generateBuilders>-->
+<!--                                <useSpringBoot4>true</useSpringBoot4>-->
+<!--                                <useJackson3>true</useJackson3>-->
 <!--                            </configOptions>-->
+
+<!--                            &lt;!&ndash; Ključno za rešavanje tvojih grešaka &ndash;&gt;-->
+<!--                            <typeMappings>-->
+<!--                                <typeMapping>int32=Integer</typeMapping>-->
+<!--                                <typeMapping>int64=Long</typeMapping>-->
+<!--                                <typeMapping>number=java.lang.Double</typeMapping>-->
+<!--                            </typeMappings>-->
+
+<!--                            <importMappings>-->
+<!--                                <importMapping>BigDecimal=java.math.BigDecimal</importMapping>-->
+<!--                            </importMappings>-->
+
 <!--                            <generateApiTests>false</generateApiTests>-->
 <!--                            <generateModelTests>false</generateModelTests>-->
 <!--                        </configuration>-->

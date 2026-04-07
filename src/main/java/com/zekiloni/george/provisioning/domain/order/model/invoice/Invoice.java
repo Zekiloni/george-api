@@ -1,4 +1,4 @@
-package com.zekiloni.george.provisioning.domain.billing.model;
+package com.zekiloni.george.provisioning.domain.order.model.invoice;
 
 import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.provisioning.domain.order.model.Order;

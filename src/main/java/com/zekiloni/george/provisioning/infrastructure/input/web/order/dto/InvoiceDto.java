@@ -1,6 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.order.dto;
 
-import com.zekiloni.george.provisioning.domain.billing.model.InvoiceStatus;
+import com.zekiloni.george.provisioning.domain.order.model.invoice.InvoiceStatus;
 import com.zekiloni.george.common.infrastructure.in.web.dto.MoneyDto;
 
 import java.time.OffsetDateTime;
