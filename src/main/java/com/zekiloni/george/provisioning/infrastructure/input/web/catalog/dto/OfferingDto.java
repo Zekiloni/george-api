@@ -2,6 +2,8 @@ package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
 
 import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.provisioning.domain.catalog.model.*;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.specification.characteristic.CharacteristicSpecificationCreateDto;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.specification.characteristic.CharacteristicSpecificationDto;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -19,6 +21,7 @@ public class OfferingDto {
     private OfferingType type;
     private OfferingStatus status;
     private BillingConfigDto billingConfig;
+    private List<CharacteristicSpecificationDto> characteristicSpecification;
     private List<OfferingPriceDto> pricing;
     private Money price;
     private OffsetDateTime createdAt;

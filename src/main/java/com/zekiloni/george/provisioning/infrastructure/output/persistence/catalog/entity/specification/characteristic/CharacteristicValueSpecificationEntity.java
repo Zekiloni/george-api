@@ -1,6 +1,5 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.catalog.entity.specification.characteristic;
 
-import com.zekiloni.george.common.domain.model.TimePeriod;
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.TimePeriodEntity;
 import jakarta.persistence.Column;
@@ -14,8 +13,6 @@ import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "characteristic_value_specifications")
