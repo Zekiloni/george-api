@@ -33,6 +33,7 @@ spring:
     show-sql: true
     properties:
       hibernate:
+        multiTenancy: DISCRIMINATOR
         format_sql: true
 
   # Servlet multipart file upload settings
