@@ -1,11 +1,16 @@
 package com.zekiloni.george.common.infrastructure.out.persistence.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.TenantId;
 
-@Getter
-public class TenantEntity extends BaseEntity {
 
+@SuperBuilder
+@NoArgsConstructor
+public abstract class TenantEntity extends BaseEntity {
+
+    @Getter
     @TenantId
     private String tenantId;
 }
