@@ -2,7 +2,9 @@ package com.zekiloni.george.provisioning.domain.inventory.model;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.order.model.Order;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;

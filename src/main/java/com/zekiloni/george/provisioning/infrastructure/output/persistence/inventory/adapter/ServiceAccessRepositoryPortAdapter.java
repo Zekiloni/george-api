@@ -9,11 +9,25 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class ServiceAccessRepositoryPortAdapter implements InventoryRepositoryPort {
     private final ServiceAccessJpaRepository repository;
     private final ServiceAccessEntityMapper mapper;
+
+    @Override
+    public ServiceAccess save(ServiceAccess serviceAccess) {
+        return mapper.toDomain(repository.save(mapper.toEntity(serviceAccess)));
+    }
+
+    @Override
+    public List<ServiceAccess> saveAll(List<ServiceAccess> serviceAccesses) {
+        return repository.saveAll(mapper.toEntity(serviceAccesses)).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 
     @Override
     public Page<ServiceAccess> findAll(Pageable pageable) {

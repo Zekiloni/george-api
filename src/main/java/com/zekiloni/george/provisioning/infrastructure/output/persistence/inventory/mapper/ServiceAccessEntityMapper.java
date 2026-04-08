@@ -12,6 +12,8 @@ import org.mapstruct.ObjectFactory;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.SubclassMappings;
 
+import java.util.List;
+
 @Mapper(uses = {OrderEntityMapper.class})
 public interface ServiceAccessEntityMapper {
     @SubclassMappings({
@@ -25,6 +27,9 @@ public interface ServiceAccessEntityMapper {
             @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessEntity.class)
     })
     ServiceAccessEntity toEntity(ServiceAccess domain);
+
+
+    List<ServiceAccessEntity> toEntity(List<ServiceAccess> serviceAccess);
 
     @ObjectFactory
     default ServiceAccess createDomain(ServiceAccessEntity entity) {
