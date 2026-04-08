@@ -14,5 +14,6 @@ public class Order {
     private OrderStatus status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private String tenantId;;
 }
 

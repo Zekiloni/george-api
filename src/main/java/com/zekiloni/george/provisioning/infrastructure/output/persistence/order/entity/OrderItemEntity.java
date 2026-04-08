@@ -20,8 +20,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class OrderItemEntity extends BaseEntity {
-    @OneToOne(optional = false)
-    @JoinColumn(name = "offering_id", referencedColumnName = "id")
+    @ManyToOne(optional = false, fetch = FetchType.LAZY)
+    @JoinColumn(name = "offering_id", nullable = false)
     private OfferingEntity offering;
 
     @Column
