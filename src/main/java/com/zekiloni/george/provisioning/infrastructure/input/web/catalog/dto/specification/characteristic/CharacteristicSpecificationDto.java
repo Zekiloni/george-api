@@ -12,8 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class CharacteristicSpecificationDto {
-
-    private Long id;
+    private String id;
 
     private String name;
 

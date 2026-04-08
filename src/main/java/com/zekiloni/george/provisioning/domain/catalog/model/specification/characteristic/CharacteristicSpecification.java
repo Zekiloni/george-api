@@ -1,10 +1,18 @@
 package com.zekiloni.george.provisioning.domain.catalog.model.specification.characteristic;
 
 import com.zekiloni.george.common.domain.model.TimePeriod;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CharacteristicSpecification {
     private String id;
 

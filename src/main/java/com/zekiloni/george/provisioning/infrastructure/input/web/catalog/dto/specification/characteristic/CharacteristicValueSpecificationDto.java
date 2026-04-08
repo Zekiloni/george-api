@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 @Builder
 public class CharacteristicValueSpecificationDto {
 
-    private Long id;
+    private String id;
 
     private Boolean isDefault;
 
