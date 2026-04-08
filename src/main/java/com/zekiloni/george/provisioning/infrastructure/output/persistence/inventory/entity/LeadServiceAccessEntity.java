@@ -18,7 +18,7 @@ import java.util.Set;
 public class LeadServiceAccessEntity extends ServiceAccessEntity {
 
     @Builder.Default
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.MERGE)
     @JoinTable(
             name = "lead_service_access_leads",
             joinColumns = @JoinColumn(name = "service_access_id"),

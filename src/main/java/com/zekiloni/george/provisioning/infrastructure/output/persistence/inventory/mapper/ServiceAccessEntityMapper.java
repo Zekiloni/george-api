@@ -1,5 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.mapper;
 
+import com.zekiloni.george.platform.infrastructure.out.persistence.lead.mapper.LeadEntityMapper;
 import com.zekiloni.george.provisioning.domain.inventory.model.LeadServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.SmtpServiceAccess;
@@ -14,7 +15,7 @@ import org.mapstruct.SubclassMappings;
 
 import java.util.List;
 
-@Mapper(uses = {OrderEntityMapper.class})
+@Mapper(uses = {OrderEntityMapper.class, LeadEntityMapper.class})
 public interface ServiceAccessEntityMapper {
     @SubclassMappings({
             @SubclassMapping(source = LeadServiceAccessEntity.class, target = LeadServiceAccess.class),
