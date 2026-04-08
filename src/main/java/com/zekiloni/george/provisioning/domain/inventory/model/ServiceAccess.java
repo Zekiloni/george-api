@@ -21,4 +21,5 @@ public abstract class ServiceAccess {
     private OffsetDateTime validTo;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private String tenantId;;
 }

@@ -1,31 +1,48 @@
 package com.zekiloni.george.provisioning.infrastructure.integration.btcpay.client;
 
+import com.zekiloni.george.provisioning.infrastructure.integration.btcpay.dto.BtcPayInvoiceCreateDto;
+import com.zekiloni.george.provisioning.infrastructure.integration.btcpay.dto.BtcPayInvoiceResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestClient;
+
+import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
 public class BtcPayApiClient {
-//    private final BtcPayApiClientConfig config;
+    private final RestClient btcPayRestClient;
 
-    public String createInvoice(String orderId, String description, String amount, String currency) {
-        return null;
-        // Build the request payload
-//        var payload = new BtcPayInvoiceRequest(orderId, description, amount, currency);
-//
-//        // Send the request to create an invoice
-//        var response = config.btcPayRestTemplate().postForEntity(
-//                config.getBaseUrl() + "/invoices",
-//                payload,
-//                String.class
-//        );
-//
-//        // Handle the response and return the invoice URL or ID
-//        if (response.getStatusCode().is2xxSuccessful()) {
-//            // Extract invoice URL or ID from the response body
-//            return response.getBody(); // Adjust this based on actual response structure
-//        } else {
-//            throw new RuntimeException("Failed to create invoice: " + response.getStatusCode());
-//        }
+    @Value("${btc-pay.store-id}")
+    private String storeId;
+
+    @Value("${btc-pay.api.api-key}")
+    private String apiKey;
+
+    public BtcPayInvoiceResponse createInvoice(String orderId, String description, String amount, String currency) {
+        BtcPayInvoiceCreateDto.Metadata metadata = new BtcPayInvoiceCreateDto.Metadata(
+                orderId,
+                "https://example.com/orders/" + orderId,
+                description,
+                null,
+                null
+        );
+
+        BtcPayInvoiceCreateDto btcPayInvoiceCreateDto = new BtcPayInvoiceCreateDto(metadata, null, null, amount, currency, null);
+
+        return btcPayRestClient.post()
+                .uri("/stores/{storeId}/invoices", storeId)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(btcPayInvoiceCreateDto)
+                .header("Authorization", String.format("token %s", apiKey))
+                .retrieve()
+                .onStatus(HttpStatusCode::isError, (req, res) -> {
+                    String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
+                    throw new RuntimeException("Status: " + res.getStatusCode() + " | Body: " + body);
+                })
+                .body(BtcPayInvoiceResponse.class);
     }
 }

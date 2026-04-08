@@ -53,6 +53,12 @@ api:
   cors:
     allowed-origins: http://localhost:4200
 
+btc-pay:
+    store-id: 5DU4njab753Lt1WY5Cc3bMsNyYczULpbDNEvsDGauZs5
+    api:
+      base-url: http://localhost:49392/api/v1
+      api-key: 35b2e61f376258e91e935af2f6d7454166a5f368
+
 # Logging
 logging:
   level:

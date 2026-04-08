@@ -30,9 +30,10 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
 
     @Override
     public void provision(Order order, OrderItem item) {
-        tenantContext.setTenantId(order.getTenantId());
-
+        String tenantId = order.getTenantId();
         try {
+            tenantContext.setTenantId(tenantId);
+
             LeadServiceAccess leadServiceAccess = LeadServiceAccess.builder()
                     .serviceSpecification(getType())
                     .validFrom(OffsetDateTime.now())

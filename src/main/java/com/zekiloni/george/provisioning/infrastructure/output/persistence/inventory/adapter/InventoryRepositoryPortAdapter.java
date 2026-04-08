@@ -13,7 +13,7 @@ import java.util.List;
 
 @Component
 @RequiredArgsConstructor
-public class ServiceAccessRepositoryPortAdapter implements InventoryRepositoryPort {
+public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
     private final ServiceAccessJpaRepository repository;
     private final ServiceAccessEntityMapper mapper;
 
