@@ -1,13 +1,10 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.order.dto;
 
-import com.zekiloni.george.provisioning.domain.catalog.model.DurationUnit;
 
+import java.util.List;
 
 public record OrderCreateDto(
-        String offeringId,
-        Integer quantity,
-        Integer duration,
-        DurationUnit durationUnit
+        List<OrderItemCreateDto> item
 ) {
 }
 

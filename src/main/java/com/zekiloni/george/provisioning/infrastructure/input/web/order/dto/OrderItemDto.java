@@ -1,11 +1,12 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.order.dto;
 
-import java.time.OffsetDateTime;
-import java.util.List;
+import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.OfferingDto;
 
-public record OrderDto(
+import java.time.OffsetDateTime;
+
+public record OrderItemDto(
         String id,
-        List<OrderItemDto> item,
+        OfferingDto offering,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt
 ) {
