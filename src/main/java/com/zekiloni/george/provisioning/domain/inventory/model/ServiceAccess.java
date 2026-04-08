@@ -9,6 +9,8 @@ import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 
+@Getter
+@Setter
 @SuperBuilder
 @NoArgsConstructor
 public abstract class ServiceAccess {
