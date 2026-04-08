@@ -13,7 +13,7 @@ import java.util.List;
 public class OrderProvisioningService {
     private final List<ProvisioningStrategy> provisioningStrategies;
 
-    private void handle(Order order) {
+    public void handle(Order order) {
         order.getItem().forEach(orderItem -> {
             provisioningStrategies.stream()
                     .filter(strategy -> isApplicableStrategy(orderItem, strategy))

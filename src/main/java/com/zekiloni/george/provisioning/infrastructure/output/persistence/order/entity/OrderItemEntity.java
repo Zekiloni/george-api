@@ -34,9 +34,6 @@ public class OrderItemEntity extends BaseEntity {
     @Column(name = "duration_unit")
     private DurationUnit durationUnit;
 
-    @Column(nullable = false)
-    private OrderStatus status;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "invoice_id", referencedColumnName = "id")
     private InvoiceEntity invoice;

@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -25,12 +26,12 @@ public class OrderRepositoryPortAdapter implements OrderRepositoryPort {
 
     @Override
     public Optional<Order> findById(String id) {
-        return repository.findById(id).map(mapper::toDomain);
+        return repository.findById(UUID.fromString(id)).map(mapper::toDomain);
     }
 
     @Override
     public void deleteById(String id) {
-        repository.deleteById(id);
+        repository.deleteById(UUID.fromString(id));
     }
 
     @Override
