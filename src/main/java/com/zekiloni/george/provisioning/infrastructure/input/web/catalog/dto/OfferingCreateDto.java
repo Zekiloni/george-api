@@ -1,6 +1,7 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto;
 
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
+import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.infrastructure.input.web.catalog.dto.specification.characteristic.CharacteristicSpecificationCreateDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -19,6 +20,7 @@ public class OfferingCreateDto {
     private String description;
     private String identifier;
     private OfferingStatus status;
+    private ServiceSpecification serviceSpecification;
     private BillingConfigCreateDto billingConfig;
     private List<CharacteristicSpecificationCreateDto> characteristicSpecification;
     private List<OfferingPriceCreateDto> pricing;

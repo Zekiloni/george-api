@@ -2,6 +2,7 @@ package com.zekiloni.george.provisioning.infrastructure.output.persistence.catal
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import com.zekiloni.george.provisioning.domain.catalog.model.OfferingStatus;
+import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.catalog.entity.specification.characteristic.CharacteristicSpecificationEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,6 +31,10 @@ public class OfferingEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private OfferingStatus status;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "service_specification_id", nullable = false)
+    private ServiceSpecification serviceSpecification;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "offering_id")

@@ -1,6 +1,7 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.order.entity;
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
+import com.zekiloni.george.common.infrastructure.out.persistence.entity.TenantEntity;
 import com.zekiloni.george.provisioning.domain.catalog.model.DurationUnit;
 import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import com.zekiloni.george.provisioning.domain.order.model.OrderStatus;
@@ -22,7 +23,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-public class OrderEntity extends BaseEntity {
+public class OrderEntity extends TenantEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;
