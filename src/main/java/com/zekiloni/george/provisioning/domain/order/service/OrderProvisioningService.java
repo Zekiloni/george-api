@@ -18,7 +18,7 @@ public class OrderProvisioningService {
             provisioningStrategies.stream()
                     .filter(strategy -> isApplicableStrategy(orderItem, strategy))
                     .findFirst()
-                    .ifPresent(strategy -> strategy.provision(orderItem));
+                    .ifPresent(strategy -> strategy.provision(order ,orderItem));
         });
     }
 

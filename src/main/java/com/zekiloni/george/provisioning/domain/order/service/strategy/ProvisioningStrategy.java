@@ -7,7 +7,7 @@ import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 public interface ProvisioningStrategy {
     ServiceSpecification getType();
 
-    void provision(OrderItem order);
+    void provision(Order order, OrderItem orderItem);
 
     void deprovision(OrderItem order);
 }

@@ -27,11 +27,12 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
     }
 
     @Override
-    public void provision(OrderItem item) {
+    public void provision(Order order, OrderItem item) {
         LeadServiceAccess leadServiceAccess = LeadServiceAccess.builder()
                 .serviceSpecification(getType())
                 .validFrom(OffsetDateTime.now())
                 .leads(getLeads(item))
+                .order(order)
                 .build();
 
         serviceAccessCreateUseCase.create(leadServiceAccess);
