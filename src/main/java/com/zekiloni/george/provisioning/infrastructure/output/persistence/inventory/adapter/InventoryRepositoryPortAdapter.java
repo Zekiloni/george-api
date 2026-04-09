@@ -10,6 +10,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -32,5 +34,10 @@ public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
     @Override
     public Page<ServiceAccess> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<ServiceAccess> findById(String id) {
+        return repository.findById(UUID.fromString(id)).map(mapper::toDomain);
     }
 }

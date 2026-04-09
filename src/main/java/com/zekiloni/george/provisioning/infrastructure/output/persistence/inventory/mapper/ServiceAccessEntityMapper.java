@@ -29,7 +29,6 @@ public interface ServiceAccessEntityMapper {
     })
     ServiceAccessEntity toEntity(ServiceAccess domain);
 
-
     List<ServiceAccessEntity> toEntity(List<ServiceAccess> serviceAccess);
 
     @ObjectFactory
