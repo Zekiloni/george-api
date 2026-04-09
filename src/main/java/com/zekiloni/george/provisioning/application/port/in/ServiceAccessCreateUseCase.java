@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface ServiceAccessCreateUseCase {
     ServiceAccess create(ServiceAccess serviceAccess);
-    List<ServiceAccess> create(List<ServiceAccess> serviceAccesses);
+
 }

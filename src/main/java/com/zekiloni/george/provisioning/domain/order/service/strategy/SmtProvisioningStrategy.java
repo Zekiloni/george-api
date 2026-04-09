@@ -8,6 +8,8 @@ import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+
 @Component
 @RequiredArgsConstructor
 public class SmtProvisioningStrategy implements ProvisioningStrategy{
@@ -21,12 +23,26 @@ public class SmtProvisioningStrategy implements ProvisioningStrategy{
     @Override
     public void provision(Order order, OrderItem orderItem) {
         // todo: contact SMT provider to provision the service access for the order item
-        SmtpServiceAccess build = SmtpServiceAccess.builder().build();
+        SmtpServiceAccess build = SmtpServiceAccess.builder()
+                .validFrom(OffsetDateTime.now())
+                .validTo(getValidTo(orderItem))
+                .build();
+
         serviceAccessCreateUseCase.create(build);
     }
 
     @Override
     public void deprovision(OrderItem order) {
 
+    }
+
+    private OffsetDateTime getValidTo(OrderItem orderItem) {
+        OffsetDateTime now = OffsetDateTime.now();
+        return switch (orderItem.getDurationUnit()) {
+            case DAYS -> now.plusDays(orderItem.getDuration());
+            case MONTHS -> now.plusMonths(orderItem.getDuration());
+            case YEARS -> now.plusYears(orderItem.getDuration());
+            default -> throw new IllegalArgumentException("Unsupported duration unit: " + orderItem.getDurationUnit());
+        };
     }
 }
