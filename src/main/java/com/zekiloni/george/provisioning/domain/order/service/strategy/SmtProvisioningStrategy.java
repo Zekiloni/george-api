@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class SmtProvisioningStrategy implements ProvisioningStrategy{
+public class SmtProvisioningStrategy implements ProvisioningStrategy {
     private final ServiceAccessCreateUseCase serviceAccessCreateUseCase;
 
     @Override
@@ -26,6 +26,7 @@ public class SmtProvisioningStrategy implements ProvisioningStrategy{
         SmtpServiceAccess build = SmtpServiceAccess.builder()
                 .validFrom(OffsetDateTime.now())
                 .validTo(getValidTo(orderItem))
+                .order(order)
                 .build();
 
         serviceAccessCreateUseCase.create(build);
@@ -39,6 +40,7 @@ public class SmtProvisioningStrategy implements ProvisioningStrategy{
     private OffsetDateTime getValidTo(OrderItem orderItem) {
         OffsetDateTime now = OffsetDateTime.now();
         return switch (orderItem.getDurationUnit()) {
+            case HOURS -> now.plusHours(orderItem.getDuration());
             case DAYS -> now.plusDays(orderItem.getDuration());
             case MONTHS -> now.plusMonths(orderItem.getDuration());
             case YEARS -> now.plusYears(orderItem.getDuration());

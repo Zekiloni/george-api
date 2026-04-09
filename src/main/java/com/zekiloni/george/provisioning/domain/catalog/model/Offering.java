@@ -35,6 +35,7 @@ public class Offering {
         return switch (billingConfig.getType()) {
             case ONE_TIME, USAGE_BASED -> pricing.get(0).getEffectiveUnitPrice();
             case RECURRING -> pricing.stream()
+                    .filter(p -> p.getDuration() != null)
                     .min(Comparator.comparingInt(OfferingPrice::getDuration))
                     .map(OfferingPrice::getEffectiveUnitPrice)
                     .orElse(null);
