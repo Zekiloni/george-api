@@ -26,7 +26,8 @@ public class InvoiceEntity extends TenantEntity {
     @Column(name = "status", nullable = false)
     private InvoiceStatus status;
 
-    private List<InvoiceItem> items;
+    @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InvoiceItemEntity> items;
 
     @Column(name = "payment_reference")
     private String paymentReference;

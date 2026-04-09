@@ -5,6 +5,8 @@ import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import lombok.Builder;
 import lombok.Data;
 
+import java.math.BigDecimal;
+
 @Data
 @Builder
 public class InvoiceItem {
@@ -12,7 +14,7 @@ public class InvoiceItem {
     private Offering offering;
     private int quantity;
     private Money unitPrice;
-    private Money discountAmount;
+    private BigDecimal discountAmount;
 
     public Money getSubtotal() {
         return unitPrice.multiply(quantity);
@@ -20,6 +22,6 @@ public class InvoiceItem {
 
     public Money getTotal() {
         if (discountAmount == null) return getSubtotal();
-        return getSubtotal().subtract(discountAmount);
+        return getSubtotal().subtract(new Money(getSubtotal().getCurrency(), discountAmount));
     }
 }
