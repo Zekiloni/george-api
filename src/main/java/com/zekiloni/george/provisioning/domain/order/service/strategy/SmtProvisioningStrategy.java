@@ -26,6 +26,7 @@ public class SmtProvisioningStrategy implements ProvisioningStrategy {
         SmtpServiceAccess build = SmtpServiceAccess.builder()
                 .validFrom(OffsetDateTime.now())
                 .validTo(getValidTo(orderItem))
+                .serviceSpecification(getType())
                 .order(order)
                 .build();
 
