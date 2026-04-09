@@ -1,6 +1,5 @@
 package com.zekiloni.george.provisioning.domain.order.service.strategy;
 
-import com.zekiloni.george.common.infrastructure.config.tenant.TenantContext;
 import com.zekiloni.george.platform.application.port.in.LeadQueryUseCase;
 import com.zekiloni.george.platform.domain.model.Lead;
 import com.zekiloni.george.provisioning.application.port.in.ServiceAccessCreateUseCase;
@@ -21,7 +20,6 @@ import java.util.List;
 public class LeadProvisioningStrategy implements ProvisioningStrategy {
     private final LeadQueryUseCase leadQueryUseCase;
     private final ServiceAccessCreateUseCase serviceAccessCreateUseCase;
-    private final TenantContext tenantContext;
 
     @Override
     public ServiceSpecification getType() {
@@ -30,21 +28,16 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
 
     @Override
     public void provision(Order order, OrderItem item) {
-        String tenantId = order.getTenantId();
-        try {
-            tenantContext.setTenantId(tenantId);
 
-            LeadServiceAccess leadServiceAccess = LeadServiceAccess.builder()
-                    .serviceSpecification(getType())
-                    .validFrom(OffsetDateTime.now())
-                    .leads(getLeads(item))
-                    .order(order)
-                    .build();
+        LeadServiceAccess leadServiceAccess = LeadServiceAccess.builder()
+                .serviceSpecification(getType())
+                .validFrom(OffsetDateTime.now())
+                .leads(getLeads(item))
+                .order(order)
+                .tenantId(order.getTenantId())
+                .build();
 
-            serviceAccessCreateUseCase.create(leadServiceAccess);
-        } finally {
-            tenantContext.clear();
-        }
+        serviceAccessCreateUseCase.create(leadServiceAccess);
     }
 
     @Override
