@@ -28,6 +28,7 @@ public class SmtProvisioningStrategy implements ProvisioningStrategy {
                 .validTo(getValidTo(orderItem))
                 .serviceSpecification(getType())
                 .order(order)
+                .tenantId(order.getTenantId())
                 .build();
 
         serviceAccessCreateUseCase.create(build);
