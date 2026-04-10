@@ -1,6 +1,7 @@
-package com.zekiloni.george.workspace.infrastructure.out.persistence.page;
+package com.zekiloni.george.workspace.infrastructure.out.persistence.page.mapper;
 
 import com.zekiloni.george.workspace.domain.page.Page;
+import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.PageEntity;
 import org.mapstruct.Mapper;
 
 @Mapper
