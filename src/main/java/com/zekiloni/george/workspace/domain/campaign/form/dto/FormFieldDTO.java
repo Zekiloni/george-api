@@ -1,6 +1,6 @@
 package com.zekiloni.george.workspace.domain.campaign.form.dto;
 
-import com.zekiloni.george.workspace.domain.campaign.form.entity.FieldType;
+import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

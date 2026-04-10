@@ -1,4 +1,4 @@
-package com.zekiloni.george.workspace.domain.campaign.form.entity;
+package com.zekiloni.george.workspace.domain.page.form.field;
 
 /**
  * Enum representing different types of form fields.

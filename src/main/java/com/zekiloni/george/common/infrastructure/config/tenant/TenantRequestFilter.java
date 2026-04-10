@@ -22,6 +22,8 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class TenantRequestFilter extends OncePerRequestFilter {
     public static final String X_ADMIN = "X-Admin-Access";
+    public static final String BTCPAY_SIG = "BTCPay-Sig";
+
     private final TenantContext tenantContext;
 
     @Override
@@ -38,6 +40,12 @@ public class TenantRequestFilter extends OncePerRequestFilter {
 
                 String tenantId = isAdminRequest(request, jwtAuth) ? TenantContext.SYSTEM : jwt.getSubject();
                 tenantContext.setTenantId(tenantId);
+            } else {
+                String header = request.getHeader(BTCPAY_SIG);
+                // TODO: This is a temporary workaround to allow BTCPay to access the system tenant. We should implement a proper authentication mechanism for BTCPay and remove this header check.
+                if (header != null) {
+                    tenantContext.setTenantId(TenantContext.SYSTEM);
+                }
             }
 
             filterChain.doFilter(request, response);

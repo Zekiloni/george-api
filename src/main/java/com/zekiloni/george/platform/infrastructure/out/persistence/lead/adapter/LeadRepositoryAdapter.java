@@ -44,12 +44,6 @@ public class LeadRepositoryAdapter implements LeadRepositoryPort {
         repository.deleteById(id);
     }
 
-    @Override
-    public List<Lead> findAll(int limit, LeadSpecification specification) {
-        return repository.findAll(specification, Pageable.ofSize(limit)).getContent().stream()
-                .map(mapper::toDomain)
-                .toList();
-    }
 
     private void applyAccessFilter() {
         if (!tenantContext.isSystem()) {

@@ -1,8 +1,10 @@
-package com.zekiloni.george.workspace.domain.campaign.form.entity;
+package com.zekiloni.george.workspace.domain.page.form.field;
 
-/**
- * Enum representing validation types that can be applied to form fields.
- */
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
 public enum ValidationType {
     REQUIRED("required"),
     MIN_LENGTH("min_length"),
@@ -18,13 +20,5 @@ public enum ValidationType {
     CUSTOM("custom");
 
     private final String value;
-
-    ValidationType(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
 }
 

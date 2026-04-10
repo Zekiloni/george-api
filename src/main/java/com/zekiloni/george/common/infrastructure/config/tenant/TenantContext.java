@@ -11,9 +11,10 @@ import org.springframework.stereotype.Component;
 @Component
 //@Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
 public class TenantContext {
-    private static final ThreadLocal<String> tenantHolder = new ThreadLocal<>();
-
     public static final String SYSTEM = "system";
+    private static final ThreadLocal<String> tenantHolder =
+            ThreadLocal.withInitial(() -> SYSTEM);
+
 
     public String getTenantId() {
         return tenantHolder.get();

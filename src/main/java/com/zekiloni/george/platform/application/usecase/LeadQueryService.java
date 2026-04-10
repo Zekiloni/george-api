@@ -20,9 +20,4 @@ public class LeadQueryService implements LeadQueryUseCase {
     public Page<Lead> handle(Pageable pageable, LeadSpecification specification) {
         return repository.findAll(pageable, specification);
     }
-
-    @Override
-    public List<Lead> handle(int limit, LeadSpecification specification) {
-        return repository.findAll(limit, specification);
-    }
 }

@@ -1,4 +1,4 @@
-package com.zekiloni.george.workspace.domain.campaign.form.entity;
+package com.zekiloni.george.workspace.domain.page.form.field;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

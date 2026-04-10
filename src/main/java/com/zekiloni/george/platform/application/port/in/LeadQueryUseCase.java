@@ -11,5 +11,4 @@ import java.util.List;
 
 public interface LeadQueryUseCase {
     Page<Lead> handle(Pageable pageable, LeadSpecification specification);
-    List<Lead> handle(int limit, LeadSpecification specification);
 }
