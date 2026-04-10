@@ -1,4 +1,4 @@
-package com.zekiloni.george.workspace.domain.page.form;
+package com.zekiloni.george.workspace.domain.page.tracking;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,15 +11,19 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FormSubmission {
+public class TrackingEvent {
     private String id;
-    private String formConfigId;
-    private String submissionData;
-    private String submittedBy;
+    private String trackingLinkId;
+    private String eventType;
     private String ipAddress;
     private String userAgent;
-    private String status;
-    private String notes;
+    private String referer;
+    private OffsetDateTime eventTimestamp;
+    private String metadata;
+    private String sessionId;
+    private String deviceType;
+    private String geographicLocation;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }
+

@@ -1,6 +1,7 @@
 package com.zekiloni.george.workspace.domain.page.form.field;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
@@ -11,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString(exclude = {"validators", "options", "subFields"})
 public class FormField {
     private String id;
@@ -26,8 +28,11 @@ public class FormField {
     private Boolean isReadOnly = false;
     private Boolean isHidden = false;
     private String customAttributes;
+    @Builder.Default
     private List<FieldValidator> validators = new ArrayList<>();
+    @Builder.Default
     private List<FieldOption> options = new ArrayList<>();
+    @Builder.Default
     private List<FormField> subFields = new ArrayList<>();
     private FormField parentField;
 }

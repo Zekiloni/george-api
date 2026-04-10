@@ -1,13 +1,12 @@
 package com.zekiloni.george.workspace.domain.page.form;
 
 import com.zekiloni.george.workspace.domain.page.form.field.FormField;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +15,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 @ToString(exclude = {"fields"})
 public class FormConfig {
     private String id;
@@ -37,10 +37,7 @@ public class FormConfig {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 
-    // One-to-Many relationship with form fields
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "form_config_id")
-    @OrderBy("displayOrder ASC")
+    @Builder.Default
     private List<FormField> fields = new ArrayList<>();
 }
 
