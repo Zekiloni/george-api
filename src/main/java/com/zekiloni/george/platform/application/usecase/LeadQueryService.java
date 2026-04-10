@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.List;
+
 @Component
 @RequiredArgsConstructor
 public class LeadQueryService implements LeadQueryUseCase {
@@ -17,5 +19,10 @@ public class LeadQueryService implements LeadQueryUseCase {
     @Override
     public Page<Lead> handle(Pageable pageable, LeadSpecification specification) {
         return repository.findAll(pageable, specification);
+    }
+
+    @Override
+    public List<Lead> handle(int limit, LeadSpecification specification) {
+        return repository.findAll(limit, specification);
     }
 }

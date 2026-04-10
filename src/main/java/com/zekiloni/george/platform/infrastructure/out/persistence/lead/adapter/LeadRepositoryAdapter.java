@@ -1,11 +1,14 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.lead.adapter;
 
+import com.zekiloni.george.common.infrastructure.config.tenant.TenantContext;
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
 import com.zekiloni.george.platform.domain.model.Lead;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.mapper.LeadEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.repository.LeadJpaRepository;
+import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Session;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
@@ -17,6 +20,8 @@ import java.util.List;
 public class LeadRepositoryAdapter implements LeadRepositoryPort {
     private final LeadJpaRepository repository;
     private final LeadEntityMapper mapper;
+    private final TenantContext tenantContext;
+    private final EntityManager entityManager;
 
     @Override
     public Lead save(Lead lead) {
@@ -30,11 +35,27 @@ public class LeadRepositoryAdapter implements LeadRepositoryPort {
 
     @Override
     public Page<Lead> findAll(Pageable pageable, LeadSpecification specification) {
+        applyAccessFilter();
         return repository.findAll(specification, pageable).map(mapper::toDomain);
     }
 
     @Override
     public void deleteById(String id) {
         repository.deleteById(id);
+    }
+
+    @Override
+    public List<Lead> findAll(int limit, LeadSpecification specification) {
+        return repository.findAll(specification, Pageable.ofSize(limit)).getContent().stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
+
+    private void applyAccessFilter() {
+        if (!tenantContext.isSystem()) {
+            entityManager.unwrap(Session.class)
+                    .enableFilter("tenantAccessFilter")
+                    .setParameter("tenantId", tenantContext.getTenantId());
+        }
     }
 }

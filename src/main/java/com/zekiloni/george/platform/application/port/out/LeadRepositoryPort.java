@@ -10,8 +10,7 @@ import java.util.List;
 public interface LeadRepositoryPort {
     Lead save(Lead lead);
     List<Lead> saveAll(List<Lead> leads);
-
     Page<Lead> findAll(Pageable pageable, LeadSpecification specification);
-
+    List<Lead> findAll(int limit, LeadSpecification specification);
     void deleteById(String id);
 }

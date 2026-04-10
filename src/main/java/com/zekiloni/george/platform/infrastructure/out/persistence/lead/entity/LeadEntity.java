@@ -6,6 +6,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.Filter;
+import org.hibernate.annotations.FilterDef;
+import org.hibernate.annotations.ParamDef;
 
 @SuperBuilder
 @Getter
@@ -14,6 +17,16 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @Entity
 @Table(name = "leads")
+@FilterDef(
+        name = "tenantAccessFilter",
+        parameters = @ParamDef(name = "tenantId", type = String.class)
+)
+@Filter(
+        name = "tenantAccessFilter",
+        condition = "id IN (SELECT lsal.lead_id FROM lead_service_access_leads lsal " +
+                "JOIN service_access sa ON sa.id = lsal.service_access_id " +
+                "WHERE sa.tenant_id = :tenantId)"
+)
 public class LeadEntity extends BaseEntity {
     @Column
     private String country;
