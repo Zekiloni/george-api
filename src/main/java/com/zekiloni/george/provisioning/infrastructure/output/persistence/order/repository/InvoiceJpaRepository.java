@@ -8,6 +8,6 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, String> {
+public interface InvoiceJpaRepository extends JpaRepository<InvoiceEntity, UUID> {
     Optional<InvoiceEntity> findByOrderId(UUID orderId);
 }

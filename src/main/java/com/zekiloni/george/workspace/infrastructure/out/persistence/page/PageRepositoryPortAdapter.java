@@ -1,0 +1,37 @@
+package com.zekiloni.george.workspace.infrastructure.out.persistence.page;
+
+import com.zekiloni.george.workspace.application.port.out.PageRepositoryPort;
+import com.zekiloni.george.workspace.domain.page.Page;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Component;
+
+import java.util.Optional;
+import java.util.UUID;
+
+@Component
+@RequiredArgsConstructor
+public class PageRepositoryPortAdapter implements PageRepositoryPort {
+    private final PageJpaRepository repository;
+    private final PageEntityMapper mapper;
+
+    @Override
+    public Page save(Page page) {
+        return mapper.toDomain(repository.save(mapper.toEntity(page)));
+    }
+
+    @Override
+    public Optional<Page> findById(String id) {
+        return repository.findById(UUID.fromString(id)).map(mapper::toDomain);
+    }
+
+    @Override
+    public org.springframework.data.domain.Page<Page> findAll(Pageable pageable) {
+        return repository.findAll(pageable).map(mapper::toDomain);
+    }
+
+    @Override
+    public void deleteById(String id) {
+        repository.deleteById(UUID.fromString(id));
+    }
+}
