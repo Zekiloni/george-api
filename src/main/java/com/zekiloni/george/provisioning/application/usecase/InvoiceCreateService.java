@@ -2,6 +2,7 @@ package com.zekiloni.george.provisioning.application.usecase;
 
 import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.provisioning.application.port.in.InvoiceCreateUseCase;
+import com.zekiloni.george.provisioning.application.port.out.ExternalInvoicePort;
 import com.zekiloni.george.provisioning.application.port.out.InvoiceRepositoryPort;
 import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import com.zekiloni.george.provisioning.domain.order.model.Order;
@@ -9,7 +10,7 @@ import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.Invoice;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.InvoiceItem;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.InvoiceStatus;
-import com.zekiloni.george.provisioning.infrastructure.integration.btcpay.client.BtcPayApiClient;
+import com.zekiloni.george.provisioning.infrastructure.output.integration.btcpay.client.BtcPayApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +23,7 @@ public class InvoiceCreateService implements InvoiceCreateUseCase {
     public static final int INVOICE_EXPIRATION_TIME_MINUTES = 15;
 
     private final InvoiceRepositoryPort repository;
-    private final BtcPayApiClient btcPayApiClient;
+    private final ExternalInvoicePort externalInvoicePort;
 
     @Override
     public Invoice create(Order order) {
@@ -31,11 +32,9 @@ public class InvoiceCreateService implements InvoiceCreateUseCase {
                 .map(InvoiceItem::getTotal)
                 .reduce(Money.ZERO, Money::add);
 
-        String externalInvoiceId = btcPayApiClient
+        String externalInvoiceId = externalInvoicePort
                 .createInvoice(order.getId(), "new",
-                        total.getAmount().toPlainString(), total.getCurrency().getCurrencyCode())
-                .id();
-
+                        total.getAmount().toPlainString(), total.getCurrency().getCurrencyCode());
 
         invoice.setInvoiceNumber(externalInvoiceId);
         return repository.save(invoice);

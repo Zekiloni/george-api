@@ -1,4 +1,4 @@
-package com.zekiloni.george.provisioning.infrastructure.integration.btcpay.client;
+package com.zekiloni.george.provisioning.infrastructure.output.integration.btcpay.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

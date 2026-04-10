@@ -1,7 +1,8 @@
-package com.zekiloni.george.provisioning.infrastructure.integration.btcpay.client;
+package com.zekiloni.george.provisioning.infrastructure.output.integration.btcpay.client;
 
-import com.zekiloni.george.provisioning.infrastructure.integration.btcpay.dto.BtcPayInvoiceCreateDto;
-import com.zekiloni.george.provisioning.infrastructure.integration.btcpay.dto.BtcPayInvoiceResponse;
+import com.zekiloni.george.provisioning.application.port.out.ExternalInvoicePort;
+import com.zekiloni.george.provisioning.infrastructure.output.integration.btcpay.dto.BtcPayInvoiceCreateDto;
+import com.zekiloni.george.provisioning.infrastructure.output.integration.btcpay.dto.BtcPayInvoiceResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatusCode;
@@ -13,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
-public class BtcPayApiClient {
+public class BtcPayApiClient implements ExternalInvoicePort {
     private final RestClient btcPayRestClient;
 
     @Value("${btc-pay.store-id}")
@@ -22,7 +23,7 @@ public class BtcPayApiClient {
     @Value("${btc-pay.api.api-key}")
     private String apiKey;
 
-    public BtcPayInvoiceResponse createInvoice(String orderId, String description, String amount, String currency) {
+    public String createInvoice(String orderId, String description, String amount, String currency) {
         BtcPayInvoiceCreateDto.Metadata metadata = new BtcPayInvoiceCreateDto.Metadata(
                 orderId,
                 "https://example.com/orders/" + orderId,
@@ -33,7 +34,8 @@ public class BtcPayApiClient {
 
         BtcPayInvoiceCreateDto btcPayInvoiceCreateDto = new BtcPayInvoiceCreateDto(metadata, null, null, amount, currency, null);
 
-        return btcPayRestClient.post()
+        BtcPayInvoiceResponse response = btcPayRestClient
+                .post()
                 .uri("/stores/{storeId}/invoices", storeId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .body(btcPayInvoiceCreateDto)
@@ -44,5 +46,7 @@ public class BtcPayApiClient {
                     throw new RuntimeException("Status: " + res.getStatusCode() + " | Body: " + body);
                 })
                 .body(BtcPayInvoiceResponse.class);
+
+        return response.id();
     }
 }

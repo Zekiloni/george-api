@@ -1,15 +1,26 @@
-package com.zekiloni.george.provisioning.infrastructure.integration.btcpay.dto;
+package com.zekiloni.george.provisioning.infrastructure.output.integration.btcpay.dto;
 
 import java.util.List;
 import java.util.Map;
 
-public record BtcPayInvoiceCreateDto(
+public record BtcPayInvoiceResponse(
         Metadata metadata,
         Checkout checkout,
         Receipt receipt,
+        String id,
+        String storeId,
         String amount,
+        String paidAmount,
         String currency,
-        List<String> additionalSearchTerms
+        String type,                              // Standard, TopUp
+        String checkoutLink,
+        Long createdTime,
+        Long expirationTime,
+        Long monitoringExpiration,
+        String status,                            // New, Processing, Expired, Invalid, Settled
+        String additionalStatus,                  // PaidLate, PaidPartial, Marked, itd.
+        List<String> availableStatusesForManualMarking,
+        boolean archived
 ) {
     public record Metadata(
             String orderId,
@@ -20,9 +31,9 @@ public record BtcPayInvoiceCreateDto(
     ) {}
 
     public record Checkout(
-            String speedPolicy,           // HighSpeed, MediumSpeed, LowSpeed, LowMediumSpeed
+            String speedPolicy,
             List<String> paymentMethods,
-            String defaultPaymentMethod,  // BTC-CHAIN, BTC-LN, itd.
+            String defaultPaymentMethod,
             boolean lazyPaymentMethods,
             int expirationMinutes,
             int monitoringMinutes,
@@ -34,7 +45,7 @@ public record BtcPayInvoiceCreateDto(
 
     public record Receipt(
             boolean enabled,
-            Boolean showQR,        // nullable
-            Boolean showPayments   // nullable
+            Boolean showQR,
+            Boolean showPayments
     ) {}
 }
