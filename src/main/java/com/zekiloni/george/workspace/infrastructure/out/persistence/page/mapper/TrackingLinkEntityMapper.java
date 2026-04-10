@@ -7,12 +7,7 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface TrackingLinkEntityMapper {
-
-    @Mapping(source = "formSubmission.id", target = "formSubmissionId")
-    @Mapping(target = "formSubmission", ignore = true)
     TrackingLink toDomain(TrackingLinkEntity entity);
-
-    @Mapping(target = "formSubmission", ignore = true)
     TrackingLinkEntity toEntity(TrackingLink domain);
 }
 

@@ -14,6 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -41,9 +42,8 @@ public class LeadRepositoryAdapter implements LeadRepositoryPort {
 
     @Override
     public void deleteById(String id) {
-        repository.deleteById(id);
+        repository.deleteById(UUID.fromString(id));
     }
-
 
     private void applyAccessFilter() {
         if (!tenantContext.isSystem()) {
