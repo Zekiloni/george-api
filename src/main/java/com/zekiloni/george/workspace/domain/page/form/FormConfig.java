@@ -19,25 +19,18 @@ import java.util.List;
 @ToString(exclude = {"fields"})
 public class FormConfig {
     private String id;
-    private String formName;
-    private String formTitle;
+    private String name;
+    private String title;
     private String description;
     private String successMessage;
     private String errorMessage;
     private String redirectUrlOnSuccess;
-    private String submissionEmail;
     private Boolean sendConfirmationEmail = false;
-    private Boolean isActive = true;
-    private Boolean isPublic = false;
     private Boolean showProgressBar = false;
-    private Boolean showSectionNumbers = true;
-    private Boolean saveDrafts = false;
     private Boolean enableCaptcha = false;
-    private String cssCustomization;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
-
     @Builder.Default
     private List<FormField> fields = new ArrayList<>();
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }
 
