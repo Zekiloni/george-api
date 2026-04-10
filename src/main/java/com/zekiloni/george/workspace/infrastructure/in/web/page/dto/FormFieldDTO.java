@@ -1,4 +1,4 @@
-package com.zekiloni.george.workspace.domain.campaign.form.dto;
+package com.zekiloni.george.workspace.infrastructure.in.web.page.dto;
 
 import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
 import lombok.AllArgsConstructor;
