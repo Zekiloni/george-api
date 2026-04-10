@@ -10,7 +10,6 @@ import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.Invoice;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.InvoiceItem;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.InvoiceStatus;
-import com.zekiloni.george.provisioning.infrastructure.output.integration.btcpay.client.BtcPayApiClient;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -14,7 +14,7 @@ import java.nio.charset.StandardCharsets;
 
 @Component
 @RequiredArgsConstructor
-public class BtcPayApiClient implements ExternalInvoicePort {
+public class BtcPayApiClientAdapter implements ExternalInvoicePort {
     private final RestClient btcPayRestClient;
 
     @Value("${btc-pay.store-id}")
