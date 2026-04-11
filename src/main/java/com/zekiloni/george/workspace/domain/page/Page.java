@@ -16,6 +16,7 @@ public class Page {
     private String id;
     private String title;
     private String description;
+    private String keywords;
     private String faviconUrl;
     private PageStatus status;
     private Boolean isPublic;

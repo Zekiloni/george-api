@@ -12,7 +12,7 @@ import java.time.OffsetDateTime;
 
 @Component
 @RequiredArgsConstructor
-public class SmtProvisioningStrategy implements ProvisioningStrategy {
+public class SmtpProvisioningStrategy implements ProvisioningStrategy {
     private final ServiceAccessCreateUseCase serviceAccessCreateUseCase;
 
     @Override
@@ -23,20 +23,24 @@ public class SmtProvisioningStrategy implements ProvisioningStrategy {
     @Override
     public void provision(Order order, OrderItem orderItem) {
         // todo: contact SMT provider to provision the service access for the order item
-        SmtpServiceAccess build = SmtpServiceAccess.builder()
-                .validFrom(OffsetDateTime.now())
-                .validTo(getValidTo(orderItem))
-                .serviceSpecification(getType())
-                .order(order)
-                .tenantId(order.getTenantId())
-                .build();
-
-        serviceAccessCreateUseCase.create(build);
+        SmtpServiceAccess serviceAccess = createServiceAccess(order, orderItem);
+        serviceAccessCreateUseCase.create(serviceAccess);
     }
 
     @Override
     public void deprovision(OrderItem order) {
 
+    }
+
+    private SmtpServiceAccess createServiceAccess(Order order, OrderItem orderItem) {
+        return SmtpServiceAccess.builder()
+                .validFrom(OffsetDateTime.now())
+                .validTo(getValidTo(orderItem))
+                .serviceSpecification(getType())
+                .characteristic(orderItem.getCharacteristic())
+                .order(order)
+                .tenantId(order.getTenantId())
+                .build();
     }
 
     private OffsetDateTime getValidTo(OrderItem orderItem) {

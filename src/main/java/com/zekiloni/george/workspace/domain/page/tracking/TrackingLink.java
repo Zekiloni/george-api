@@ -1,5 +1,6 @@
 package com.zekiloni.george.workspace.domain.page.tracking;
 
+import com.zekiloni.george.workspace.domain.page.Page;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,15 +14,11 @@ import java.time.OffsetDateTime;
 @Builder
 public class TrackingLink {
     private String id;
-    private String token;
-    private String originalUrl;
-    private String shortCode;
+    private String code;
     private Boolean isActive;
-    private String formSubmissionId;
-    private Integer clickCount;
+    private Page page;
+    private String source;
     private OffsetDateTime lastClickedAt;
-    private OffsetDateTime expiresAt;
-    private String metadata;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }
