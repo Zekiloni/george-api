@@ -55,7 +55,8 @@ services:
       "-rpcport=18443",
       "-port=18444",
       "-fallbackfee=0.0001",
-      "-printtoconsole"
+      "-printtoconsole",
+      "-whitelist=0.0.0.0/0"
     ]
     ports:
       - "18443:18443"
