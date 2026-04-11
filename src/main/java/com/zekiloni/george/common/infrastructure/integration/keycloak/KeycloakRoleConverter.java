@@ -65,7 +65,8 @@ public class KeycloakRoleConverter implements Converter<Jwt, Collection<GrantedA
 
             Map<String, ResourceAccess> resourceAccess = objectMapper.convertValue(
                     resourceAccessObj,
-                    new TypeReference<Map<String, ResourceAccess>>() {}
+                    new TypeReference<>() {
+                    }
             );
 
             return resourceAccess.entrySet().stream()
