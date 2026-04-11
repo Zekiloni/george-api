@@ -5,6 +5,8 @@ import com.zekiloni.george.workspace.domain.page.form.field.ValidationType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "field_validators")
@@ -16,18 +18,15 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class FieldValidatorEntity extends BaseEntity {
-
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private ValidationType type;
 
-    @Column(name = "value")
-    private String value;
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Object value;
 
     @Column(name = "error_message")
     private String errorMessage;
-
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
 }
 

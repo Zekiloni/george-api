@@ -4,6 +4,8 @@ import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEnti
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 @Entity
 @Table(name = "field_options")
@@ -15,21 +17,18 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 public class FieldOptionEntity extends BaseEntity {
-
     @Column(name = "label", nullable = false)
     private String label;
 
-    @Column(name = "value", nullable = false)
-    private String value;
+    @Column(columnDefinition = "jsonb", nullable = false)
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Object value;
 
     @Column(name = "display_order")
     private Integer displayOrder;
 
     @Column(name = "is_default", nullable = false)
     private Boolean isDefault = false;
-
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
 
     @Column(name = "description")
     private String description;

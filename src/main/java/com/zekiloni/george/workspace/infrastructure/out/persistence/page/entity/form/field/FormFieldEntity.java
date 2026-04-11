@@ -22,7 +22,6 @@ import java.util.List;
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"validators", "options", "subFields", "formConfig", "parentField"})
 public class FormFieldEntity extends BaseEntity {
-
     @Column(name = "field_name", nullable = false)
     private String fieldName;
 
@@ -48,9 +47,6 @@ public class FormFieldEntity extends BaseEntity {
     @Column(name = "required", nullable = false)
     private Boolean required = false;
 
-    @Column(name = "is_active", nullable = false)
-    private Boolean isActive = true;
-
     @Column(name = "is_read_only", nullable = false)
     private Boolean isReadOnly = false;
 
@@ -66,7 +62,6 @@ public class FormFieldEntity extends BaseEntity {
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "form_field_id")
-    @OrderBy("displayOrder ASC")
     @Builder.Default
     private List<FieldValidatorEntity> validators = new ArrayList<>();
 

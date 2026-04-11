@@ -17,12 +17,14 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"formConfig"})
 public class PageEntity extends TenantEntity {
-
     @Column(name = "title", nullable = false)
     private String title;
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "keywords")
+    private String keywords;
 
     @Column(name = "favicon_url")
     private String faviconUrl;
@@ -30,6 +32,9 @@ public class PageEntity extends TenantEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
     private PageStatus status;
+
+    @Column(name = "is_public", nullable = false)
+    private Boolean isPublic;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "form_config_id")

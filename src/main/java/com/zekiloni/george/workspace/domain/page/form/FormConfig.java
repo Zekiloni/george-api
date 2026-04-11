@@ -28,7 +28,7 @@ public class FormConfig {
     private Boolean showProgressBar = false;
     private Boolean enableCaptcha = false;
     @Builder.Default
-    private List<FormField> fields = new ArrayList<>();
+    private List<FormField> field = new ArrayList<>();
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

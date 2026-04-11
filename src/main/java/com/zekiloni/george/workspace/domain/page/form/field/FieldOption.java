@@ -15,10 +15,9 @@ import lombok.NoArgsConstructor;
 public class FieldOption {
     private String id;
     private String label;
-    private String value;
+    private Object value;
     private Integer displayOrder;
     private Boolean isDefault = false;
-    private Boolean isActive = true;
     private String description;
 }
 

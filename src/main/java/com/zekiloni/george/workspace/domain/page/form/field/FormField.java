@@ -25,7 +25,6 @@ public class FormField {
     private String defaultValue;
     private Integer displayOrder;
     private Boolean required;
-    private Boolean isActive = true;
     private Boolean isReadOnly = false;
     private Boolean isHidden = false;
     private String customAttributes;

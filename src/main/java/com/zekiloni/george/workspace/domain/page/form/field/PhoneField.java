@@ -10,8 +10,6 @@ import lombok.Setter;
  * Specialized FormField for phone number input.
  * Supports various phone formats and country-specific requirements.
  */
-@Entity
-@Table(name = "phone_fields")
 @Getter
 @Setter
 @NoArgsConstructor

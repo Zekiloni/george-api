@@ -12,8 +12,7 @@ import lombok.NoArgsConstructor;
 public class FieldValidator {
     private String id;
     private ValidationType type;
-    private String value;
+    private Object value;
     private String errorMessage;
-    private Boolean isActive = true;
 }
 
