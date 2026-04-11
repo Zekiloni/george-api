@@ -20,7 +20,6 @@ public class CreditCardFieldDTO {
     private Boolean includeCvv;
     private Boolean includeBillingAddress;
     private Boolean formatMultipart;
-    private String allowedCardTypes;
     private Boolean showCardPreview;
     private Boolean requireBillingAddress;
     private Boolean enable3dSecure;

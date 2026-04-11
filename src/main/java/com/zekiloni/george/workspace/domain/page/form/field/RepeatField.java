@@ -1,8 +1,6 @@
 package com.zekiloni.george.workspace.domain.page.form.field;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -15,7 +13,6 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-@DiscriminatorValue("REPEAT")
 public class RepeatField extends FormField {
     private Integer minInstances = 1;
     private Integer maxInstances = null;
