@@ -2,41 +2,42 @@ package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.fie
 
 import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
- * DTO for viewing FormField entity.
+ * Base DTO for viewing FormField entity.
  * Used for API requests and responses.
  * Includes id, createdAt, updatedAt fields.
+ * Use SuperBuilder for proper inheritance support.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class FormFieldDto {
-    private String id;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
-    private String fieldName;
-    private String label;
-    private FieldType type;
-    private String placeholder;
-    private String helpText;
-    private String defaultValue;
-    private Integer displayOrder;
-    private Boolean required;
-    private Boolean isReadOnly;
-    private Boolean isHidden;
-    private String customAttributes;
+    protected String id;
+    protected OffsetDateTime createdAt;
+    protected OffsetDateTime updatedAt;
+    protected String fieldName;
+    protected String label;
+    protected FieldType type;
+    protected String placeholder;
+    protected String helpText;
+    protected String defaultValue;
+    protected Integer displayOrder;
+    protected Boolean required;
+    protected Boolean isReadOnly;
+    protected Boolean isHidden;
+    protected String customAttributes;
 
     // Relationships
-    private List<FieldValidatorDto> validators;
-    private List<FieldOptionDto> options;
-    private List<FormFieldDto> field;
+    protected List<FieldValidatorDto> validators;
+    protected List<FieldOptionDto> options;
+    protected List<FormFieldDto> field;
 }
 

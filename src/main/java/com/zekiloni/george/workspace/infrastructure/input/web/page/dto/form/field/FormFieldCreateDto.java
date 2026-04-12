@@ -2,36 +2,37 @@ package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.fie
 
 import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
 /**
- * DTO for creating FormField.
+ * Base DTO for creating FormField.
  * Does not include id, createdAt, updatedAt fields.
+ * Use SuperBuilder for proper inheritance support.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
+@SuperBuilder
 public class FormFieldCreateDto {
-    private String fieldName;
-    private String label;
-    private FieldType type;
-    private String placeholder;
-    private String helpText;
-    private String defaultValue;
-    private Integer displayOrder;
-    private Boolean required;
-    private Boolean isReadOnly;
-    private Boolean isHidden;
-    private String customAttributes;
+    protected String fieldName;
+    protected String label;
+    protected FieldType type;
+    protected String placeholder;
+    protected String helpText;
+    protected String defaultValue;
+    protected Integer displayOrder;
+    protected Boolean required;
+    protected Boolean isReadOnly;
+    protected Boolean isHidden;
+    protected String customAttributes;
 
     // Relationships
-    private List<FieldValidatorCreateDto> validators;
-    private List<FieldOptionCreateDto> options;
-    private List<FormFieldCreateDto> field;
+    protected List<FieldValidatorCreateDto> validators;
+    protected List<FieldOptionCreateDto> options;
+    protected List<FormFieldCreateDto> field;
 }
 
