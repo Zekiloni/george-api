@@ -16,6 +16,7 @@ public class Lead {
     private String id;
     private String country;
     private String areaCode;
+    private String carrier;
     private String regionCode;
     private String location;
     private String phoneNumber;

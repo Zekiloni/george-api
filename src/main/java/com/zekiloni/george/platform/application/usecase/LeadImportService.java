@@ -4,7 +4,7 @@ import com.zekiloni.george.platform.application.port.in.LeadImportUseCase;
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
 import com.zekiloni.george.platform.domain.model.Lead;
 import com.zekiloni.george.platform.domain.model.PhoneResolutionResult;
-import com.zekiloni.george.platform.domain.service.CountryCodeResolver;
+import com.zekiloni.george.platform.domain.service.PhoneDataResolver;
 import com.zekiloni.george.platform.domain.util.PhoneNumberFileReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -15,7 +15,7 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 public class LeadImportService implements LeadImportUseCase {
-    private final CountryCodeResolver countryCodeResolver;
+    private final PhoneDataResolver phoneDataResolver;
     private final LeadRepositoryPort repository;
 
     @Override
@@ -24,7 +24,7 @@ public class LeadImportService implements LeadImportUseCase {
             // TODO: Big file handling - process in batches, use streaming, etc.
             List<Lead> leads = PhoneNumberFileReader.readPhoneNumbers(inputStream)
                     .stream()
-                    .map(countryCodeResolver::resolve)
+                    .map(phoneDataResolver::resolve)
                     .map(this::mapToLead)
                     .toList();
 
@@ -38,6 +38,7 @@ public class LeadImportService implements LeadImportUseCase {
         return Lead.builder()
                 .country(result.getCountry())
                 .areaCode(result.getAreaCode())
+                .carrier(result.getCarrier())
                 .regionCode(result.getRegionCode())
                 .phoneNumber(result.getPhoneNumber())
                 .location(result.getLocation())

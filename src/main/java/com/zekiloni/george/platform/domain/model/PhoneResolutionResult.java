@@ -11,6 +11,7 @@ import lombok.Getter;
 public class PhoneResolutionResult {
     private final String phoneNumber;  // E.164 format (e.g. "+38733212345")
     private final String country;      // e.g. "BA", "US", "DE" (ISO country code)
+    private final String carrier;      // Mobile carrier name (e.g. "BH Telecom", "AT&T")
     private final String areaCode;     // National destination code / area code (e.g. "32" for Sarajevo)
     private final String regionCode;   // Often same as areaCode or more specific
     private final String location;     // Human readable location (e.g. "Sarajevo", "New York")

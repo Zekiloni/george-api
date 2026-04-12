@@ -4,6 +4,7 @@ import com.zekiloni.george.provisioning.application.port.in.ServiceAccessCreateU
 import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.inventory.model.PageServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
+import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.provisioning.domain.order.model.Order;
 import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,8 @@ public class PageProvisioningStrategy implements ProvisioningStrategy {
     private ServiceAccess createServiceAccess(Order order, OrderItem orderItem) {
         return PageServiceAccess.builder()
                 .serviceSpecification(getType())
-                .order(order)
+                .orderItem(orderItem)
+                .status(ServiceStatus.ACTIVE)
                 .characteristic(orderItem.getCharacteristic())
                 .tenantId(order.getTenantId())
                 .build();

@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.domain.model.Lead;
 import com.zekiloni.george.provisioning.application.port.in.ServiceAccessCreateUseCase;
 import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.inventory.model.LeadServiceAccess;
+import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.provisioning.domain.order.model.Order;
 import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 import lombok.RequiredArgsConstructor;
@@ -27,13 +28,14 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
     }
 
     @Override
-    public void provision(Order order, OrderItem item) {
+    public void provision(Order order, OrderItem orderItem) {
         LeadServiceAccess leadServiceAccess = LeadServiceAccess.builder()
                 .serviceSpecification(getType())
                 .validFrom(OffsetDateTime.now())
-                .leads(getLeads(item))
-                .characteristic(item.getCharacteristic())
-                .order(order)
+                .leads(getLeads(orderItem))
+                .status(ServiceStatus.ACTIVE)
+                .characteristic(orderItem.getCharacteristic())
+                .orderItem(orderItem)
                 .tenantId(order.getTenantId())
                 .build();
 

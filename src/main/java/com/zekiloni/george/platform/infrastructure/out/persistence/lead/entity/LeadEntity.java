@@ -38,6 +38,9 @@ public class LeadEntity extends BaseEntity {
     private String regionCode;
 
     @Column
+    private String carrier;
+
+    @Column
     private String location;
 
     @Column(name = "phone_number", unique = true, nullable = false)

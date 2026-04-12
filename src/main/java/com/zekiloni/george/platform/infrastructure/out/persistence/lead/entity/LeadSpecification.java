@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.Specification;
         @Spec(path = "location", spec = LikeIgnoreCase.class),
         @Spec(path = "phoneNumber", spec = LikeIgnoreCase.class),
         @Spec(path = "country", spec = LikeIgnoreCase.class),
+        @Spec(path = "carrier", spec = LikeIgnoreCase.class),
         @Spec(path = "areaCode", spec = LikeIgnoreCase.class)
 })
 public interface LeadSpecification extends Specification<LeadEntity> {

@@ -16,7 +16,7 @@ import java.time.OffsetDateTime;
 public class ServiceAccessDto {
     private String id;
     private ServiceSpecification serviceSpecification;
-    private String orderId;
+    private String orderItemId;
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
     private OffsetDateTime createdAt;

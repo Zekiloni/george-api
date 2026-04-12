@@ -2,7 +2,7 @@ package com.zekiloni.george.provisioning.domain.inventory.model;
 
 import com.zekiloni.george.common.domain.model.Characteristic;
 import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
-import com.zekiloni.george.provisioning.domain.order.model.Order;
+import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -18,10 +18,11 @@ import java.util.List;
 public abstract class ServiceAccess {
     private String id;
     private ServiceSpecification serviceSpecification;
-    private Order order;
+    private OrderItem orderItem;
     private List<Characteristic> characteristic;
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
+    private ServiceStatus status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private String tenantId;;

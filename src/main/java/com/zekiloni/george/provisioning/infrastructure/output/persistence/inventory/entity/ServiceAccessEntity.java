@@ -3,7 +3,8 @@ package com.zekiloni.george.provisioning.infrastructure.output.persistence.inven
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.TenantEntity;
 import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
-import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.entity.OrderEntity;
+import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
+import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.entity.OrderItemEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -33,7 +34,11 @@ public abstract class ServiceAccessEntity extends TenantEntity {
     @Column(name = "valid_to")
     private OffsetDateTime validTo;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status", nullable = false)
+    private ServiceStatus status;
+
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id", nullable = false, unique = true)
-    private OrderEntity order;
+    @JoinColumn(name = "order_item_id", nullable = false, unique = true)
+    private OrderItemEntity orderItem;
 }

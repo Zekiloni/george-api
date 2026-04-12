@@ -2,6 +2,7 @@ package com.zekiloni.george.provisioning.domain.order.service.strategy;
 
 import com.zekiloni.george.provisioning.application.port.in.ServiceAccessCreateUseCase;
 import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
+import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.provisioning.domain.inventory.model.SmtpServiceAccess;
 import com.zekiloni.george.provisioning.domain.order.model.Order;
 import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
@@ -37,8 +38,9 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
                 .validFrom(OffsetDateTime.now())
                 .validTo(getValidTo(orderItem))
                 .serviceSpecification(getType())
+                .status(ServiceStatus.ACTIVE)
                 .characteristic(orderItem.getCharacteristic())
-                .order(order)
+                .orderItem(orderItem)
                 .tenantId(order.getTenantId())
                 .build();
     }

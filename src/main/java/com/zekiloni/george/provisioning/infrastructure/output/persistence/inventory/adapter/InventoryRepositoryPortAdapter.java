@@ -2,6 +2,7 @@ package com.zekiloni.george.provisioning.infrastructure.output.persistence.inven
 
 import com.zekiloni.george.provisioning.application.port.out.InventoryRepositoryPort;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
+import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.mapper.ServiceAccessEntityMapper;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.repository.ServiceAccessJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -9,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -40,4 +42,15 @@ public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
     public Optional<ServiceAccess> findById(String id) {
         return repository.findById(UUID.fromString(id)).map(mapper::toDomain);
     }
+
+    @Override
+    public int updateToSuspended(ServiceStatus currentStatus, ServiceStatus newStatus, OffsetDateTime now, OffsetDateTime gracePeriodEnd) {
+        return repository.updateToSuspended(currentStatus, newStatus, now, gracePeriodEnd);
+    }
+
+    @Override
+    public int updateToTerminated(ServiceStatus currentStatus, ServiceStatus newStatus, OffsetDateTime now, OffsetDateTime gracePeriodEnd) {
+        return repository.updateToTerminated(currentStatus, newStatus, now, gracePeriodEnd);
+    }
+
 }

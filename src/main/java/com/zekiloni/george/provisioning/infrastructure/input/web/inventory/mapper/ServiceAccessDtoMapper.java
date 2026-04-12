@@ -18,7 +18,7 @@ public interface ServiceAccessDtoMapper {
             @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessDto.class),
             @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class)
     })
-    @Mapping(source = "order.id", target = "orderId")
+    @Mapping(source = "orderItem.id", target = "orderItemId")
     ServiceAccessDto toDto(ServiceAccess serviceAccess);
 }
 
