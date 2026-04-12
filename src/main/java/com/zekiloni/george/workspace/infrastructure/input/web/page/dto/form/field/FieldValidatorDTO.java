@@ -1,4 +1,4 @@
-package com.zekiloni.george.workspace.infrastructure.in.web.page.dto;
+package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,20 +6,18 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO for FieldOption entity.
+ * DTO for FieldValidator entity.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FieldOptionDTO {
+public class FieldValidatorDTO {
 
     private Long id;
-    private String label;
+    private String type;
     private String value;
-    private Integer displayOrder;
-    private Boolean isDefault;
+    private String errorMessage;
     private Boolean isActive;
-    private String description;
 }
 

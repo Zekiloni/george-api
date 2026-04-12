@@ -21,13 +21,15 @@ import java.util.List;
 public interface ServiceAccessEntityMapper {
     @SubclassMappings({
             @SubclassMapping(source = LeadServiceAccessEntity.class, target = LeadServiceAccess.class),
-            @SubclassMapping(source = SmtpServiceAccessEntity.class, target = SmtpServiceAccess.class)
+            @SubclassMapping(source = SmtpServiceAccessEntity.class, target = SmtpServiceAccess.class),
+            @SubclassMapping(source = PageServiceAccessEntity.class, target = PageServiceAccess.class)
     })
     ServiceAccess toDomain(ServiceAccessEntity entity);
 
     @SubclassMappings({
             @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessEntity.class),
-            @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessEntity.class)
+            @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessEntity.class),
+            @SubclassMapping(source = PageServiceAccess.class, target = PageServiceAccessEntity.class)
     })
     ServiceAccessEntity toEntity(ServiceAccess domain);
 

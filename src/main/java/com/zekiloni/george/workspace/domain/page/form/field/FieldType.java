@@ -1,9 +1,14 @@
 package com.zekiloni.george.workspace.domain.page.form.field;
 
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
 /**
  * Enum representing different types of form fields.
  * Includes basic types, advanced preset types, and complex types.
  */
+@Getter
+@RequiredArgsConstructor
 public enum FieldType {
     // Basic types
     TEXT("text"),
@@ -17,7 +22,6 @@ public enum FieldType {
     TIME("time"),
     DATETIME("datetime"),
     FILE("file"),
-    HIDDEN("hidden"),
 
     // Advanced preset types
     PASSWORD("password"),
@@ -35,13 +39,5 @@ public enum FieldType {
     REPEAT("repeat");
 
     private final String value;
-
-    FieldType(String value) {
-        this.value = value;
-    }
-
-    public String getValue() {
-        return value;
-    }
 }
 

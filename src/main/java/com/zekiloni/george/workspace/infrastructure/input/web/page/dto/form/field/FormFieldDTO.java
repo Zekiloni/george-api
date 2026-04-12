@@ -1,4 +1,4 @@
-package com.zekiloni.george.workspace.infrastructure.in.web.page.dto;
+package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field;
 
 import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
 import lombok.AllArgsConstructor;
@@ -35,14 +35,6 @@ public class FormFieldDTO {
     // Relationships
     private List<FieldValidatorDTO> validators;
     private List<FieldOptionDTO> options;
-    private List<FormFieldDTO> subFields;
-
-    // Specialized field properties
-    private PasswordFieldDTO passwordField;
-    private AddressFieldDTO addressField;
-    private PhoneFieldDTO phoneField;
-    private CreditCardFieldDTO creditCardField;
-    private RatingFieldDTO ratingField;
-    private RepeatFieldDTO repeatField;
+    private List<FormFieldDTO> field;
 }
 

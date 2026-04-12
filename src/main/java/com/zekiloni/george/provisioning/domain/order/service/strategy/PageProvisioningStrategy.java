@@ -24,7 +24,7 @@ public class PageProvisioningStrategy implements ProvisioningStrategy {
 
     @Override
     public void provision(Order order, OrderItem orderItem) {
-        ServiceAccess serviceAccess = createServiceAccess(order, orderItem);
+        PageServiceAccess serviceAccess = createServiceAccess(order, orderItem);
         serviceAccessCreateUseCase.create(serviceAccess);
     }
 
@@ -33,7 +33,7 @@ public class PageProvisioningStrategy implements ProvisioningStrategy {
 
     }
 
-    private ServiceAccess createServiceAccess(Order order, OrderItem orderItem) {
+    private PageServiceAccess createServiceAccess(Order order, OrderItem orderItem) {
         return PageServiceAccess.builder()
                 .serviceSpecification(getType())
                 .orderItem(orderItem)

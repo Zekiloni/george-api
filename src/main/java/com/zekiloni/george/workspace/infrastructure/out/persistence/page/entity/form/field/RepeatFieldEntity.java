@@ -14,7 +14,6 @@ import lombok.experimental.SuperBuilder;
 @EqualsAndHashCode(callSuper = true)
 @ToString(callSuper = true)
 public class RepeatFieldEntity extends FormFieldEntity {
-
     @Column(name = "min_instances")
     private Integer minInstances = 1;
 

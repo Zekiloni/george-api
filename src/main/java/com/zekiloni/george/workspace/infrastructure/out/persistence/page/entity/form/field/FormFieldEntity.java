@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = {"validators", "options", "subFields", "formConfig", "parentField"})
+@ToString(exclude = {"validators", "options", "field", "formConfig", "parentField"})
 public class FormFieldEntity extends BaseEntity {
     @Column(name = "field_name", nullable = false)
     private String fieldName;
@@ -75,7 +75,7 @@ public class FormFieldEntity extends BaseEntity {
     @JoinColumn(name = "parent_field_id")
     @OrderBy("displayOrder ASC")
     @Builder.Default
-    private List<FormFieldEntity> subFields = new ArrayList<>();
+    private List<FormFieldEntity> field = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_field_id", insertable = false, updatable = false)

@@ -14,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @SuperBuilder
-@ToString(exclude = {"validators", "options", "subFields"})
+@ToString(exclude = {"validators", "options", "field"})
 public class FormField {
     private String id;
     private String fieldName;
@@ -33,7 +33,7 @@ public class FormField {
     @Builder.Default
     private List<FieldOption> options = new ArrayList<>();
     @Builder.Default
-    private List<FormField> subFields = new ArrayList<>();
+    private List<FormField> field = new ArrayList<>();
     private FormField parentField;
 }
 
