@@ -5,21 +5,24 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.OffsetDateTime;
+
 /**
- * DTO for FieldOption entity.
+ * DTO for viewing FieldOption.
+ * Includes id, createdAt, updatedAt fields.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FieldOptionDTO {
-
-    private Long id;
+public class FieldOptionDto {
+    private String id;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
     private String label;
-    private String value;
+    private Object value;
     private Integer displayOrder;
     private Boolean isDefault;
-    private Boolean isActive;
     private String description;
 }
 

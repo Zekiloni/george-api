@@ -1,23 +1,22 @@
 package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field;
 
+import com.zekiloni.george.workspace.domain.page.form.field.ValidationType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * DTO for FieldValidator entity.
+ * DTO for creating FieldValidator.
+ * Does not include id, createdAt, updatedAt fields.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FieldValidatorDTO {
-
-    private Long id;
-    private String type;
-    private String value;
+public class FieldValidatorCreateDto {
+    private ValidationType type;
+    private Object value;
     private String errorMessage;
-    private Boolean isActive;
 }
 

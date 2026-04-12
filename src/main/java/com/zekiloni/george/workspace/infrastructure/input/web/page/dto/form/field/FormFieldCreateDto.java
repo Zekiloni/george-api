@@ -9,16 +9,14 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 /**
- * DTO for FormField entity.
- * Used for API requests and responses.
+ * DTO for creating FormField.
+ * Does not include id, createdAt, updatedAt fields.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class FormFieldDTO {
-
-    private Long id;
+public class FormFieldCreateDto {
     private String fieldName;
     private String label;
     private FieldType type;
@@ -26,15 +24,14 @@ public class FormFieldDTO {
     private String helpText;
     private String defaultValue;
     private Integer displayOrder;
-    private Boolean isRequired;
-    private Boolean isActive;
+    private Boolean required;
     private Boolean isReadOnly;
     private Boolean isHidden;
     private String customAttributes;
 
     // Relationships
-    private List<FieldValidatorDTO> validators;
-    private List<FieldOptionDTO> options;
-    private List<FormFieldDTO> field;
+    private List<FieldValidatorCreateDto> validators;
+    private List<FieldOptionCreateDto> options;
+    private List<FormFieldCreateDto> field;
 }
 
