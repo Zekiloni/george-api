@@ -18,7 +18,7 @@ import java.util.List;
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"fields"})
-public class FormConfigEntity extends TenantEntity {
+public class FormEntity extends TenantEntity {
     @Column(name = "form_name", nullable = false)
     private String name;
 

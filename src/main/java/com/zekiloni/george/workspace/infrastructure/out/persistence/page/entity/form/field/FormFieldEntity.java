@@ -2,7 +2,7 @@ package com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
-import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.FormConfigEntity;
+import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.FormEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -20,7 +20,7 @@ import java.util.List;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = {"validators", "options", "field", "formConfig", "parentField"})
+@ToString(exclude = {"validators", "options", "field", "form", "parentField"})
 public class FormFieldEntity extends BaseEntity {
     @Column(name = "field_name", nullable = false)
     private String fieldName;
@@ -58,7 +58,7 @@ public class FormFieldEntity extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_config_id", nullable = false)
-    private FormConfigEntity formConfig;
+    private FormEntity form;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "form_field_id")

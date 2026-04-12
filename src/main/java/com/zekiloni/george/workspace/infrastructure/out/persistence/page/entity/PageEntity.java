@@ -2,7 +2,7 @@ package com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.TenantEntity;
 import com.zekiloni.george.workspace.domain.page.PageStatus;
-import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.FormConfigEntity;
+import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.FormEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -15,7 +15,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = {"formConfig"})
+@ToString(exclude = {"form"})
 public class PageEntity extends TenantEntity {
     @Column(name = "title", nullable = false)
     private String title;
@@ -35,5 +35,5 @@ public class PageEntity extends TenantEntity {
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "form_config_id")
-    private FormConfigEntity formConfig;
+    private FormEntity form;
 }

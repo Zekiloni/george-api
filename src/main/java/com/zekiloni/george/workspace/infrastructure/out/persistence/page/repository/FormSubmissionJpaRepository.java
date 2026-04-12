@@ -9,7 +9,5 @@ import java.util.UUID;
 
 @Repository
 public interface FormSubmissionJpaRepository extends JpaRepository<FormSubmissionEntity, UUID> {
-    List<FormSubmissionEntity> findByFormConfigId(UUID formConfigId);
-    List<FormSubmissionEntity> findByFormConfigIdAndStatus(UUID formConfigId, String status);
 }
 

@@ -18,7 +18,7 @@ public class FormSubmissionEntity extends TenantEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_config_id", nullable = false)
-    private FormConfigEntity formConfig;
+    private FormEntity form;
 
     @Column(name = "submission_data", columnDefinition = "LONGTEXT")
     private String submissionData;

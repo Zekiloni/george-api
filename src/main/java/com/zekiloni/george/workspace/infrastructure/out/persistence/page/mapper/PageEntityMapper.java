@@ -13,7 +13,7 @@ public interface PageEntityMapper {
     @Mapping(source = "description", target = "description")
     @Mapping(source = "faviconUrl", target = "faviconUrl")
     @Mapping(source = "status", target = "status")
-    @Mapping(source = "formConfig", target = "formConfig")
+    @Mapping(source = "form", target = "form")
     @Mapping(source = "createdAt", target = "createdAt")
     @Mapping(source = "updatedAt", target = "updatedAt")
     PageEntity toEntity(Page page);
@@ -23,7 +23,7 @@ public interface PageEntityMapper {
     @Mapping(source = "description", target = "description")
     @Mapping(source = "faviconUrl", target = "faviconUrl")
     @Mapping(source = "status", target = "status")
-    @Mapping(source = "formConfig", target = "formConfig")
+    @Mapping(source = "formConfig", target = "form")
     @Mapping(source = "createdAt", target = "createdAt")
     @Mapping(source = "updatedAt", target = "updatedAt")
     Page toDomain(PageEntity page);

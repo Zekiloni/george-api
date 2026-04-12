@@ -1,6 +1,6 @@
 package com.zekiloni.george.workspace.domain.page;
 
-import com.zekiloni.george.workspace.domain.page.form.FormConfig;
+import com.zekiloni.george.workspace.domain.page.form.Form;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -19,7 +19,7 @@ public class Page {
     private String keywords;
     private String faviconUrl;
     private PageStatus status;
-    private FormConfig formConfig;
+    private Form form;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

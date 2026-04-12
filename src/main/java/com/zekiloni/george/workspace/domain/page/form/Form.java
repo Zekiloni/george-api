@@ -16,7 +16,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @ToString(exclude = {"field"})
-public class FormConfig {
+public class Form {
     private String id;
     private String name;
     private String title;
