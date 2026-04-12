@@ -29,7 +29,6 @@ public class FormConfigDTO {
     private Boolean sendConfirmationEmail;
     private String notificationWebhookUrl;
     private Boolean isActive;
-    private Boolean isPublic;
     private Boolean showProgressBar;
     private Boolean showSectionNumbers;
     private Boolean saveDrafts;

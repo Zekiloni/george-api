@@ -2,9 +2,11 @@ package com.zekiloni.george.provisioning.infrastructure.output.persistence.inven
 
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.mapper.LeadEntityMapper;
 import com.zekiloni.george.provisioning.domain.inventory.model.LeadServiceAccess;
+import com.zekiloni.george.provisioning.domain.inventory.model.PageServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.SmtpServiceAccess;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.LeadServiceAccessEntity;
+import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.PageServiceAccessEntity;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.ServiceAccessEntity;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.SmtpServiceAccessEntity;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.mapper.OrderEntityMapper;
@@ -37,6 +39,8 @@ public interface ServiceAccessEntityMapper {
             return new LeadServiceAccess();
         } else if (entity instanceof SmtpServiceAccessEntity) {
             return new SmtpServiceAccess();
+        } else if (entity instanceof PageServiceAccessEntity) {
+            return new PageServiceAccess();
         }
         throw new IllegalArgumentException("Unknown entity type: " + entity.getClass());
     }
@@ -47,6 +51,8 @@ public interface ServiceAccessEntityMapper {
             return new LeadServiceAccessEntity();
         } else if (domain instanceof SmtpServiceAccess) {
             return new SmtpServiceAccessEntity();
+        } else if (domain instanceof PageServiceAccess) {
+            return new PageServiceAccessEntity();
         }
         throw new IllegalArgumentException("Unknown domain type: " + domain.getClass());
     }

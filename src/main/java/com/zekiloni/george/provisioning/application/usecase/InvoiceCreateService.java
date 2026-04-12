@@ -62,7 +62,7 @@ public class InvoiceCreateService implements InvoiceCreateUseCase {
         return InvoiceItem.builder()
                 .offering(offering)
                 .quantity(orderItem.getQuantity())
-                .unitPrice(offering.getPrice())
+                .unitPrice(offering.getPrice(orderItem.getDuration(), orderItem.getDurationUnit()))
                 .discountAmount(null)
                 .build();
     }

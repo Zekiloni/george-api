@@ -1,6 +1,7 @@
 package com.zekiloni.george.provisioning.domain.order.model.invoice;
 
 import com.zekiloni.george.common.domain.model.Money;
+import com.zekiloni.george.provisioning.domain.catalog.model.DurationUnit;
 import com.zekiloni.george.provisioning.domain.catalog.model.Offering;
 import lombok.Builder;
 import lombok.Data;

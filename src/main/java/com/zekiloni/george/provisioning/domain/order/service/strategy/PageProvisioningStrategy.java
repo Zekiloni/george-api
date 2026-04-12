@@ -10,6 +10,8 @@ import com.zekiloni.george.provisioning.domain.order.model.OrderItem;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+
 @Component
 @RequiredArgsConstructor
 public class PageProvisioningStrategy implements ProvisioningStrategy {
@@ -36,6 +38,8 @@ public class PageProvisioningStrategy implements ProvisioningStrategy {
                 .serviceSpecification(getType())
                 .orderItem(orderItem)
                 .status(ServiceStatus.ACTIVE)
+                .validFrom(OffsetDateTime.now())
+                .validTo(getValidTo(orderItem))
                 .characteristic(orderItem.getCharacteristic())
                 .tenantId(order.getTenantId())
                 .build();

@@ -42,6 +42,33 @@ public class Offering {
         };
     }
 
+    public Money getPrice(int duration, DurationUnit durationUnit) {
+        if (pricing == null || pricing.isEmpty()) return null;
 
+        return switch (billingConfig.getType()) {
+            case ONE_TIME, USAGE_BASED -> pricing.get(0).getEffectiveUnitPrice();
+            case RECURRING -> {
+                OfferingPrice exactMatch = pricing.stream()
+                        .filter(p -> p.getDuration() != null
+                                && p.getDuration() == duration
+                                && p.getDurationUnit() == durationUnit)
+                        .findFirst()
+                        .orElse(null);
+
+                if (exactMatch != null) {
+                    yield exactMatch.getEffectiveUnitPrice();
+                }
+
+                OfferingPrice baseTier = pricing.stream()
+                        .filter(p -> p.getDuration() != null && p.getDurationUnit() == durationUnit)
+                        .min(Comparator.comparingInt(OfferingPrice::getDuration))
+                        .orElseThrow(() -> new IllegalArgumentException(
+                                "No pricing found for unit: " + durationUnit));
+
+                int multiplier = duration / baseTier.getDuration();
+                yield baseTier.getEffectiveUnitPrice().multiply(multiplier);
+            }
+        };
+    }
 }
 

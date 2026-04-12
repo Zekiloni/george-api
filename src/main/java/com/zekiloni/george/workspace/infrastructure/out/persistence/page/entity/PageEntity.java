@@ -33,9 +33,6 @@ public class PageEntity extends TenantEntity {
     @Column(name = "status", nullable = false)
     private PageStatus status;
 
-    @Column(name = "is_public", nullable = false)
-    private Boolean isPublic;
-
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     @JoinColumn(name = "form_config_id")
     private FormConfigEntity formConfig;

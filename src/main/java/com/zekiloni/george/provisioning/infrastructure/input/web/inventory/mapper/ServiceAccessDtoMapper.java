@@ -1,9 +1,11 @@
 package com.zekiloni.george.provisioning.infrastructure.input.web.inventory.mapper;
 
 import com.zekiloni.george.provisioning.domain.inventory.model.LeadServiceAccess;
+import com.zekiloni.george.provisioning.domain.inventory.model.PageServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.SmtpServiceAccess;
 import com.zekiloni.george.provisioning.infrastructure.input.web.inventory.dto.LeadServiceAccessDto;
+import com.zekiloni.george.provisioning.infrastructure.input.web.inventory.dto.PageServiceAccessDto;
 import com.zekiloni.george.provisioning.infrastructure.input.web.inventory.dto.ServiceAccessDto;
 import com.zekiloni.george.provisioning.infrastructure.input.web.inventory.dto.SmtpServiceAccessDto;
 import com.zekiloni.george.provisioning.infrastructure.input.web.order.mapper.OrderDtoMapper;
@@ -16,7 +18,8 @@ import org.mapstruct.SubclassMappings;
 public interface ServiceAccessDtoMapper {
     @SubclassMappings({
             @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessDto.class),
-            @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class)
+            @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class),
+            @SubclassMapping(source = PageServiceAccess.class, target = PageServiceAccessDto.class)
     })
     @Mapping(source = "orderItem.id", target = "orderItemId")
     ServiceAccessDto toDto(ServiceAccess serviceAccess);

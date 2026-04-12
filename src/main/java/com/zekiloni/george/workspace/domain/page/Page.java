@@ -19,7 +19,6 @@ public class Page {
     private String keywords;
     private String faviconUrl;
     private PageStatus status;
-    private Boolean isPublic;
     private FormConfig formConfig;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

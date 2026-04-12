@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Getter
@@ -24,5 +23,5 @@ public class LeadServiceAccessEntity extends ServiceAccessEntity {
             joinColumns = @JoinColumn(name = "service_access_id"),
             inverseJoinColumns = @JoinColumn(name = "lead_id")
     )
-    private Set<LeadEntity> leads = new HashSet<>();
+    private Set<LeadEntity> leads = new java.util.HashSet<>();
 }

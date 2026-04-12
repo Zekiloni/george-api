@@ -45,14 +45,4 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
                 .build();
     }
 
-    private OffsetDateTime getValidTo(OrderItem orderItem) {
-        OffsetDateTime now = OffsetDateTime.now();
-        return switch (orderItem.getDurationUnit()) {
-            case HOURS -> now.plusHours(orderItem.getDuration());
-            case DAYS -> now.plusDays(orderItem.getDuration());
-            case MONTHS -> now.plusMonths(orderItem.getDuration());
-            case YEARS -> now.plusYears(orderItem.getDuration());
-            default -> throw new IllegalArgumentException("Unsupported duration unit: " + orderItem.getDurationUnit());
-        };
-    }
 }
