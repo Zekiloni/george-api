@@ -11,12 +11,12 @@ import org.hibernate.annotations.UuidGenerator;
 
 import java.util.UUID;
 
-@MappedSuperclass
 @Getter
 @Setter
 @SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
+@MappedSuperclass
 public abstract class BaseEntity extends AuditableEntity {
 
     @Id
