@@ -64,7 +64,7 @@ public class FormFieldEntity extends BaseEntity {
     private FieldMetadata metadata;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_config_id", nullable = false)
+    @JoinColumn(name = "form_id", nullable = false)
     private FormEntity form;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)

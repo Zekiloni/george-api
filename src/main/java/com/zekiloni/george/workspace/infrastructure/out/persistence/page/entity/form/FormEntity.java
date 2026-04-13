@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "form_configs")
+@Table(name = "forms")
 @Getter
 @Setter
 @NoArgsConstructor
@@ -46,7 +46,7 @@ public class FormEntity extends TenantEntity {
     @Column(name = "enable_captcha", nullable = false)
     private Boolean enableCaptcha = false;
 
-    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "formConfig")
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER, mappedBy = "form")
     @OrderBy("displayOrder ASC")
     @Builder.Default
     private List<FormFieldEntity> field = new ArrayList<>();

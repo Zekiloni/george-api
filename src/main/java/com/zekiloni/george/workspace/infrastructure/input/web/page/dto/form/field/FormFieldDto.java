@@ -23,8 +23,6 @@ import java.util.List;
 @AllArgsConstructor
 public class FormFieldDto {
     protected String id;
-    protected OffsetDateTime createdAt;
-    protected OffsetDateTime updatedAt;
     protected String fieldName;
     protected String label;
     protected FieldType type;
@@ -33,13 +31,13 @@ public class FormFieldDto {
     protected String defaultValue;
     protected Integer displayOrder;
     protected Boolean required;
-    protected Boolean isReadOnly;
-    protected Boolean isHidden;
+    protected Boolean readonly;
+    protected Boolean hidden;
     protected FieldMetadataDto metadata;
-
-    // Relationships
     protected List<FieldValidatorDto> validators;
     protected List<FieldOptionDto> options;
     protected List<FormFieldDto> field;
+    protected OffsetDateTime createdAt;
+    protected OffsetDateTime updatedAt;
 }
 

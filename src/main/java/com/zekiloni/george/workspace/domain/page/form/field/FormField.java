@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import lombok.experimental.SuperBuilder;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,5 +37,7 @@ public class FormField {
     @Builder.Default
     private List<FormField> field = new ArrayList<>();
     private FormField parentField;
+    protected OffsetDateTime createdAt;
+    protected OffsetDateTime updatedAt;
 }
 

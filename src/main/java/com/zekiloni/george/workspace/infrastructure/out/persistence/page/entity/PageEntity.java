@@ -34,6 +34,6 @@ public class PageEntity extends TenantEntity {
     private PageStatus status;
 
     @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
-    @JoinColumn(name = "form_config_id")
+    @JoinColumn(name = "form_id")
     private FormEntity form;
 }

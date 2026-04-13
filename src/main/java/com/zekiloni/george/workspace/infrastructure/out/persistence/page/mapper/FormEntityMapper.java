@@ -5,7 +5,7 @@ import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.
 import org.mapstruct.Mapper;
 
 @Mapper(uses = {FormFieldEntityMapper.class})
-public interface FormConfigEntityMapper {
+public interface FormEntityMapper {
     FormEntity toEntity(Form domain);
     Form toDomain(FormEntity entity);
 }

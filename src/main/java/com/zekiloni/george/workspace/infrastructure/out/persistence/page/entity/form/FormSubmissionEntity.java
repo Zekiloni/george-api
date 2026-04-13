@@ -13,11 +13,11 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @SuperBuilder
 @EqualsAndHashCode(callSuper = true)
-@ToString(exclude = {"formConfig"})
+@ToString(exclude = {"form"})
 public class FormSubmissionEntity extends TenantEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_config_id", nullable = false)
+    @JoinColumn(name = "form_id", nullable = false)
     private FormEntity form;
 
     @Column(name = "submission_data", columnDefinition = "LONGTEXT")

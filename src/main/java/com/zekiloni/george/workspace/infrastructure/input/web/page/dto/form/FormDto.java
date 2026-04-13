@@ -19,8 +19,6 @@ import java.util.List;
 @Builder
 public class FormDto {
     private String id;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
     private String name;
     private String title;
     private String description;
@@ -30,8 +28,8 @@ public class FormDto {
     private Boolean sendConfirmationEmail;
     private Boolean showProgressBar;
     private Boolean enableCaptcha;
-
-    // Relationships
     private List<FormFieldDto> field;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }
 
