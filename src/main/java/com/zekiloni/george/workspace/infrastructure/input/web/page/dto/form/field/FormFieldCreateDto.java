@@ -13,8 +13,8 @@ import java.util.List;
  * @param validators Relationships
  */
 public record FormFieldCreateDto(String fieldName, String label, FieldType type, String placeholder, String helpText,
-                                 String defaultValue, Integer displayOrder, Boolean required, Boolean isReadOnly,
-                                 Boolean isHidden, FieldMetadataDto metadata, List<FieldValidatorCreateDto> validators,
+                                 String defaultValue, Integer displayOrder, Boolean required, Boolean readonly,
+                                 Boolean hidden, FieldMetadataDto metadata, List<FieldValidatorCreateDto> validators,
                                  List<FieldOptionCreateDto> options, List<FormFieldCreateDto> field) {
 }
 

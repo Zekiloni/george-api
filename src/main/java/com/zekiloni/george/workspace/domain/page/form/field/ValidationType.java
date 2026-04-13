@@ -1,5 +1,6 @@
 package com.zekiloni.george.workspace.domain.page.form.field;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -19,5 +20,16 @@ public enum ValidationType {
     CUSTOM("custom");
 
     private final String value;
+
+
+    @JsonCreator
+    public static ValidationType fromValue(String value) {
+        for (ValidationType type : ValidationType.values()) {
+            if (type.value.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown validation type: " + value);
+    }
 }
 

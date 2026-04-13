@@ -6,8 +6,10 @@ import com.zekiloni.george.workspace.domain.page.form.field.FormField;
 import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.field.FieldOptionEntity;
 import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.field.FieldValidatorEntity;
 import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.field.FormFieldEntity;
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
 
 @Mapper
 public interface FormFieldEntityMapper {

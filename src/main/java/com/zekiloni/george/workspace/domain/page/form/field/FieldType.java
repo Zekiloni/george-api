@@ -1,5 +1,6 @@
 package com.zekiloni.george.workspace.domain.page.form.field;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
@@ -39,5 +40,15 @@ public enum FieldType {
     REPEAT("repeat");
 
     private final String value;
+
+    @JsonCreator
+    public static FieldType fromValue(String value) {
+        for (FieldType type : FieldType.values()) {
+            if (type.value.equalsIgnoreCase(value)) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException("Unknown field type: " + value);
+    }
 }
 

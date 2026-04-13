@@ -51,10 +51,10 @@ public class FormFieldEntity extends BaseEntity {
     private Boolean required = false;
 
     @Column(name = "is_read_only", nullable = false)
-    private Boolean isReadOnly = false;
+    private Boolean readonly = false;
 
     @Column(name = "is_hidden", nullable = false)
-    private Boolean isHidden = false;
+    private Boolean hidden = false;
 
     @Column(name = "custom_attributes", columnDefinition = "TEXT")
     private String customAttributes;
