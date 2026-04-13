@@ -1,15 +1,12 @@
-package com.zekiloni.george.workspace.domain.page.form.field;
+package com.zekiloni.george.workspace.domain.page.form.field.metadata;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PasswordField extends FormField {
+public class PasswordField implements FieldMetadata {
     private Boolean requireUppercase = false;
     private Boolean requireLowercase = false;
     private Boolean requireNumbers = false;

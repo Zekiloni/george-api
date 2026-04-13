@@ -1,22 +1,20 @@
-package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.specialized;
+package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.metadata;
 
-import com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.FormFieldCreateDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 /**
- * Create DTO for RepeatField.
- * Extends FormFieldCreateDto to inherit all base field properties (fieldName, label, etc.).
- * Does not include id, createdAt, updatedAt fields.
+ * View DTO for RepeatField.
+ * Extends FormFieldDto to inherit all base field properties (id, createdAt, updatedAt, etc.).
  * Adds specialized repeat field properties.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class RepeatFieldCreateDto extends FormFieldCreateDto {
+public class RepeatFieldDto implements FieldMetadataDto{
     private Integer minInstances;
     private Integer maxInstances;
     private Boolean allowAdd;

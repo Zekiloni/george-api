@@ -1,19 +1,12 @@
-package com.zekiloni.george.workspace.domain.page.form.field;
+package com.zekiloni.george.workspace.domain.page.form.field.metadata;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-/**
- * Specialized FormField for phone number input.
- * Supports various phone formats and country-specific requirements.
- */
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PhoneField extends FormField {
+public class PhoneField implements FieldMetadata{
     private String defaultCountryCode; // e.g., "US", "GB", "IN"
     private String allowedCountryCodes; // Comma-separated list of allowed country codes
     private String formatPattern; // e.g., "(XXX) XXX-XXXX" for US

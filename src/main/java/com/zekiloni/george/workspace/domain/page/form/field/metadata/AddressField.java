@@ -1,15 +1,12 @@
-package com.zekiloni.george.workspace.domain.page.form.field;
+package com.zekiloni.george.workspace.domain.page.form.field.metadata;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AddressField extends FormField {
+public class AddressField implements FieldMetadata {
     private Boolean includeStreet = true;
     private Boolean includeCity = true;
     private Boolean includeState = true;

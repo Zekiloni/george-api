@@ -11,9 +11,9 @@ import lombok.NoArgsConstructor;
  * Does not include id, createdAt, updatedAt fields.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class FieldValidatorCreateDto {
     private ValidationType type;
     private Object value;

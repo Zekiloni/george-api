@@ -1,15 +1,12 @@
-package com.zekiloni.george.workspace.domain.page.form.field;
+package com.zekiloni.george.workspace.domain.page.form.field.metadata;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class CreditCardField extends FormField {
+public class CreditCardField implements FieldMetadata {
     private Boolean includeCardNumber = true;
     private Boolean includeCardHolder = true;
     private Boolean includeExpiry = true;

@@ -2,10 +2,13 @@ package com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
+import com.zekiloni.george.workspace.domain.page.form.field.metadata.FieldMetadata;
 import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.FormEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +58,10 @@ public class FormFieldEntity extends BaseEntity {
 
     @Column(name = "custom_attributes", columnDefinition = "TEXT")
     private String customAttributes;
+
+    @Column(columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private FieldMetadata metadata;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "form_config_id", nullable = false)

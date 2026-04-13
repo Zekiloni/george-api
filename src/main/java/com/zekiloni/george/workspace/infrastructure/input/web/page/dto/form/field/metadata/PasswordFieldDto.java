@@ -1,10 +1,9 @@
-package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.specialized;
+package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.metadata;
 
-import com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.FormFieldDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 /**
  * View DTO for PasswordField.
@@ -12,10 +11,10 @@ import lombok.experimental.SuperBuilder;
  * Adds specialized password field properties.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class PasswordFieldDto extends FormFieldDto {
+public class PasswordFieldDto implements FieldMetadataDto {
     private Boolean requireUppercase;
     private Boolean requireLowercase;
     private Boolean requireNumbers;

@@ -15,7 +15,6 @@ public enum ValidationType {
     EMAIL("email"),
     URL("url"),
     PHONE("phone"),
-    CREDIT_CARD("credit_card"),
     DATE_FORMAT("date_format"),
     CUSTOM("custom");
 

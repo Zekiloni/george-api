@@ -1,10 +1,9 @@
-package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.specialized;
+package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.metadata;
 
-import com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.FormFieldDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 /**
  * View DTO for CreditCardField.
@@ -12,10 +11,10 @@ import lombok.experimental.SuperBuilder;
  * Adds specialized credit card field properties.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class CreditCardFieldDto extends FormFieldDto {
+public class CreditCardFieldDto implements FieldMetadataDto {
     private Boolean includeCardNumber;
     private Boolean includeCardHolder;
     private Boolean includeExpiry;

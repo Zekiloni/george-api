@@ -1,7 +1,9 @@
 package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field;
 
 import com.zekiloni.george.workspace.domain.page.form.field.FieldType;
+import com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.metadata.FieldMetadataDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -14,9 +16,9 @@ import java.util.List;
  * Use SuperBuilder for proper inheritance support.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
 public class FormFieldCreateDto {
     protected String fieldName;
     protected String label;
@@ -28,7 +30,7 @@ public class FormFieldCreateDto {
     protected Boolean required;
     protected Boolean isReadOnly;
     protected Boolean isHidden;
-    protected String customAttributes;
+    protected FieldMetadataDto metadata;
 
     // Relationships
     protected List<FieldValidatorCreateDto> validators;

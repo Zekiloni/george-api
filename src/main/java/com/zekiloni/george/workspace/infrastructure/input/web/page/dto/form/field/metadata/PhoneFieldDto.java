@@ -1,10 +1,9 @@
-package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.specialized;
+package com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.metadata;
 
-import com.zekiloni.george.workspace.infrastructure.input.web.page.dto.form.field.FormFieldDto;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 /**
  * View DTO for PhoneField.
@@ -12,10 +11,10 @@ import lombok.experimental.SuperBuilder;
  * Adds specialized phone field properties.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@SuperBuilder
-public class PhoneFieldDto extends FormFieldDto {
+public class PhoneFieldDto implements FieldMetadataDto {
     private String defaultCountryCode;
     private String allowedCountryCodes;
     private String formatPattern;

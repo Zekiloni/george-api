@@ -10,9 +10,9 @@ import lombok.NoArgsConstructor;
  * Does not include id, createdAt, updatedAt fields.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class FieldOptionCreateDto {
     private String label;
     private Object value;

@@ -1,16 +1,12 @@
-package com.zekiloni.george.workspace.domain.page.form.field;
+package com.zekiloni.george.workspace.domain.page.form.field.metadata;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RatingField extends FormField {
+public class RatingField implements FieldMetadata{
     private String ratingType; // "STAR", "EMOJI", "NUMBER", "SMILEY"
     private Integer maxRating = 5;
     private Boolean allowHalfRating = false;

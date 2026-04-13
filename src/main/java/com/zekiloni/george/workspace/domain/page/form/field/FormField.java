@@ -1,5 +1,6 @@
 package com.zekiloni.george.workspace.domain.page.form.field;
 
+import com.zekiloni.george.workspace.domain.page.form.field.metadata.FieldMetadata;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -25,9 +26,9 @@ public class FormField {
     private String defaultValue;
     private Integer displayOrder;
     private Boolean required;
-    private Boolean isReadOnly = false;
-    private Boolean isHidden = false;
-    private String customAttributes;
+    private Boolean readonly = false;
+    private Boolean hidden = false;
+    private FieldMetadata metadata;
     @Builder.Default
     private List<FieldValidator> validators = new ArrayList<>();
     @Builder.Default

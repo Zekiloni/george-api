@@ -13,9 +13,9 @@ import java.time.OffsetDateTime;
  * Includes id, createdAt, updatedAt fields.
  */
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 public class FieldValidatorDto {
     private String id;
     private OffsetDateTime createdAt;
