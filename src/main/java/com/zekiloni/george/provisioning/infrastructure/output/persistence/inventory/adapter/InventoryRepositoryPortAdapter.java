@@ -1,6 +1,7 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.adapter;
 
 import com.zekiloni.george.provisioning.application.port.out.InventoryRepositoryPort;
+import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.mapper.ServiceAccessEntityMapper;
@@ -53,4 +54,8 @@ public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
         return repository.updateToTerminated(currentStatus, newStatus, now, gracePeriodEnd);
     }
 
+    @Override
+    public boolean hasActiveAccess(ServiceSpecification serviceSpecification) {
+        return repository.hasActiveAccess(serviceSpecification);
+    }
 }

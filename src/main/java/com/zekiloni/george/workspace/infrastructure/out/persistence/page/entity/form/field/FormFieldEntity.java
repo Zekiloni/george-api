@@ -32,7 +32,7 @@ public class FormFieldEntity extends BaseEntity {
     private String label;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false, insertable = false, updatable = false)
+    @Column(name = "type", nullable = false, updatable = false)
     private FieldType type;
 
     @Column(name = "placeholder")

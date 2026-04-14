@@ -1,5 +1,6 @@
 package com.zekiloni.george.provisioning.application.port.out;
 
+import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
 import org.springframework.data.domain.Page;
@@ -14,6 +15,8 @@ public interface InventoryRepositoryPort {
     List<ServiceAccess> saveAll(List<ServiceAccess> serviceAccesses);
     Page<ServiceAccess> findAll(Pageable pageable);
     Optional<ServiceAccess> findById(String id);
+
+    boolean hasActiveAccess(ServiceSpecification serviceSpecification);
 
     int updateToSuspended(
             ServiceStatus currentStatus,

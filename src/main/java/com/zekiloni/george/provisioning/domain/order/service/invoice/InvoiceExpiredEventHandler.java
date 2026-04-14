@@ -1,13 +1,19 @@
 package com.zekiloni.george.provisioning.domain.order.service.invoice;
 
+import com.zekiloni.george.provisioning.application.port.in.InvoiceQueryUseCase;
+import com.zekiloni.george.provisioning.application.port.in.InvoiceUpdateUseCase;
 import com.zekiloni.george.provisioning.application.port.in.OrderQueryUseCase;
 import com.zekiloni.george.provisioning.application.port.in.OrderUpdateUseCase;
 import com.zekiloni.george.provisioning.domain.order.model.Order;
 import com.zekiloni.george.provisioning.domain.order.model.OrderStatus;
+import com.zekiloni.george.provisioning.domain.order.model.invoice.Invoice;
+import com.zekiloni.george.provisioning.domain.order.model.invoice.InvoiceStatus;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.event.InvoiceExpiredEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+
+import java.time.OffsetDateTime;
 
 @Slf4j
 @Component
@@ -15,6 +21,8 @@ import org.springframework.stereotype.Component;
 public class InvoiceExpiredEventHandler implements InvoiceEventHandler<InvoiceExpiredEvent> {
     private final OrderQueryUseCase orderQueryUseCase;
     private final OrderUpdateUseCase orderUpdateUseCase;
+    private final InvoiceQueryUseCase invoiceQueryUseCase;
+    private final InvoiceUpdateUseCase invoiceUpdateUseCase;
 
     @Override
     public Class<InvoiceExpiredEvent> getEventType() {
@@ -23,12 +31,21 @@ public class InvoiceExpiredEventHandler implements InvoiceEventHandler<InvoiceEx
 
     @Override
     public void handle(InvoiceExpiredEvent event) {
+        invoiceQueryUseCase.getByOrderId(event.getOrderId())
+                .ifPresent(invoice -> updateInvoice(invoice, event));
+
         orderQueryUseCase.getById(event.getOrderId())
-                .ifPresent(this::update);
+                .ifPresent(this::updateOrder);
     }
 
-    private void update(Order order) {
-        // TODO: Update invoice status to FAILED, EXPIRED
+    private void updateInvoice(Invoice invoice, InvoiceExpiredEvent event) {
+        log.info("Updating invoice {} status to EXPIRED", invoice.getId());
+        invoice.setStatus(InvoiceStatus.FAILED);
+        invoice.setCancelledAt(OffsetDateTime.now());
+        invoiceUpdateUseCase.update(invoice);
+    }
+
+    private void updateOrder(Order order) {
         log.info("Updating order {} status to FAILED", order.getId());
         order.setStatus(OrderStatus.FAILED);
         orderUpdateUseCase.update(order);

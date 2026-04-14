@@ -1,5 +1,6 @@
 package com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.repository;
 
+import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.inventory.entity.ServiceAccessEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -30,6 +31,14 @@ public interface ServiceAccessJpaRepository
             @Param("now") OffsetDateTime now,
             @Param("gracePeriodEnd") OffsetDateTime gracePeriodEnd
     );
+
+    @Query("""
+        SELECT CASE WHEN COUNT(s) > 0 THEN true ELSE false END
+        FROM ServiceAccessEntity s
+        WHERE s.serviceSpecification = :serviceSpecification
+          AND s.status = 'ACTIVE'
+""")
+    boolean hasActiveAccess(@Param("serviceSpecification") ServiceSpecification serviceSpecification);
 
     @Modifying
     @Query("""

@@ -24,5 +24,10 @@ public class ServiceAccessQueryService implements ServiceAccessQueryUseCase {
     public Page<ServiceAccess> getAll(Pageable pageable) {
         return repository.findAll(pageable);
     }
+
+    @Override
+    public boolean hasActiveAccess(com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification specification) {
+        return repository.hasActiveAccess(specification);
+    }
 }
 
