@@ -18,7 +18,7 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class LeadRepositoryAdapter implements LeadRepositoryPort {
+public class LeadRepositoryPortAdapter implements LeadRepositoryPort {
     private final LeadJpaRepository repository;
     private final LeadEntityMapper mapper;
     private final TenantContext tenantContext;

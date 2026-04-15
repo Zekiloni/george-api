@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -21,10 +22,11 @@ public class LeadApiController {
     private final LeadQueryUseCase queryUseCase;
     private final LeadDtoMapper mapper;
 
+
+    @PreAuthorize("hasRole('admin') or @serviceAccessQueryUseCase.hasActiveAccess(T(com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification).PAGE)")
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> importLeads(@RequestParam("file") MultipartFile file) {
         try {
-            // TODO: handle exceptions properly and return meaningful responses
             importUseCase.handle(file.getInputStream());
             return ResponseEntity.ok().build();
         } catch (Exception e) {

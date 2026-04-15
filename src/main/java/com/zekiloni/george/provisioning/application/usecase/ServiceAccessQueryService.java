@@ -2,6 +2,7 @@ package com.zekiloni.george.provisioning.application.usecase;
 
 import com.zekiloni.george.provisioning.application.port.in.ServiceAccessQueryUseCase;
 import com.zekiloni.george.provisioning.application.port.out.InventoryRepositoryPort;
+import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.provisioning.domain.inventory.model.ServiceAccess;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -26,7 +27,7 @@ public class ServiceAccessQueryService implements ServiceAccessQueryUseCase {
     }
 
     @Override
-    public boolean hasActiveAccess(com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification specification) {
+    public boolean hasActiveAccess(ServiceSpecification specification) {
         return repository.hasActiveAccess(specification);
     }
 }
