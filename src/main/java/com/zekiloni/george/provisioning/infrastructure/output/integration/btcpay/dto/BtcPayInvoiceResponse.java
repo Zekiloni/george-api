@@ -34,17 +34,17 @@ public record BtcPayInvoiceResponse(
             String speedPolicy,
             List<String> paymentMethods,
             String defaultPaymentMethod,
-            boolean lazyPaymentMethods,
-            int expirationMinutes,
-            int monitoringMinutes,
-            double paymentTolerance,
+            Boolean lazyPaymentMethods,    // ← was boolean
+            Integer expirationMinutes,     // ← was int
+            Integer monitoringMinutes,     // ← was int
+            Double paymentTolerance,       // ← was double
             String redirectURL,
-            boolean redirectAutomatically,
+            Boolean redirectAutomatically, // ← was boolean
             String defaultLanguage
     ) {}
 
     public record Receipt(
-            boolean enabled,
+            Boolean enabled,    // ← was boolean
             Boolean showQR,
             Boolean showPayments
     ) {}

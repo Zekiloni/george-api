@@ -1,7 +1,6 @@
 package com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.tracking;
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.TenantEntity;
-import com.zekiloni.george.workspace.infrastructure.out.persistence.page.entity.form.FormSubmissionEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -28,10 +27,6 @@ public class TrackingLinkEntity extends TenantEntity {
 
     @Column(name = "is_active", nullable = false)
     private Boolean isActive = true;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "form_submission_id")
-    private FormSubmissionEntity formSubmission;
 
     @Column(name = "click_count")
     private Integer clickCount = 0;

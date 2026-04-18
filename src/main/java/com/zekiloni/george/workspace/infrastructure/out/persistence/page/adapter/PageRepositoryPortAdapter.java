@@ -11,10 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 
-/**
- * Adapter koji implementira PageRepositoryPort koristeći Spring Data JPA.
- * Mapira domenski Page model na JPA PageEntity za čuvanje u bazi.
- */
+
 @Component
 @RequiredArgsConstructor
 public class PageRepositoryPortAdapter implements PageRepositoryPort {

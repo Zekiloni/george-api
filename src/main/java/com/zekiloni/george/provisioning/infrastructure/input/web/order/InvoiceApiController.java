@@ -23,4 +23,5 @@ public class InvoiceApiController {
         processUseCase.handle(mapper.toDomain(event));
         return ResponseEntity.ok().build();
     }
+
 }

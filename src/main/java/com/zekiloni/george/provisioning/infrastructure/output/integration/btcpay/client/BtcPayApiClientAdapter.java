@@ -23,7 +23,7 @@ public class BtcPayApiClientAdapter implements ExternalInvoicePort {
     @Value("${btc-pay.api.api-key}")
     private String apiKey;
 
-    public String createInvoice(String orderId, String description, String amount, String currency) {
+    public ExternalInvoice createInvoice(String orderId, String description, String amount, String currency) {
         BtcPayInvoiceCreateDto.Metadata metadata = new BtcPayInvoiceCreateDto.Metadata(
                 orderId,
                 "https://example.com/orders/" + orderId,
@@ -47,6 +47,6 @@ public class BtcPayApiClientAdapter implements ExternalInvoicePort {
                 })
                 .body(BtcPayInvoiceResponse.class);
 
-        return response.id();
+        return new ExternalInvoice(response.id(), response.checkoutLink());
     }
 }

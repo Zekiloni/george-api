@@ -16,6 +16,7 @@ import java.util.Map;
 @Builder
 public class ComponentNode {
     private String id;
+    private String key;
     private String type;
     private Integer displayOrder;
     @Builder.Default

@@ -31,11 +31,13 @@ public class InvoiceCreateService implements InvoiceCreateUseCase {
                 .map(InvoiceItem::getTotal)
                 .reduce(Money.ZERO, Money::add);
 
-        String externalInvoiceId = externalInvoicePort
+        ExternalInvoicePort.ExternalInvoice externalInvoice = externalInvoicePort
                 .createInvoice(order.getId(), "new",
                         total.getAmount().toPlainString(), total.getCurrency().getCurrencyCode());
 
-        invoice.setInvoiceNumber(externalInvoiceId);
+        invoice.setInvoiceNumber(externalInvoice.invoiceId());
+        invoice.setPaymentReference(externalInvoice.paymentUrl());
+
         return repository.save(invoice);
     }
 
