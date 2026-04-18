@@ -1,4 +1,4 @@
-package com.zekiloni.george.workspace.domain.page.tracking;
+package com.zekiloni.george.workspace.domain.session;
 
 import com.zekiloni.george.workspace.domain.page.Page;
 import lombok.AllArgsConstructor;

@@ -39,12 +39,7 @@ public class OfferingRepositoryPortAdapter implements OfferingRepositoryPort {
 
     @Override
     public void deleteById(String id) {
-        try {
-            UUID uuid = UUID.fromString(id);
-            jpaRepository.deleteById(uuid);
-        } catch (IllegalArgumentException e) {
-            // Invalid UUID, do nothing
-        }
+        jpaRepository.deleteById(UUID.fromString(id));
     }
 
     @Override

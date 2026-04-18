@@ -11,9 +11,14 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 import java.util.UUID;
 
+/**
+ * Adapter koji implementira PageRepositoryPort koristeći Spring Data JPA.
+ * Mapira domenski Page model na JPA PageEntity za čuvanje u bazi.
+ */
 @Component
 @RequiredArgsConstructor
 public class PageRepositoryPortAdapter implements PageRepositoryPort {
+
     private final PageJpaRepository repository;
     private final PageEntityMapper mapper;
 
@@ -28,6 +33,11 @@ public class PageRepositoryPortAdapter implements PageRepositoryPort {
     }
 
     @Override
+    public Optional<Page> findBySlug(String slug) {
+        return repository.findBySlug(slug).map(mapper::toDomain);
+    }
+
+    @Override
     public org.springframework.data.domain.Page<Page> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDomain);
     }
@@ -35,5 +45,15 @@ public class PageRepositoryPortAdapter implements PageRepositoryPort {
     @Override
     public void deleteById(String id) {
         repository.deleteById(UUID.fromString(id));
+    }
+
+    @Override
+    public boolean existsById(String id) {
+        return repository.existsById(UUID.fromString(id));
+    }
+
+    @Override
+    public boolean existsBySlug(String slug) {
+        return repository.findBySlug(slug).isPresent();
     }
 }
