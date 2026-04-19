@@ -5,10 +5,8 @@ import com.zekiloni.george.provisioning.application.port.in.InvoiceQueryUseCase;
 import com.zekiloni.george.provisioning.infrastructure.input.web.order.dto.InvoiceDto;
 import com.zekiloni.george.provisioning.infrastructure.input.web.order.dto.event.BtcPayEventDto;
 import com.zekiloni.george.provisioning.infrastructure.input.web.order.mapper.InvoiceDtoMapper;
-import com.zekiloni.george.provisioning.infrastructure.input.web.order.mapper.InvoiceEventDtoMapper;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.entity.InvoiceSpecification;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,12 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class InvoiceApiController {
     private final InvoiceEventHandleUseCase processUseCase;
     private final InvoiceQueryUseCase queryUseCase;
-    private final InvoiceEventDtoMapper eventMapper;
     private final InvoiceDtoMapper mapper;
 
     @PostMapping("/webhook")
     public ResponseEntity<Object> handle(@RequestBody BtcPayEventDto event) {
-        processUseCase.handle(eventMapper.toDomain(event));
+        processUseCase.handle(mapper.toDomain(event));
         return ResponseEntity.ok().build();
     }
 
