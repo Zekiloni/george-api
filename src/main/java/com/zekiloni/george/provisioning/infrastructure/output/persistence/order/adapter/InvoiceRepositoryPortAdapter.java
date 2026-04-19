@@ -2,9 +2,12 @@ package com.zekiloni.george.provisioning.infrastructure.output.persistence.order
 
 import com.zekiloni.george.provisioning.application.port.out.InvoiceRepositoryPort;
 import com.zekiloni.george.provisioning.domain.order.model.invoice.Invoice;
+import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.entity.InvoiceSpecification;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.mapper.InvoiceEntityMapper;
 import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.repository.InvoiceJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
@@ -25,5 +28,11 @@ public class InvoiceRepositoryPortAdapter implements InvoiceRepositoryPort {
     @Override
     public Invoice save(Invoice invoice) {
         return mapper.toDomain(repository.save(mapper.toEntity(invoice)));
+    }
+
+    @Override
+    public Page<Invoice> findAll(Pageable pageable, InvoiceSpecification specification) {
+        return repository.findAll(specification, pageable)
+                .map(mapper::toDomain);
     }
 }
