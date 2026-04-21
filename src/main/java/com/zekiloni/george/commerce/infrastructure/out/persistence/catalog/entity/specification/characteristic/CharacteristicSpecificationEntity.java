@@ -31,7 +31,6 @@ public class CharacteristicSpecificationEntity extends BaseEntity {
     @Column
     private Boolean extensible;
 
-    @Column
     private Boolean isUnique;
 
     @Column

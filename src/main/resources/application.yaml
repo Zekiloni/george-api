@@ -23,18 +23,21 @@ spring:
       max-lifetime: 1800000
 
   jpa:
-    database-platform: org.hibernate.dialect.PostgreSQLDialect
-    # DDL auto settings: update, create, create-drop, none (use 'none' or 'validate' for production)
     hibernate:
-      ddl-auto: update
+      ddl-auto: create-drop
       naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
     show-sql: true
     properties:
       hibernate:
         multiTenancy: DISCRIMINATOR
         format_sql: true
+
+  flyway:
+    enabled: false
+    baseline-on-migrate: true
+    validate-on-migrate: true
 
   # Servlet multipart file upload settings
   servlet:
@@ -59,10 +62,12 @@ btc-pay:
       base-url: http://localhost:49392/api/v1
       api-key: 35b2e61f376258e91e935af2f6d7454166a5f368
 
+
 # Logging
 logging:
   level:
     com.vectorhaul.platform.operation: DEBUG
     org.springframework.web: INFO
     org.hibernate.SQL: DEBUG
-
+    org.flywaydb: DEBUG
+    org.springframework.boot.autoconfigure.flyway: DEBUG
