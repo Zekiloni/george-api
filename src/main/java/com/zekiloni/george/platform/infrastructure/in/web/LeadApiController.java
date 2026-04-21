@@ -23,7 +23,7 @@ public class LeadApiController {
     private final LeadDtoMapper mapper;
 
 
-    @PreAuthorize("hasRole('admin') or @serviceAccessQueryUseCase.hasActiveAccess(T(com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification).PAGE)")
+    @PreAuthorize("hasRole('admin') or @serviceAccessQueryUseCase.hasActiveAccess(T(com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification).PAGE)")
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> importLeads(@RequestParam("file") MultipartFile file) {
         try {

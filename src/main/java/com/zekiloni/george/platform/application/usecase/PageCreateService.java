@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.application.usecase;
 
-import com.zekiloni.george.provisioning.application.usecase.ServiceAccessQueryService;
-import com.zekiloni.george.provisioning.domain.catalog.model.ServiceSpecification;
+import com.zekiloni.george.commerce.application.usecase.ServiceAccessQueryService;
+import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.platform.application.port.in.PageCreateUseCase;
 import com.zekiloni.george.platform.application.port.out.PageRepositoryPort;
 import com.zekiloni.george.platform.domain.page.Page;
