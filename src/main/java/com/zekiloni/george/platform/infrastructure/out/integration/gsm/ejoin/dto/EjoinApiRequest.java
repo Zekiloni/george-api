@@ -6,6 +6,6 @@ public record EjoinApiRequest(
         String baseUrl,
         String username,
         String password,
-        List<EjoinPort> ports,       // nullable
-        String portsPattern          // nullable
+        List<EjoinPort> ports,
+        String portsPattern
 ) {}
