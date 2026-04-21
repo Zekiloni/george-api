@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class SimCard {
+public class GsmGatewaySlot {
     private String id;
     private String phoneNumber;
     private String imsi;

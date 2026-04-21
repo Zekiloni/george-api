@@ -16,8 +16,14 @@ public class GsmGateway {
     private String id;
     private String ipAddress;
     private int port;
-    private GsmProtocol protocol;
-    private List<SimCard> simCard;
+    private GsmProvider provider;
+    private int totalPort;
+    private List<GsmGatewaySlot> slot;
     private String username;
     private String password;
+
+    public int getActivePortCount() {
+        if (slot == null) return 0;
+        return (int) slot.stream().filter(GsmGatewaySlot::getActive).count();
+    }
 }
