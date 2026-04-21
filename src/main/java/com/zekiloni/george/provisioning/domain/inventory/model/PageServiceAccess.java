@@ -1,6 +1,6 @@
 package com.zekiloni.george.provisioning.domain.inventory.model;
 
-import com.zekiloni.george.workspace.domain.page.Page;
+import com.zekiloni.george.platform.domain.page.Page;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

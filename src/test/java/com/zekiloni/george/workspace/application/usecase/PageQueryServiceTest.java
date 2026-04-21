@@ -1,8 +1,9 @@
 package com.zekiloni.george.workspace.application.usecase;
 
-import com.zekiloni.george.workspace.application.port.out.PageRepositoryPort;
-import com.zekiloni.george.workspace.domain.page.Page;
-import com.zekiloni.george.workspace.domain.page.PageStatus;
+import com.zekiloni.george.platform.application.port.out.PageRepositoryPort;
+import com.zekiloni.george.platform.application.usecase.PageQueryService;
+import com.zekiloni.george.platform.domain.page.Page;
+import com.zekiloni.george.platform.domain.page.PageStatus;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

@@ -1,7 +1,7 @@
 package com.zekiloni.george.provisioning.application.port.out;
 
 import com.zekiloni.george.provisioning.domain.order.model.invoice.Invoice;
-import com.zekiloni.george.provisioning.infrastructure.output.persistence.order.entity.InvoiceSpecification;
+import com.zekiloni.george.provisioning.infrastructure.out.persistence.order.entity.InvoiceSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
