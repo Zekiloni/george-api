@@ -1,6 +1,6 @@
 package com.zekiloni.george.common.infrastructure.config;
 
-import com.zekiloni.george.common.infrastructure.integration.keycloak.KeycloakRoleConverter;
+import com.zekiloni.george.common.infrastructure.out.integration.keycloak.KeycloakRoleConverter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

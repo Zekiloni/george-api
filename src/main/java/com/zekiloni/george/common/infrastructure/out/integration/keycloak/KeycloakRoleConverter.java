@@ -1,4 +1,4 @@
-package com.zekiloni.george.common.infrastructure.integration.keycloak;
+package com.zekiloni.george.common.infrastructure.out.integration.keycloak;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
