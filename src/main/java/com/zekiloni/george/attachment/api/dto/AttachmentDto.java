@@ -1,7 +1,6 @@
 package com.zekiloni.george.attachment.api.dto;
 
 
-import com.vectorhaul.platform.attachment.domain.Attachment;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -11,9 +10,6 @@ import java.io.Serializable;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
-/**
- * DTO for {@link Attachment}
- */
 @Data
 @Builder
 @NoArgsConstructor
