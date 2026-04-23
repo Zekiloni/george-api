@@ -14,6 +14,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.util.Optional;
+
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("${api.base.path:/api/v1}/lead")
@@ -25,13 +28,11 @@ public class LeadApiController {
 
     @PreAuthorize("hasRole('admin') or @serviceAccessQueryUseCase.hasActiveAccess(T(com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification).PAGE)")
     @PostMapping(value = "/import", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Void> importLeads(@RequestParam("file") MultipartFile file) {
-        try {
-            importUseCase.handle(file.getInputStream());
-            return ResponseEntity.ok().build();
-        } catch (Exception e) {
-            return ResponseEntity.status(500).build();
-        }
+    public ResponseEntity<Void> importLeads(
+            @RequestParam("file") MultipartFile file,
+            @RequestParam(value = "serviceAccessId", required = false) String serviceAccessId) throws IOException {
+        importUseCase.handle(new LeadImportUseCase.LeadImportCommand(file.getInputStream(), Optional.ofNullable(serviceAccessId)));
+        return ResponseEntity.accepted().build();
     }
 
     @GetMapping

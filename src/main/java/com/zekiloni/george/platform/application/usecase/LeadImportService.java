@@ -1,5 +1,6 @@
 package com.zekiloni.george.platform.application.usecase;
 
+import com.zekiloni.george.platform.application.port.in.AssignLeadsUseCase;
 import com.zekiloni.george.platform.application.port.in.LeadImportUseCase;
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
 import com.zekiloni.george.platform.domain.model.Lead;
@@ -7,8 +8,10 @@ import com.zekiloni.george.platform.domain.model.PhoneResolutionResult;
 import com.zekiloni.george.platform.domain.service.PhoneDataResolver;
 import com.zekiloni.george.platform.domain.util.PhoneNumberFileReader;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
@@ -17,21 +20,21 @@ import java.util.List;
 public class LeadImportService implements LeadImportUseCase {
     private final PhoneDataResolver phoneDataResolver;
     private final LeadRepositoryPort repository;
+    private final AssignLeadsUseCase assignLeadsUseCase;
 
     @Override
-    public void handle(InputStream inputStream) {
-        try {
-            // TODO: Big file handling - process in batches, use streaming, etc.
-            List<Lead> leads = PhoneNumberFileReader.readPhoneNumbers(inputStream)
-                    .stream()
-                    .map(phoneDataResolver::resolve)
-                    .map(this::mapToLead)
-                    .toList();
+    public void handle(LeadImportCommand command) throws IOException {
+        List<Lead> leads = repository.saveAll(buildLeads(command.inputStream()));
+        command.serviceAccessId()
+                .ifPresent(id -> assignLeadsUseCase.handle(id, leads.stream().map(Lead::getId).toList()));
+    }
 
-            repository.saveAll(leads);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to import leads from file", e);
-        }
+    private @NonNull List<Lead> buildLeads(InputStream inputStream) throws IOException {
+        return PhoneNumberFileReader.readPhoneNumbers(inputStream)
+                .stream()
+                .map(phoneDataResolver::resolve)
+                .map(this::mapToLead)
+                .toList();
     }
 
     private Lead mapToLead(PhoneResolutionResult result) {

@@ -13,4 +13,12 @@ import java.util.List;
 @AllArgsConstructor
 public class LeadServiceAccess extends ServiceAccess {
     private List<Lead> leads;
+
+    public void addLeads(List<String> leadIds) {
+            leadIds.forEach(leadId -> {
+                if (leads.stream().noneMatch(lead -> lead.getId().equals(leadId))) {
+                    leads.add(Lead.builder().id(leadId).build());
+                }
+            });
+    }
 }
