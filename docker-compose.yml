@@ -4,7 +4,7 @@ version: '3.8'
 services:
   postgres:
     image: postgres:18-alpine
-    container_name: g-postgres
+    container_name: postgres
     environment:
       POSTGRES_USER: g-user
       POSTGRES_PASSWORD: g-pw
@@ -119,18 +119,20 @@ services:
   stalwart-mail:
     image: stalwartlabs/stalwart:latest
     container_name: stalwart-mail
-    restart: unless-stopped
     ports:
-      - "25:25"     # SMTP
-      - "465:465"   # SMTPS
-      - "587:587"   # Submission
-      - "143:143"   # IMAP
-      - "993:993"   # IMAPS
-      - "4190:4190" # ManageSieve
-      - "8080:8080" # Management Web UI & JMAP
-      - "443:443"   # HTTPS (optional for built-in ACME)
+      - "25:25"
+      - "587:587"
+      - "465:465"
+      - "143:143"
+      - "993:993"
+      - "4190:4190"
+      - "443:443"
+      - "8585:8080"
     volumes:
-      - stalwart_data:/var/lib/stalwart
+      - stalwart_data:/opt/stalwart
+    tty: true
+    stdin_open: true
+
 volumes:
   btcpay_data:
   postgres_data:
