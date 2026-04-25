@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.application.port.in;
+package com.zekiloni.george.platform.application.port.in.page;
 
 /**
  * Use case port za brisanje stranica.

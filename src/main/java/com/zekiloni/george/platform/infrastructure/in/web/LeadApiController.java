@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.in.web;
 
-import com.zekiloni.george.platform.application.port.in.LeadImportUseCase;
-import com.zekiloni.george.platform.application.port.in.LeadQueryUseCase;
+import com.zekiloni.george.platform.application.port.in.lead.LeadImportUseCase;
+import com.zekiloni.george.platform.application.port.in.lead.LeadQueryUseCase;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.LeadDto;
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.LeadDtoMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;

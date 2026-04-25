@@ -1,6 +1,6 @@
-package com.zekiloni.george.platform.application.usecase;
+package com.zekiloni.george.platform.application.usecase.page;
 
-import com.zekiloni.george.platform.application.port.in.PageDeleteUseCase;
+import com.zekiloni.george.platform.application.port.in.page.PageDeleteUseCase;
 import com.zekiloni.george.platform.application.port.out.PageRepositoryPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

@@ -1,6 +1,6 @@
 package com.zekiloni.george.commerce.domain.order.service.strategy;
 
-import com.zekiloni.george.platform.application.port.in.LeadQueryUseCase;
+import com.zekiloni.george.platform.application.port.in.lead.LeadQueryUseCase;
 import com.zekiloni.george.platform.domain.model.Lead;
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessCreateUseCase;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;

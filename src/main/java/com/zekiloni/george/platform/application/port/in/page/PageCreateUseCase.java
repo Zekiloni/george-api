@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.application.port.in;
+package com.zekiloni.george.platform.application.port.in.page;
 
 import com.zekiloni.george.platform.domain.page.Page;
 

@@ -1,9 +1,9 @@
 package com.zekiloni.george.platform.infrastructure.in.web;
 
-import com.zekiloni.george.platform.application.port.in.PageCreateUseCase;
-import com.zekiloni.george.platform.application.port.in.PageDeleteUseCase;
-import com.zekiloni.george.platform.application.port.in.PageQueryUseCase;
-import com.zekiloni.george.platform.application.port.in.PageUpdateUseCase;
+import com.zekiloni.george.platform.application.port.in.page.PageCreateUseCase;
+import com.zekiloni.george.platform.application.port.in.page.PageDeleteUseCase;
+import com.zekiloni.george.platform.application.port.in.page.PageQueryUseCase;
+import com.zekiloni.george.platform.application.port.in.page.PageUpdateUseCase;
 
 import com.zekiloni.george.platform.infrastructure.in.web.dto.PageCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.PageDto;

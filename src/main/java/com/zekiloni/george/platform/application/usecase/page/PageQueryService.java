@@ -1,6 +1,6 @@
-package com.zekiloni.george.platform.application.usecase;
+package com.zekiloni.george.platform.application.usecase.page;
 
-import com.zekiloni.george.platform.application.port.in.PageQueryUseCase;
+import com.zekiloni.george.platform.application.port.in.page.PageQueryUseCase;
 import com.zekiloni.george.platform.application.port.out.PageRepositoryPort;
 import com.zekiloni.george.platform.domain.page.Page;
 import lombok.RequiredArgsConstructor;

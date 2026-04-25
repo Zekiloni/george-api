@@ -1,7 +1,7 @@
-package com.zekiloni.george.platform.application.usecase;
+package com.zekiloni.george.platform.application.usecase.lead;
 
-import com.zekiloni.george.platform.application.port.in.AssignLeadsUseCase;
-import com.zekiloni.george.platform.application.port.in.LeadImportUseCase;
+import com.zekiloni.george.platform.application.port.in.lead.AssignLeadsUseCase;
+import com.zekiloni.george.platform.application.port.in.lead.LeadImportUseCase;
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
 import com.zekiloni.george.platform.domain.model.Lead;
 import com.zekiloni.george.platform.domain.model.PhoneResolutionResult;

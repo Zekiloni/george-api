@@ -1,9 +1,9 @@
-package com.zekiloni.george.platform.application.usecase;
+package com.zekiloni.george.platform.application.usecase.lead;
 
 import com.zekiloni.george.commerce.application.port.out.InventoryRepositoryPort;
 import com.zekiloni.george.commerce.domain.inventory.model.LeadServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
-import com.zekiloni.george.platform.application.port.in.AssignLeadsUseCase;
+import com.zekiloni.george.platform.application.port.in.lead.AssignLeadsUseCase;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
