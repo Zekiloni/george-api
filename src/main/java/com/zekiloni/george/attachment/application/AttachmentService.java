@@ -2,7 +2,7 @@ package com.zekiloni.george.attachment.application;
 
 import com.zekiloni.george.attachment.domain.Attachment;
 import com.zekiloni.george.attachment.domain.AttachmentRepository;
-import com.zekiloni.george.attachment.infrastructure.storage.FileStorageService;
+import com.zekiloni.george.attachment.infrastructure.out.storage.FileStorageService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

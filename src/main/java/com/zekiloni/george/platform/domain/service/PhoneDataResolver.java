@@ -5,7 +5,7 @@ import com.google.i18n.phonenumbers.PhoneNumberToCarrierMapper;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
 import com.google.i18n.phonenumbers.geocoding.PhoneNumberOfflineGeocoder;
-import com.zekiloni.george.platform.domain.model.PhoneResolutionResult;
+import com.zekiloni.george.platform.domain.model.lead.PhoneResolutionResult;
 import org.springframework.stereotype.Component;
 
 import java.util.Locale;

@@ -1,6 +1,6 @@
 package com.zekiloni.george.commerce.domain.inventory.model;
 
-import com.zekiloni.george.platform.domain.model.Lead;
+import com.zekiloni.george.platform.domain.model.lead.Lead;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

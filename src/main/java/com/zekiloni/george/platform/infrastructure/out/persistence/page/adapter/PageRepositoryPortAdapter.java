@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.page.adapter;
 
 import com.zekiloni.george.platform.application.port.out.PageRepositoryPort;
-import com.zekiloni.george.platform.domain.page.Page;
+import com.zekiloni.george.platform.domain.model.page.Page;
 import com.zekiloni.george.platform.infrastructure.out.persistence.page.repository.PageJpaRepository;
 import com.zekiloni.george.platform.infrastructure.out.persistence.page.mapper.PageEntityMapper;
 import lombok.RequiredArgsConstructor;

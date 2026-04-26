@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.in.web.dto;
 
-import com.zekiloni.george.platform.domain.page.definition.PageDefinition;
+import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

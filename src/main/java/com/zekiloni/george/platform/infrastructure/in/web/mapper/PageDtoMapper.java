@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.in.web.mapper;
 
-import com.zekiloni.george.platform.domain.page.Page;
+import com.zekiloni.george.platform.domain.model.page.Page;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.PageCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.PageDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.PageUpdateDto;

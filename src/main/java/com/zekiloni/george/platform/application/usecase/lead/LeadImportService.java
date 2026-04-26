@@ -3,10 +3,11 @@ package com.zekiloni.george.platform.application.usecase.lead;
 import com.zekiloni.george.platform.application.port.in.lead.AssignLeadsUseCase;
 import com.zekiloni.george.platform.application.port.in.lead.LeadImportUseCase;
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
-import com.zekiloni.george.platform.domain.model.Lead;
-import com.zekiloni.george.platform.domain.model.PhoneResolutionResult;
+import com.zekiloni.george.platform.domain.model.lead.Lead;
+import com.zekiloni.george.platform.domain.model.lead.PhoneResolutionResult;
 import com.zekiloni.george.platform.domain.service.PhoneDataResolver;
 import com.zekiloni.george.platform.domain.util.PhoneNumberFileReader;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Component;
@@ -23,6 +24,7 @@ public class LeadImportService implements LeadImportUseCase {
     private final AssignLeadsUseCase assignLeadsUseCase;
 
     @Override
+    @Transactional
     public void handle(LeadImportCommand command) throws IOException {
         List<Lead> leads = repository.saveAll(buildLeads(command.inputStream()));
         command.serviceAccessId()
@@ -30,8 +32,7 @@ public class LeadImportService implements LeadImportUseCase {
     }
 
     private @NonNull List<Lead> buildLeads(InputStream inputStream) throws IOException {
-        return PhoneNumberFileReader.readPhoneNumbers(inputStream)
-                .stream()
+        return PhoneNumberFileReader.streamPhoneNumbers(inputStream)
                 .map(phoneDataResolver::resolve)
                 .map(this::mapToLead)
                 .toList();

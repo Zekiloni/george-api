@@ -3,7 +3,6 @@ package com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin;
 import com.zekiloni.george.platform.application.port.out.GsmGatewayPort;
 import com.zekiloni.george.platform.domain.model.gsm.GsmGateway;
 import com.zekiloni.george.platform.domain.model.gsm.GsmProvider;
-import com.zekiloni.george.platform.domain.model.sms.SmsTask;
 import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.mapper.EjoinDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -34,10 +33,5 @@ public class EjoinGsmGatewayPortAdapter implements GsmGatewayPort {
                 .stream()
                 .map(mapper::toDomain)
                 .toList();
-    }
-
-    @Override
-    public void sendSms(GsmGateway gateway, SmsTask smsTask) {
-        throw new UnsupportedOperationException("Ejoin GSM gateway does not support sending SMS");
     }
 }

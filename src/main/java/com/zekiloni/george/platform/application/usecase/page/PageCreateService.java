@@ -4,7 +4,7 @@ import com.zekiloni.george.commerce.application.usecase.ServiceAccessQueryServic
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.platform.application.port.in.page.PageCreateUseCase;
 import com.zekiloni.george.platform.application.port.out.PageRepositoryPort;
-import com.zekiloni.george.platform.domain.page.Page;
+import com.zekiloni.george.platform.domain.model.page.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

@@ -1,8 +1,8 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.page.entity;
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.TenantEntity;
-import com.zekiloni.george.platform.domain.page.PageStatus;
-import com.zekiloni.george.platform.domain.page.definition.PageDefinition;
+import com.zekiloni.george.platform.domain.model.page.PageStatus;
+import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;

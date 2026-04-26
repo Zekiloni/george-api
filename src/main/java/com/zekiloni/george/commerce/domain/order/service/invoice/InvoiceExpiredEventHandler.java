@@ -32,13 +32,13 @@ public class InvoiceExpiredEventHandler implements InvoiceEventHandler<InvoiceEx
     @Override
     public void handle(InvoiceExpiredEvent event) {
         invoiceQueryUseCase.getByOrderId(event.getOrderId())
-                .ifPresent(invoice -> updateInvoice(invoice, event));
+                .ifPresent(this::updateInvoice);
 
         orderQueryUseCase.getById(event.getOrderId())
                 .ifPresent(this::updateOrder);
     }
 
-    private void updateInvoice(Invoice invoice, InvoiceExpiredEvent event) {
+    private void updateInvoice(Invoice invoice) {
         log.info("Updating invoice {} status to EXPIRED", invoice.getId());
         invoice.setStatus(InvoiceStatus.FAILED);
         invoice.setCancelledAt(OffsetDateTime.now());

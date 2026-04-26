@@ -2,7 +2,7 @@ package com.zekiloni.george.platform.infrastructure.out.persistence.lead.adapter
 
 import com.zekiloni.george.common.infrastructure.config.tenant.TenantContext;
 import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
-import com.zekiloni.george.platform.domain.model.Lead;
+import com.zekiloni.george.platform.domain.model.lead.Lead;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.mapper.LeadEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.repository.LeadJpaRepository;

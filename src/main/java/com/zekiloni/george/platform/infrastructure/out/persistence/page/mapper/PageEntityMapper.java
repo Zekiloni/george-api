@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.page.mapper;
 
-import com.zekiloni.george.platform.domain.page.Page;
+import com.zekiloni.george.platform.domain.model.page.Page;
 import com.zekiloni.george.platform.infrastructure.out.persistence.page.entity.PageEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingConstants;
