@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.mapper;
 
-import com.zekiloni.george.platform.application.port.out.GsmGatewayPort;
+import com.zekiloni.george.platform.application.port.out.gateway.GsmGatewayPort;
 import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.dto.EjoinPortStatusResponse;
 import org.mapstruct.Mapper;
 

@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.application.usecase.lead;
 
 import com.zekiloni.george.platform.application.port.in.lead.LeadQueryUseCase;
-import com.zekiloni.george.platform.application.port.out.LeadRepositoryPort;
+import com.zekiloni.george.platform.application.port.out.lead.LeadRepositoryPort;
 import com.zekiloni.george.platform.domain.model.lead.Lead;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;
 import lombok.RequiredArgsConstructor;

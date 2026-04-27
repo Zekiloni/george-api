@@ -25,6 +25,6 @@ public class Campaign {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Ref page;
-    private Ref channel;
+    private Ref gateway;
     private List<Outreach> outreach;
 }

@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.campaign.adapter;
 
-import com.zekiloni.george.platform.application.port.out.CampaignRepositoryPort;
+import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.domain.model.campaign.Campaign;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.mapper.CampaignEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repository.CampaignJpaRepository;

@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.campaign.adapter;
 
-import com.zekiloni.george.platform.application.port.out.OutreachRepositoryPort;
+import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.mapper.OutreachEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repository.OutreachJpaRepository;

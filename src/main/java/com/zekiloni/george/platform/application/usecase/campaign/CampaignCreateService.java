@@ -1,9 +1,9 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
 import com.zekiloni.george.platform.application.port.in.campaign.CampaignCreateUseCase;
-import com.zekiloni.george.platform.application.port.out.CampaignDispatcherPort;
-import com.zekiloni.george.platform.application.port.out.CampaignRepositoryPort;
-import com.zekiloni.george.platform.application.port.out.OutreachRepositoryPort;
+import com.zekiloni.george.platform.application.port.out.campaign.CampaignDispatcherPort;
+import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
+import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
 import com.zekiloni.george.platform.domain.model.campaign.Campaign;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
@@ -30,7 +30,7 @@ public class CampaignCreateService implements CampaignCreateUseCase {
         try {
             Campaign campaign = repository.save(campaignCreate);
             handleOutreach(file, campaign);
-            dispatcher.dispatch(campaign.getId());
+            dispatcher.dispatch(campaign.getId(), campaign.getGateway().getId());
             return campaign;
         } catch (IOException e) {
             throw new RuntimeException(e);

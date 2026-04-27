@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.application.port.out;
+package com.zekiloni.george.platform.application.port.out.page;
 
 import com.zekiloni.george.platform.domain.model.page.Page;
 import org.springframework.data.domain.Pageable;

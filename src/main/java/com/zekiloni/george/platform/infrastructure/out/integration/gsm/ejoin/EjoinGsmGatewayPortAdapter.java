@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin;
 
-import com.zekiloni.george.platform.application.port.out.GsmGatewayPort;
+import com.zekiloni.george.platform.application.port.out.gateway.GsmGatewayPort;
 import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
 import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmProvider;
 import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.mapper.EjoinDtoMapper;

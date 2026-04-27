@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.out.messaging.gateway;
 
-import com.zekiloni.george.platform.application.port.out.GatewayDispatchPort;
-import com.zekiloni.george.platform.application.port.out.SmtpGatewayPort;
+import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatchPort;
+import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;

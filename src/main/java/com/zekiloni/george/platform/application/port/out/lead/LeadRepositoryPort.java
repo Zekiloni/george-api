@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.application.port.out;
+package com.zekiloni.george.platform.application.port.out.lead;
 
 import com.zekiloni.george.platform.domain.model.lead.Lead;
 import com.zekiloni.george.platform.infrastructure.out.persistence.lead.entity.LeadSpecification;

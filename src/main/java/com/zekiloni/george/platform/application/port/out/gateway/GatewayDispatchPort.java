@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.application.port.out;
+package com.zekiloni.george.platform.application.port.out.gateway;
 
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.gatway.Gateway;
