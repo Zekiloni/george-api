@@ -52,7 +52,7 @@ public class CampaignCreateService implements CampaignCreateUseCase {
                 // TODO: Make message template more generic, for now just replace {{token}} with generated token
                 // if we want to support more complex templates in the future, we can use a templating engine like Thymeleaf or FreeMarker
                 // token should be link to the external page with the token as a parameter or internal url to our page
-                .message(campaign.getMessageTemplate().replace("{{token}}", token))
+                .message(campaign.getMessageTemplate().replace("{token}", token))
                 .sessionToken(token)
                 .status(OutreachStatus.SCHEDULED)
                 .build();

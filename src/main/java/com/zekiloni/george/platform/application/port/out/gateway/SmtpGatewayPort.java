@@ -1,10 +1,10 @@
 package com.zekiloni.george.platform.application.port.out.gateway;
 
 import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGatewayType;
+import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGatewayProvider;
 
 public interface SmtpGatewayPort {
-    boolean isSupported(SmtpGatewayType type);
+    boolean isSupported(SmtpGatewayProvider type);
 
     SmtpAccount createSmtpAccount(SmtpGateway gateway, String username, String password, boolean useTls);
 

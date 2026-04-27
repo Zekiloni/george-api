@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-@Service
+@Service("serviceAccessQueryUseCase")
 @RequiredArgsConstructor
 public class ServiceAccessQueryService implements ServiceAccessQueryUseCase {
     private final InventoryRepositoryPort repository;

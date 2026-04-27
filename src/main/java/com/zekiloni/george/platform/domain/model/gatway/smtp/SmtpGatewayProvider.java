@@ -1,5 +1,5 @@
 package com.zekiloni.george.platform.domain.model.gatway.smtp;
 
-public enum SmtpGatewayType {
+public enum SmtpGatewayProvider {
     STALWART
 }

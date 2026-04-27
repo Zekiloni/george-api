@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.in.web;
 
 import com.zekiloni.george.platform.application.port.in.campaign.CampaignCreateUseCase;
-import com.zekiloni.george.platform.infrastructure.in.web.dto.CampaignCreateDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.CampaignDtoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

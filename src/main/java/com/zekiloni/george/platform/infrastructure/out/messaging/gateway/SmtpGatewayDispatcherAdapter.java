@@ -23,8 +23,8 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
     @Override
     public void send(List<Outreach> outreach, SmtpGateway gateway) {
         SmtpGatewayPort port = smtpGatewayPorts.stream()
-                .filter(p -> p.isSupported(gateway.getType()))
+                .filter(p -> p.isSupported(gateway.getProvider()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException("Unsupported SMTP gateway type: " + gateway.getType()));
+                .orElseThrow(() -> new IllegalArgumentException("Unsupported SMTP gateway type: " + gateway.getProvider()));
     }
 }

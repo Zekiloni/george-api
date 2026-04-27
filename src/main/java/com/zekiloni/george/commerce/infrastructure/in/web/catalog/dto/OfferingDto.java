@@ -17,7 +17,7 @@ public class OfferingDto {
     private String name;
     private String description;
     private String identifier;
-    private OfferingType type;
+    private ServiceSpecification serviceSpecification;
     private OfferingStatus status;
     private BillingConfigDto billingConfig;
     private List<CharacteristicSpecificationDto> characteristicSpecification;

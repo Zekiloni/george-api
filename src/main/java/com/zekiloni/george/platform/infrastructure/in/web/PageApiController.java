@@ -5,8 +5,8 @@ import com.zekiloni.george.platform.application.port.in.page.PageDeleteUseCase;
 import com.zekiloni.george.platform.application.port.in.page.PageQueryUseCase;
 import com.zekiloni.george.platform.application.port.in.page.PageUpdateUseCase;
 
-import com.zekiloni.george.platform.infrastructure.in.web.dto.PageCreateDto;
-import com.zekiloni.george.platform.infrastructure.in.web.dto.PageDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageCreateDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageDto;
 
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.PageDtoMapper;
 import jakarta.validation.Valid;

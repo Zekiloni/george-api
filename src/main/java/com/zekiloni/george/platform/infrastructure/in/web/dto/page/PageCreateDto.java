@@ -1,31 +1,34 @@
-package com.zekiloni.george.platform.infrastructure.in.web.dto;
+package com.zekiloni.george.platform.infrastructure.in.web.dto.page;
 
-import com.zekiloni.george.platform.domain.model.page.PageStatus;
 import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 /**
- * Web layer DTO za ažuriranje stranice.
- * Sva polja su opciona - samo prosleđena polja će biti ažurirana.
+ * Web layer DTO za kreiranje nove stranice.
+ * Validira ulazne podatke pre nego što se prosleđuju na aplikacijski sloj.
  */
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PageUpdateDto {
+public class PageCreateDto {
 
     /**
      * Naslov stranice
      */
+    @NotBlank(message = "Title is required")
     private String title;
 
     /**
      * URL-friendly slug
      */
+    @NotBlank(message = "Slug is required")
     private String slug;
 
     /**
@@ -44,14 +47,9 @@ public class PageUpdateDto {
     private String faviconUrl;
 
     /**
-     * Status stranice
+     * Inicijalna definicija stranice
      */
-    private PageStatus status;
-
-    /**
-     * Ažurirana definicija stranice
-     */
+    @NotNull(message = "Page definition is required")
     @Valid
     private PageDefinition definition;
 }
-

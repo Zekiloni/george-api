@@ -14,7 +14,7 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 public class SmtpGateway extends Gateway {
     private String id;
-    private SmtpGatewayType type;
+    private SmtpGatewayProvider provider;
     private String host;
     private int port;
     private String username;
