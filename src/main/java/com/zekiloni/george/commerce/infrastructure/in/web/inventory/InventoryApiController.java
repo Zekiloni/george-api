@@ -3,6 +3,7 @@ package com.zekiloni.george.commerce.infrastructure.in.web.inventory;
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessQueryUseCase;
 import com.zekiloni.george.commerce.infrastructure.in.web.inventory.dto.ServiceAccessDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.inventory.mapper.ServiceAccessDtoMapper;
+import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.entity.ServiceAccessSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,8 +18,8 @@ public class InventoryApiController {
     private final ServiceAccessDtoMapper mapper;
 
     @GetMapping
-    public ResponseEntity<Page<ServiceAccessDto>> getServiceAccesses(Pageable pageable) {
-        return ResponseEntity.ok(queryUseCase.getAll(pageable).map(mapper::toDto));
+    public ResponseEntity<Page<ServiceAccessDto>> getServiceAccesses(Pageable pageable, ServiceAccessSpecification specification) {
+        return ResponseEntity.ok(queryUseCase.getAll(specification, pageable).map(mapper::toDto));
     }
 
     @GetMapping("/{id}")

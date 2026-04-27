@@ -4,6 +4,7 @@ import com.zekiloni.george.commerce.application.port.out.InventoryRepositoryPort
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
+import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.entity.ServiceAccessSpecification;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.mapper.ServiceAccessEntityMapper;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.repository.ServiceAccessJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +36,8 @@ public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
     }
 
     @Override
-    public Page<ServiceAccess> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDomain);
+    public Page<ServiceAccess> findAll(ServiceAccessSpecification specification, Pageable pageable) {
+        return repository.findAll(specification, pageable).map(mapper::toDomain);
     }
 
     @Override

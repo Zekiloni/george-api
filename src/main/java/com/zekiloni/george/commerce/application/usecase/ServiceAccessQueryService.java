@@ -4,6 +4,7 @@ import com.zekiloni.george.commerce.application.port.in.ServiceAccessQueryUseCas
 import com.zekiloni.george.commerce.application.port.out.InventoryRepositoryPort;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
+import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.entity.ServiceAccessSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,8 +23,8 @@ public class ServiceAccessQueryService implements ServiceAccessQueryUseCase {
     }
 
     @Override
-    public Page<ServiceAccess> getAll(Pageable pageable) {
-        return repository.findAll(pageable);
+    public Page<ServiceAccess> getAll(ServiceAccessSpecification specification, Pageable pageable) {
+        return repository.findAll(specification, pageable);
     }
 
     @Override

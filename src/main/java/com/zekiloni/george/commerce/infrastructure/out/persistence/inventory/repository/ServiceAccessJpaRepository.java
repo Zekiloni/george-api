@@ -4,6 +4,7 @@ import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.entity.ServiceAccessEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,7 +16,7 @@ import java.util.UUID;
 
 @Repository
 public interface ServiceAccessJpaRepository
-    extends JpaRepository<ServiceAccessEntity, UUID> {
+    extends JpaRepository<ServiceAccessEntity, UUID>, JpaSpecificationExecutor<ServiceAccessEntity> {
 
     @Modifying
     @Query("""
