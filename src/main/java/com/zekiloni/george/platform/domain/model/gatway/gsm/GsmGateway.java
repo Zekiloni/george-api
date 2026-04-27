@@ -1,19 +1,18 @@
-package com.zekiloni.george.platform.domain.model.gsm;
+package com.zekiloni.george.platform.domain.model.gatway.gsm;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.zekiloni.george.platform.domain.model.gatway.Gateway;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 import java.util.List;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@Builder
+@SuperBuilder
 @NoArgsConstructor
 @AllArgsConstructor
-public class GsmGateway {
-    private String id;
+public class GsmGateway extends Gateway {
     private String ipAddress;
     private int port;
     private GsmProvider provider;

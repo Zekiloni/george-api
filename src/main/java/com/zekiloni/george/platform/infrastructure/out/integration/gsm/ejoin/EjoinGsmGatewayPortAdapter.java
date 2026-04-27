@@ -1,8 +1,8 @@
 package com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin;
 
 import com.zekiloni.george.platform.application.port.out.GsmGatewayPort;
-import com.zekiloni.george.platform.domain.model.gsm.GsmGateway;
-import com.zekiloni.george.platform.domain.model.gsm.GsmProvider;
+import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmProvider;
 import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.mapper.EjoinDtoMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

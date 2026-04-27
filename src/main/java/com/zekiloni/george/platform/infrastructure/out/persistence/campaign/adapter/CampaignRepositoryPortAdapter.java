@@ -7,6 +7,9 @@ import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repo
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class CampaignRepositoryPortAdapter implements CampaignRepositoryPort {
@@ -16,5 +19,11 @@ public class CampaignRepositoryPortAdapter implements CampaignRepositoryPort {
     @Override
     public Campaign save(Campaign campaign) {
         return mapper.toDomain(jpaRepository.save(mapper.toEntity(campaign)));
+    }
+
+    @Override
+    public Optional<Campaign> findById(String id) {
+        return jpaRepository.findById(UUID.fromString(id))
+                .map(mapper::toDomain);
     }
 }

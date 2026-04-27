@@ -11,7 +11,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8686/realms/master
+          issuer-uri: ${SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:http://localhost:8686/realms/master}
           jwk-set-uri: ${spring.security.oauth2.resourceserver.jwt.issuer-uri}/protocol/openid-connect/certs
 
   # DataSource configuration for PostgreSQL with HikariCP connection pooling
@@ -20,13 +20,15 @@ spring:
     url: jdbc:postgresql://${DB_HOST:localhost:5432}/${DB_NAME:george}?rewriteBatchedStatements=true
     username: ${DB_USERNAME:g-user}
     password: ${DB_PASSWORD:g-pw}
-
     hikari:
-      maximum-pool-size: 10
-      minimum-idle: 5
+      maximum-pool-size: 20
+      minimum-idle: 10
       idle-timeout: 30000
       connection-timeout: 20000
       max-lifetime: 1800000
+      leak-detection-threshold: 2000
+      # TODO: Consider using auto commit false for better transaction control, but ensure that transactions are properly managed in the application
+      # auto-commit: false # Better for transaction control
 
   # JPA and Hibernate configuration for automatic schema generation and naming strategies
   jpa:

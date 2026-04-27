@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.application.port.out;
 
-import com.zekiloni.george.platform.domain.model.gsm.GsmGateway;
-import com.zekiloni.george.platform.domain.model.gsm.GsmProvider;
+import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmProvider;
 
 import java.math.BigDecimal;
 import java.util.List;
