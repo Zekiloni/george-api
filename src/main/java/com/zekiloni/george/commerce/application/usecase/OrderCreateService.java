@@ -11,6 +11,7 @@ import com.zekiloni.george.commerce.domain.order.model.OrderItem;
 import com.zekiloni.george.commerce.domain.order.model.OrderStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,6 +21,7 @@ public class OrderCreateService implements OrderCreateUseCase {
     private final OfferingQueryUseCase offeringQueryUseCase;
 
     @Override
+    @Transactional
     public Order create(Order orderCreate) {
         validate(orderCreate);
         orderCreate.setStatus(OrderStatus.ACKNOWLEDGED);

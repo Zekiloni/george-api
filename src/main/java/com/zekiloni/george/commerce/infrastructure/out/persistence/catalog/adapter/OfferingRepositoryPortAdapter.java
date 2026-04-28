@@ -11,6 +11,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -35,6 +36,18 @@ public class OfferingRepositoryPortAdapter implements OfferingRepositoryPort {
         } catch (IllegalArgumentException e) {
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Offering> findAllById(List<String> ids) {
+        List<UUID> uuids = ids.stream()
+                .map(UUID::fromString)
+                .collect(Collectors.toList());
+
+        return jpaRepository.findAllById(uuids)
+                .stream()
+                .map(mapper::toDomain)
+                .collect(Collectors.toList());
     }
 
     @Override

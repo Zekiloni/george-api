@@ -13,6 +13,8 @@ public interface OfferingRepositoryPort {
 
     Optional<Offering> findById(String id);
 
+    List<Offering> findAllById(List<String> ids);
+
     void deleteById(String id);
 
     Page<Offering> findAll(Pageable pageable);

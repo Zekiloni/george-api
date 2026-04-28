@@ -6,6 +6,7 @@ import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 @UtilityClass
@@ -18,12 +19,20 @@ public final class PhoneNumberFileReader {
      */
     public static Stream<String> streamPhoneNumbers(InputStream inputStream) {
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-        return reader.lines()
+        return reader
+                .lines()
+                .parallel()
                 .map(String::trim)
                 .filter(line -> !line.isBlank())
                 .distinct()
                 .onClose(() -> {
                     try { reader.close(); } catch (IOException e) { throw new UncheckedIOException(e); }
                 });
+    }
+
+    public static Set<String> collectPhoneNumbers(InputStream inputStream) {
+        try (Stream<String> stream = streamPhoneNumbers(inputStream)) {
+            return stream.collect(Collectors.toSet());
+        }
     }
 }

@@ -46,7 +46,7 @@ public class Offering {
         if (pricing == null || pricing.isEmpty()) return null;
 
         return switch (billingConfig.getType()) {
-            case ONE_TIME, USAGE_BASED -> pricing.get(0).getEffectiveUnitPrice();
+            case ONE_TIME, USAGE_BASED -> pricing.getFirst().getEffectiveUnitPrice();
             case RECURRING -> {
                 OfferingPrice exactMatch = pricing.stream()
                         .filter(p -> p.getDuration() != null

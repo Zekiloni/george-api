@@ -39,7 +39,8 @@ spring:
       idle-timeout: 30000
       connection-timeout: 20000
       max-lifetime: 1800000
-      leak-detection-threshold: 2000
+      leak-detection-threshold: 3000
+
       # TODO: Consider using auto commit false for better transaction control, but ensure that transactions are properly managed in the application
       # auto-commit: false # Better for transaction control
 
