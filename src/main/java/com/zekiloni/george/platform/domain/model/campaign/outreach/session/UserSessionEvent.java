@@ -5,7 +5,7 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public class UserSession {
+public class UserSessionEvent {
     private String id;
     private String fingerprint;
     private String userAgent;

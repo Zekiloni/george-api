@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.domain.model.campaign.outreach;
 
-import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionEvent;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,7 @@ public class Outreach {
     private String message;
     private String externalId;
     private OutreachStatus status;
-    private List<UserSession> session;
+    private List<UserSessionEvent> session;
     private OffsetDateTime scheduledAt;
     private OffsetDateTime dispatchedAt;
     private OffsetDateTime deliveredAt;

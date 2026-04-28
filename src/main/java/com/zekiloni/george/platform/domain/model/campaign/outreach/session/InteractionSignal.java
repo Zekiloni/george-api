@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class InteractionSignal {
     private String id;
+    private boolean incoming;
     private InteractionType type;
     private Map<String, Object> payload;
     private OffsetDateTime createdAt;
