@@ -19,6 +19,10 @@ spring:
   application:
     name: george-api
 
+  threads:
+    virtual:
+      enabled: true
+
   # Security configuration for OAuth2 Resource Server using JWT
   security:
     oauth2:
