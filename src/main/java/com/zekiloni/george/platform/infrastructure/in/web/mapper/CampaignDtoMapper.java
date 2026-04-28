@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.in.web.mapper;
 
 import com.zekiloni.george.platform.domain.model.campaign.Campaign;
-import com.zekiloni.george.platform.domain.model.campaign.outreach.session.InteractionSignal;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserEvent;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.InteractionSignalDto;
@@ -14,5 +14,5 @@ public interface CampaignDtoMapper {
 
     CampaignDto toDto(Campaign campaign);
     OutreachDto toDto(Outreach outreach);
-    InteractionSignalDto toDto(InteractionSignal signal);
+    InteractionSignalDto toDto(UserEvent signal);
 }

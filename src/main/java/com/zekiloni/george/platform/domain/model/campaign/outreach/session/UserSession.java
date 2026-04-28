@@ -5,12 +5,12 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import java.time.OffsetDateTime;
 import java.util.List;
 
-public class UserSessionEvent {
+public class UserSession {
     private String id;
     private String fingerprint;
     private String userAgent;
     private String ipAddress;
-    private List<InteractionSignal> signal;
+    private List<UserEvent> event;
     private Outreach outreach;
     private UserSessionStatus status;
     private int viewCount;

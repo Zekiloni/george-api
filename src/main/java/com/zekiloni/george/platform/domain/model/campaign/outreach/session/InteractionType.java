@@ -58,4 +58,6 @@ public enum InteractionType {
     ERROR,
     WARNING,
     INFO,
+
+    CUSTOM_EVENT,
 }
