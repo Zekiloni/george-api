@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.domain.model.campaign.outreach;
+package com.zekiloni.george.platform.domain.model.campaign.outreach.session;
 
 public enum InteractionType {
     LOAD,

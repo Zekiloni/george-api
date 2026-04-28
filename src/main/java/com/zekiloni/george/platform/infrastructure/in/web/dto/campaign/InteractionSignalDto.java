@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.in.web.dto.campaign;
 
-import com.zekiloni.george.platform.domain.model.campaign.outreach.InteractionType;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.session.InteractionType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
