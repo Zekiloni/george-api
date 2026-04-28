@@ -23,7 +23,6 @@ public enum InteractionType {
 
     // Form submission
     SUBMIT,
-    SUBMIT_RETRY,
 
     // Validation
     VALIDATION_ERROR,
