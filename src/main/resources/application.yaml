@@ -1,7 +1,20 @@
 # Server Configuration
 server:
   port: ${SERVER_PORT:8080}
+  servlet:
+    context-path: /
 
+app:
+  base-url: ${APP_BASE_URL:http://localhost:4200}
+
+# API Configuration
+api:
+  base:
+    path: /api/v1
+  cors:
+    allowed-origins: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
+
+# Spring Application Configuration
 spring:
   application:
     name: george-api
@@ -58,19 +71,11 @@ spring:
       max-file-size: 3MB
       max-request-size: 3MB
 
-# API Configuration
-api:
-  base:
-    path: /api/v1
-  cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
-
 btc-pay:
     store-id: ${BTC_PAY_STORE_ID:5PNvSLGDfwGYgcCWzmsAxAbXLXxqxk2twAtaeMbEdaq6}
     api:
       base-url: ${BTC_PAY_URL:http://localhost:49392/api/v1}
       api-key: ${BTC_PAY_API_KEY:f5c7efdf092c8be1330205a03b5516251c3ef486}
-
 
 # Logging
 logging:

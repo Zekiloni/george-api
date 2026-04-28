@@ -36,6 +36,9 @@ public class CampaignEntity extends TenantEntity {
     @Column
     private CampaignStatus status;
 
+    @Column(nullable = false)
+    private String baseUrl;
+
     //    private Ref page;
 //    private Ref channel;
     @OneToMany(

@@ -22,9 +22,10 @@ public class Campaign {
     private int tokenLength;
     private String messageTemplate;
     private CampaignStatus status;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
     private Ref page;
     private Ref gateway;
     private List<Outreach> outreach;
+    private String baseUrl;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
 }
