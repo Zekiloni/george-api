@@ -1,7 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.in.web.gateway.mapper;
 
 import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
 import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmProvider;
 import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
@@ -9,7 +8,6 @@ import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGatewayProvider
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.SubclassMapping;
 import org.mapstruct.SubclassMappings;

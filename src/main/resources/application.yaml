@@ -77,10 +77,10 @@ spring:
       max-request-size: 3MB
 
 btc-pay:
-    store-id: ${BTC_PAY_STORE_ID:5PNvSLGDfwGYgcCWzmsAxAbXLXxqxk2twAtaeMbEdaq6}
+    store-id: ${BTC_PAY_STORE_ID:4YTS8vsii3jKm26PFauoCHzxFAjRy2WnBN3gbXesLzdr}
     api:
       base-url: ${BTC_PAY_URL:http://localhost:49392/api/v1}
-      api-key: ${BTC_PAY_API_KEY:f5c7efdf092c8be1330205a03b5516251c3ef486}
+      api-key: ${BTC_PAY_API_KEY:74a069139477a54999c59082fa98874a8c43c750}
 
 # Logging
 logging:
