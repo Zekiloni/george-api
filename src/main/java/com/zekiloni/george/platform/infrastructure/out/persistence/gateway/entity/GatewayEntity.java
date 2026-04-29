@@ -24,7 +24,6 @@ import java.time.OffsetDateTime;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public abstract class GatewayEntity extends BaseEntity {
-
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false, insertable = false, updatable = false)
     private GatewayType type;
@@ -49,10 +48,4 @@ public abstract class GatewayEntity extends BaseEntity {
 
     @Column(name = "password")
     private String password;
-
-    @Column(name = "created_at")
-    private OffsetDateTime createdAt;
-
-    @Column(name = "updated_at")
-    private OffsetDateTime updatedAt;
 }

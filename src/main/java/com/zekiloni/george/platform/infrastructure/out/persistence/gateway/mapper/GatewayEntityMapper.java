@@ -20,11 +20,19 @@ public interface GatewayEntityMapper {
     })
     Gateway toDomain(GatewayEntity entity);
 
+    SmtpGateway toDomain(SmtpGatewayEntity entity);
+
+    GsmGateway toDomain(GsmGatewayEntity entity);
+
     @SubclassMappings({
             @SubclassMapping(source = SmtpGateway.class, target = SmtpGatewayEntity.class),
             @SubclassMapping(source = GsmGateway.class, target = GsmGatewayEntity.class)
     })
     GatewayEntity toEntity(Gateway gateway);
+
+    SmtpGatewayEntity toEntity(SmtpGateway gateway);
+
+    GsmGatewayEntity toEntity(GsmGateway gateway);
 
     @ObjectFactory
     default Gateway createDomain(GatewayEntity entity) {

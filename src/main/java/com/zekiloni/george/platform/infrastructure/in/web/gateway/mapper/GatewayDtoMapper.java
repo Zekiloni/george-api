@@ -3,7 +3,9 @@ package com.zekiloni.george.platform.infrastructure.in.web.gateway.mapper;
 import com.zekiloni.george.platform.domain.model.gatway.Gateway;
 import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmProvider;
 import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
+import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGatewayProvider;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayDto;
 import org.mapstruct.Mapper;
@@ -30,6 +32,7 @@ public interface GatewayDtoMapper {
                 gateway.setDescription(dto.description());
                 gateway.setPriority(dto.priority());
                 gateway.setUsername(dto.smtpConfig().username());
+                gateway.setProvider(SmtpGatewayProvider.valueOf(dto.smtpConfig().provider()));
                 gateway.setHost(dto.smtpConfig().host());
                 gateway.setPort(dto.smtpConfig().port());
                 gateway.setFromDomain(dto.smtpConfig().fromDomain());
@@ -43,6 +46,7 @@ public interface GatewayDtoMapper {
                 gateway.setDescription(dto.description());
                 gateway.setPriority(dto.priority());
                 gateway.setUsername(dto.gsmConfig().username());
+                gateway.setProvider(GsmProvider.valueOf(dto.gsmConfig().provider()));
                 gateway.setIpAddress(dto.gsmConfig().ipAddress());
                 gateway.setPort(dto.gsmConfig().port());
                 gateway.setTotalPort(dto.gsmConfig().totalPort());
