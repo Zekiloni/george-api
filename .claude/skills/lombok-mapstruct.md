@@ -1,0 +1,674 @@
+---
+name: lombok-mapstruct
+description: Apply best practices for Lombok, MapStruct, and clean mapper design
+type: skill
+---
+
+# Lombok & MapStruct Best Practices Skill
+
+## Lombok Best Practices
+
+### When to Use Lombok Annotations
+
+#### @Data - Use Carefully
+```java
+// ⚠️ Use sparingly - generates too much (equals, hashCode, setter, getter, toString)
+// Better to be explicit for domain models
+
+@Data
+public class OrderDto { } // ❌ Avoid for domain models
+
+// ✅ Better for simple DTOs or entities
+@Data
+public class ConfigProperty { }
+```
+
+#### @Value - For Immutable Value Objects
+```java
+// ✅ Perfect for value objects - immutable, clean
+@Value
+public class Money {
+    BigDecimal amount;
+    String currency;
+}
+
+@Value
+public class Quantity {
+    int value;
+    String unit;
+}
+```
+
+#### @Builder - For Complex Construction
+```java
+// ✅ Great for complex objects with many optional parameters
+@Builder
+public class PageDefinition {
+    String title;
+    String slug;
+    List<PageStep> steps;
+    Map<String, Object> metadata;
+}
+
+// Usage:
+PageDefinition definition = PageDefinition.builder()
+    .title("Contact Form")
+    .slug("contact-form")
+    .steps(stepList)
+    .build();
+```
+
+#### @AllArgsConstructor and @NoArgsConstructor
+```java
+// ✅ Use for entities (required by JPA)
+@Entity
+@NoArgsConstructor  // JPA needs no-args constructor
+@AllArgsConstructor // For testing and reflection
+public class OrderEntity {
+    @Id
+    private UUID id;
+    private String orderNumber;
+}
+
+// ✅ For domain models with specific constructor needs
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
+public class Order {
+    // Factory method instead of public constructor
+    public static Order create(OrderCreateCommand command) {
+        return new Order(command);
+    }
+}
+```
+
+#### @Getter and @Setter
+```java
+// ✅ Prefer explicit getters/setters for domain models
+@Getter // JPA entities need getters
+@Entity
+public class OrderEntity {
+    private String status;
+    
+    // Setter with business logic validation
+    public void setStatus(OrderStatus status) {
+        if (this.status == OrderStatus.COMPLETED && status != OrderStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot change completed order status");
+        }
+        this.status = status;
+    }
+}
+
+// ✅ For simple DTOs where setters are fine
+@Getter
+@Setter
+public class OrderCreateDto {
+    private String customerId;
+    private List<OrderItemDto> items;
+}
+```
+
+### Lombok Anti-Patterns to Avoid
+
+#### Should You Use @Data on Domain Models?
+
+**The Short Answer**: It depends on your design philosophy and the specific use case. Here's a nuanced view:
+
+**❌ Avoid @Data when:**
+- You need to enforce business rules on state changes
+- The domain model has important invariants to maintain
+- You want to prevent anemic domain model
+- The model needs to control its internal state
+
+```java
+// ❌ Using @Data here bypasses business rules
+@Data
+public class Order {
+    private OrderStatus status;
+    private BigDecimal total;
+
+    // Business rule: completed orders can't be modified
+    // But @Data.generateSetter allows: order.setStatus(OrderStatus.CANCELLED);
+}
+
+// ✅ Better - control state changes
+@Getter
+public class Order {
+    private OrderStatus status;
+    private BigDecimal total;
+    
+    public void complete() {
+        if (status != OrderStatus.PENDING) {
+            throw new IllegalStateException("Only pending orders can be completed");
+        }
+        this.status = OrderStatus.COMPLETED;
+    }
+    
+    public void cancel() {
+        if (status == OrderStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot cancel completed order");
+        }
+        this.status = OrderStatus.CANCELLED;
+    }
+}
+```
+
+**✅ @Data can be acceptable when:**
+- The domain model is simple with no business rules
+- You're following pragmatic DDD over pure DDD
+- The model is primarily a data holder in a CRUD context
+- You put business logic in domain services instead of entities
+
+```java
+// ✅ Acceptable for simple entities
+@Data
+@Entity
+public class Lead {
+    private String phoneNumber;
+    private String country;
+    private String region;
+    
+    // Business rules in domain service instead
+    // leadService.validatePhoneNumber(phoneNumber);
+}
+```
+
+**Project-Specific Recommendation for George API:**
+
+For your `domain/model/` classes (not JPA entities):
+- **Value objects**: Use `@Value` (immutable) - you're already doing this correctly
+- **Entities**: Use `@Data` if the entity is simple, otherwise use explicit getters/setters with business logic
+- **JPA Entities**: Use `@Getter` only, add setters only where needed with validation
+
+The key principle: **Prefer behavior-rich objects over data holders**, but be pragmatic about it.
+
+#### JPA Entities with @Data
+**Be cautious with @Data on JPA entities** due to potential issues:
+
+```java
+// ⚠️ Potentially problematic - equals/hashCode with lazy loading
+@Data
+@Entity
+public class OrderEntity {
+    @OneToMany
+    private List<OrderItemEntity> items;
+    // Generated equals/hashCode might cause issues with lazy collections
+}
+
+// ✅ Safer approach for JPA entities
+@Getter
+@Setter // Only if needed
+@Entity
+public class OrderEntity {
+    // Use business key for equals, not generated
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof OrderEntity)) return false;
+        return id != null && id.equals(((OrderEntity) o).getId());
+    }
+    
+    @Override
+    public int hashCode() {
+        return getClass().hashCode(); // Constant hashCode
+    }
+}
+```
+
+**However**, if your JPA entities don't have lazy collections or complex relationships, `@Data` might be acceptable. The key is understanding the trade-offs.
+
+## MapStruct Best Practices
+
+### Mapper Design Principles
+
+#### Keep Mappers Focused and Simple
+```java
+// ✅ Good - single responsibility mapper
+@Mapper
+public interface OrderDtoMapper {
+    OrderDto toDto(Order order);
+    Order toDomain(OrderDto dto);
+    List<OrderDto> toDtoList(List<Order> orders);
+}
+
+// ❌ Bad - kitchen sink mapper
+@Mapper
+public interface MegaMapper {
+    OrderDto toOrderDto(Order order);
+    UserDto toUserDto(User user);
+    ProductDto toProductDto(Product product);
+    // ... 20 more mappings
+}
+```
+
+#### ComponentModel Configuration
+**Note**: Your project has `defaultComponentModel=spring` configured globally in pom.xml, so you don't need to specify it on each mapper.
+
+```java
+@Mapper // ✅ No need for componentModel - configured globally
+public interface OrderDtoMapper {
+    // Automatically generates a Spring bean
+}
+```
+
+#### Handle Custom Mapping Logic
+```java
+@Mapper
+public interface OrderDtoMapper {
+    
+    // Simple field mapping (automatic)
+    @Mapping(target = "customerName", source = "customer.name")
+    OrderDto toDto(Order order);
+    
+    // Custom method for complex logic
+    default MoneyDto mapMoney(Money money) {
+        if (money == null) return null;
+        return new MoneyDto(money.getAmount(), money.getCurrency());
+    }
+    
+    // Use expression for simple transformations
+    @Mapping(target = "total", expression = "java(order.getSubtotal().add(order.getTax()))")
+    OrderDto toDtoWithTotal(Order order);
+}
+```
+
+### Collection Mapping
+
+#### Batch Mapping Methods
+```java
+@Mapper
+public interface LeadDtoMapper {
+    LeadDto toDto(Lead lead);
+    
+    // ✅ MapStruct automatically generates efficient collection mapping
+    List<LeadDto> toDtoList(List<Lead> leads);
+    
+    Set<LeadDto> toDtoSet(Set<Lead> leads);
+    
+    // For paginated results
+    default Page<LeadDto> toDtoPage(Page<Lead> leads) {
+        return leads.map(this::toDto);
+    }
+}
+```
+
+### Mapping with Inheritance
+
+#### Handle Polymorphic Types
+```java
+@Mapper
+public interface ServiceAccessDtoMapper {
+    
+    // Base mapping
+    ServiceAccessDto toDto(ServiceAccess serviceAccess);
+    
+    // Specific implementations
+    @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class)
+    ServiceAccessDto toDto(SmtpServiceAccess smtpAccess);
+    
+    @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessDto.class)
+    ServiceAccessDto toDto(LeadServiceAccess leadAccess);
+    
+    // Reverse mapping
+    ServiceAccess toDomain(ServiceAccessDto dto);
+}
+```
+
+### Mapping Nested Objects
+
+#### Use @Mapping for Nested Fields
+```java
+@Mapper
+public interface OrderDtoMapper {
+    
+    @Mapping(target = "customerName", source = "customer.name")
+    @Mapping(target = "customerEmail", source = "customer.email")
+    @Mapping(target = "itemCount", expression = "java(order.getItems().size())")
+    OrderSummaryDto toSummaryDto(Order order);
+    
+    // For nested DTOs, MapStruct will use other mappers if available
+    @Mapping(target = "orderNumber", source = "orderNumber")
+    OrderDetailDto toDetailDto(Order order);
+}
+```
+
+## Clean Mapper Patterns
+
+### Mapper Organization
+
+#### One Mapper Per Domain Entity
+```
+infrastructure/in/web/dto/mapper/
+├── OrderDtoMapper.java
+├── InvoiceDtoMapper.java
+├── ServiceAccessDtoMapper.java
+└── LeadDtoMapper.java
+```
+
+#### Mapper Naming Conventions
+```java
+// ✅ Clear, consistent naming
+OrderDtoMapper      // Order ↔ OrderDto
+OrderEntityMapper   // Order ↔ OrderEntity
+OrderJpaMapper      // Order ↔ OrderEntity (JPA-specific)
+
+// ❌ Confusing naming
+OrderMapper         // What does it map to?
+OrderHelper         // Helper for what?
+```
+
+### Mapper Implementation Patterns
+
+#### Interface vs Abstract Class
+```java
+// ✅ Prefer interface for simple mappers
+@Mapper
+public interface OrderDtoMapper {
+    OrderDto toDto(Order order);
+}
+
+// ✅ Use abstract class for complex mapping logic
+@Mapper
+public abstract class OrderComplexMapper {
+    
+    @Mapping(target = "total", source = "subtotal")
+    public abstract OrderDto toDto(Order order);
+    
+    // Additional methods with @AfterMapping
+    @AfterMapping
+    protected void enrichDto(Order order, @MappingTarget OrderDto dto) {
+        dto.setDisplayStatus(formatStatus(order.getStatus()));
+        dto.setCanBeCancelled(canCancel(order));
+    }
+    
+    private String formatStatus(OrderStatus status) {
+        return status.name().toLowerCase().replace("_", " ");
+    }
+}
+```
+
+### Handling Null Values
+
+#### NullValueMappingStrategy
+```java
+@Mapper(
+    componentModel = "spring",
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL  // Default
+)
+public interface OrderDtoMapper {
+    // Returns null if source is null
+    OrderDto toDto(Order order);
+}
+
+// For returning default objects
+@Mapper(
+    componentModel = "spring",
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT
+)
+public interface OrderDtoMapper {
+    // Returns empty DTO if source is null
+    OrderDto toDto(Order order);
+}
+```
+
+## Lombok + MapStruct Integration
+
+### Annotation Processor Order
+
+**Critical**: Configure Maven compiler plugin with correct order (already in your pom.xml)
+
+```xml
+<annotationProcessorPaths>
+    <!-- 1. Lombok first -->
+    <path>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
+    </path>
+    <!-- 2. MapStruct second -->
+    <path>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>${org.mapstruct.version}</version>
+    </path>
+    <!-- 3. Lombok-MapStruct binding last -->
+    <path>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-mapstruct-binding</artifactId>
+        <version>${lombok-mapstruct-binding.version}</version>
+    </path>
+</annotationProcessorPaths>
+```
+
+### Using @Builder with MapStruct
+
+#### Source has @Builder
+```java
+// Domain model with @Builder
+@Builder
+public class Order {
+    private String orderNumber;
+    private List<OrderItem> items;
+    private Money total;
+}
+
+// MapStruct will use the builder
+@Mapper
+public interface OrderDtoMapper {
+    // MapStruct detects @Builder and uses it automatically
+    Order toDomain(OrderDto dto);
+}
+```
+
+#### Target has @Builder
+```java
+// DTO with @Builder
+@Data
+@Builder
+public class OrderDto {
+    private String orderNumber;
+    private List<OrderItemDto> items;
+    private MoneyDto total;
+}
+
+// MapStruct will use the builder for creating DTOs
+@Mapper
+public interface OrderDtoMapper {
+    OrderDto toDto(Order order);
+}
+```
+
+## Clean Class Design with Lombok
+
+### Immutable Domain Models
+
+#### Value Objects Pattern
+```java
+// ✅ Perfect for value objects
+@Value
+@Builder
+public class Money {
+    @NonNull
+    BigDecimal amount;
+    
+    @NonNull
+    String currency;
+    
+    // Business method
+    public Money add(Money other) {
+        if (!this.currency.equals(other.currency)) {
+            throw new IllegalArgumentException("Cannot add different currencies");
+        }
+        return new Money(this.amount.add(other.amount), this.currency);
+    }
+}
+```
+
+### Entities with Controlled Mutability
+
+#### JPA Entities Pattern
+```java
+@Getter
+@Entity
+@NoArgsConstructor(access = AccessLevel.PROTECTED) // Not public
+@AllArgsConstructor(access = AccessLevel.PRIVATE) // Factory method instead
+public class OrderEntity extends BaseEntity {
+    
+    private String orderNumber;
+    private OrderStatus status;
+    
+    // Setter with validation
+    public void setStatus(OrderStatus status) {
+        if (this.status == OrderStatus.COMPLETED) {
+            throw new IllegalStateException("Cannot modify completed order");
+        }
+        this.status = status;
+    }
+    
+    // Business logic in entity
+    public boolean canBeCancelled() {
+        return status == OrderStatus.PENDING;
+    }
+}
+```
+
+### DTOs for Different Purposes
+
+#### Request DTOs
+```java
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class OrderCreateRequest {
+    @NotEmpty
+    private String customerId;
+    
+    @NotEmpty
+    @Valid
+    private List<OrderItemRequest> items;
+    
+    @Min(1)
+    private Integer duration;
+}
+```
+
+#### Response DTOs
+```java
+@Data
+@Builder
+public class OrderResponse {
+    private String orderNumber;
+    private OrderStatus status;
+    private MoneyDto total;
+    private List<OrderItemDto> items;
+    private ZonedDateTime createdAt;
+    
+    // Computed fields
+    @JsonProperty("canBeCancelled")
+    public boolean getCanBeCancelled() {
+        return status == OrderStatus.PENDING;
+    }
+}
+```
+
+## Project-Specific Best Practices
+
+### For George API Project
+
+#### Existing Patterns to Follow
+```java
+// ✅ Follow this pattern for new mappers
+@Mapper
+public interface {Domain}DtoMapper {
+    {Domain}Dto toDto({Domain} domain);
+    {Domain} toDomain({Domain}Dto dto);
+    List<{Domain}Dto> toDtoList(List<{Domain}> domains);
+}
+
+// ✅ Use @Value for value objects in common/domain/model/
+@Value
+public class Characteristic {
+    String name;
+    String value;
+}
+
+// ✅ Use pragmatic Lombok approach for JPA entities
+// For simple entities: @Data or @Getter is fine
+// For complex entities with business rules: use explicit getters/setters
+@Getter
+@Entity
+public class {Domain}Entity extends BaseEntity {
+    // JPA-specific fields
+}
+```
+
+#### Mapper Location
+Place mappers in the same package as DTOs:
+```
+infrastructure/in/web/{domain}/mapper/
+├── {Domain}DtoMapper.java
+└── {Domain}Dto.java
+```
+
+#### Avoid Common Mistakes
+- ❌ Don't use @Data on domain models in `domain/model/`
+- ❌ Don't put business logic in mappers (use @AfterMapping sparingly)
+- ❌ Don't create god mappers that handle too many types
+- ✅ Keep mappers simple - one-way mapping per method
+- ✅ Use composition for complex transformations
+- ✅ Leverage MapStruct's automatic mapping where possible
+
+## Testing Mappers
+
+#### Unit Test Pattern
+```java
+@SpringBootTest
+class OrderDtoMapperTest {
+    
+    @Autowired
+    private OrderDtoMapper mapper;
+    
+    @Test
+    void toDto_mapsAllFieldsCorrectly() {
+        // Arrange
+        Order order = Order.builder()
+            .orderNumber("ORD-001")
+            .status(OrderStatus.PENDING)
+            .total(Money.of(BigDecimal.TEN, "USD"))
+            .build();
+        
+        // Act
+        OrderDto dto = mapper.toDto(order);
+        
+        // Assert
+        assertEquals("ORD-001", dto.getOrderNumber());
+        assertEquals(OrderStatus.PENDING, dto.getStatus());
+        assertEquals(BigDecimal.TEN, dto.getTotal().getAmount());
+    }
+}
+```
+
+## When to Use This Skill
+
+Invoke this skill when:
+- Creating new mappers or DTOs
+- Refactoring mapper logic
+- Designing domain models with Lombok
+- Reviewing mapper code quality
+- Configuring MapStruct with Lombok integration
+- Debugging mapper issues
+- Making decisions about when to use Lombok annotations
+
+## Anti-Patterns Checklist
+
+Before committing mapper code, check:
+- ❌ @Data on domain models with business invariants (should control state changes)
+- ❌ Kitchen sink mappers (should be focused)
+- ❌ Business logic in mappers (should be in domain/services)
+- ❌ Not handling null values properly
+- ❌ Complex custom logic that should be in services
+- ❌ @Data on JPA entities with lazy collections (can cause issues)
+- ✅ Mappers are simple and focused
+- ✅ @Value for immutable value objects
+- ✅ @Data used pragmatically on simple entities
+- ✅ Clean separation between layers
+- ✅ Global componentModel configuration (no need to specify per mapper)
