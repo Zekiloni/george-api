@@ -27,6 +27,7 @@ public class OutreachEntity extends TenantEntity {
     @Column(nullable = false)
     private String message;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OutreachStatus status;
 
@@ -37,7 +38,10 @@ public class OutreachEntity extends TenantEntity {
     @JoinColumn(name = "campaign_id", nullable = false, updatable = false)
     private CampaignEntity campaign;
 
-    @Column()
+    @Column
+    private OffsetDateTime scheduledAt;
+
+    @Column
     private OffsetDateTime dispatchedAt;
 
     @Column

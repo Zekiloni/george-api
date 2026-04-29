@@ -397,3 +397,99 @@ ALTER TABLE service_access_characteristics
 
 ALTER TABLE service_access_characteristics
     ADD CONSTRAINT fk_seracccha_on_service_access_entity FOREIGN KEY (service_access_id) REFERENCES service_access (id);
+
+
+CREATE TABLE campaigns
+(
+    id               UUID                        NOT NULL,
+    tenant_id        VARCHAR(255),
+    created_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_by       VARCHAR(255),
+    updated_by       VARCHAR(255),
+    name             VARCHAR(255)                NOT NULL,
+    token_strategy   VARCHAR(255),
+    token_length     INTEGER                     NOT NULL,
+    message_template VARCHAR(255),
+    status           VARCHAR(255),
+    base_url         VARCHAR(255)                NOT NULL,
+    page_id          UUID,
+    service_access_id UUID                       NOT NULL,
+    scheduled_at     TIMESTAMP WITHOUT TIME ZONE,
+    CONSTRAINT pk_campaigns PRIMARY KEY (id)
+);
+
+CREATE TABLE outreach
+(
+    id            UUID                        NOT NULL,
+    tenant_id     VARCHAR(255),
+    created_at    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated_at    TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_by    VARCHAR(255),
+    updated_by    VARCHAR(255),
+    session_token VARCHAR(255)                NOT NULL,
+    recipient     VARCHAR(255)                NOT NULL,
+    message       VARCHAR(500)                NOT NULL,
+    status        VARCHAR(255)                NOT NULL,
+    external_id   VARCHAR(255),
+    campaign_id   UUID                        NOT NULL,
+    scheduled_at  TIMESTAMP WITHOUT TIME ZONE,
+    dispatched_at TIMESTAMP WITHOUT TIME ZONE,
+    delivered_at  TIMESTAMP WITHOUT TIME ZONE,
+    failed_at     TIMESTAMP WITHOUT TIME ZONE,
+    CONSTRAINT pk_outreach PRIMARY KEY (id)
+);
+
+CREATE TABLE user_sessions
+(
+    id               UUID                        NOT NULL,
+    tenant_id        VARCHAR(255),
+    created_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_by       VARCHAR(255),
+    updated_by       VARCHAR(255),
+    fingerprint      VARCHAR(255),
+    user_agent       VARCHAR(500),
+    ip_address       VARCHAR(255),
+    outreach_id      UUID                        NOT NULL,
+    status           VARCHAR(255)                NOT NULL,
+    view_count       INTEGER                     NOT NULL DEFAULT 0,
+    last_activity_at TIMESTAMP WITHOUT TIME ZONE,
+    CONSTRAINT pk_user_sessions PRIMARY KEY (id)
+);
+
+CREATE TABLE user_events
+(
+    id               UUID                        NOT NULL,
+    tenant_id        VARCHAR(255),
+    created_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    updated_at       TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+    created_by       VARCHAR(255),
+    updated_by       VARCHAR(255),
+    session_id       UUID                        NOT NULL,
+    event_key        VARCHAR(255)                NOT NULL,
+    incoming         BOOLEAN                     NOT NULL,
+    interaction_type VARCHAR(255)                NOT NULL,
+    payload          JSONB,
+    CONSTRAINT pk_user_events PRIMARY KEY (id)
+);
+
+CREATE INDEX idx_outreach_campaign_id ON outreach (campaign_id);
+CREATE INDEX idx_outreach_session_token ON outreach (session_token);
+CREATE INDEX idx_user_sessions_outreach_id ON user_sessions (outreach_id);
+CREATE INDEX idx_user_events_session_id ON user_events (session_id);
+
+ALTER TABLE campaigns
+    ADD CONSTRAINT fk_campaigns_on_page FOREIGN KEY (page_id) REFERENCES pages (id);
+
+ALTER TABLE campaigns
+    ADD CONSTRAINT fk_campaigns_on_service_access FOREIGN KEY (service_access_id) REFERENCES service_access (id);
+
+ALTER TABLE outreach
+    ADD CONSTRAINT fk_outreach_on_campaign FOREIGN KEY (campaign_id) REFERENCES campaigns (id);
+
+ALTER TABLE user_sessions
+    ADD CONSTRAINT fk_user_sessions_on_outreach FOREIGN KEY (outreach_id) REFERENCES outreach (id);
+
+ALTER TABLE user_events
+    ADD CONSTRAINT fk_user_events_on_session FOREIGN KEY (session_id) REFERENCES user_sessions (id);

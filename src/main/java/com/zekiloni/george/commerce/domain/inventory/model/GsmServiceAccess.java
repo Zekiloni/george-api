@@ -14,7 +14,6 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GsmServiceAccess extends ServiceAccess {
-    private String gatewayId;      // ID of the gateway this service uses
-    private String accessId;       // Access identifier for the gateway
-    private String apiKey;         // API key for gateway access
+    private String gatewayId;   // ID of the gateway this service uses
+    private int port;           // Port number assigned to this GSM service access
 }

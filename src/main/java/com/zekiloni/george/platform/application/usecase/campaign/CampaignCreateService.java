@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.application.port.out.campaign.CampaignDispat
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
 import com.zekiloni.george.platform.domain.model.campaign.Campaign;
+import com.zekiloni.george.platform.domain.model.campaign.CampaignStatus;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
 import com.zekiloni.george.platform.domain.util.PhoneNumberFileReader;
@@ -16,15 +17,20 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class CampaignCreateService implements CampaignCreateUseCase {
+    private static final int BATCH_SIZE = 500;
+
     private final CampaignRepositoryPort repository;
     private final OutreachRepositoryPort outreachRepository;
     private final CampaignDispatcherPort dispatcher;
+    private final CampaignStatusTransitionService statusTransitionService;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -34,33 +40,45 @@ public class CampaignCreateService implements CampaignCreateUseCase {
     public Campaign handle(Campaign campaignCreate, InputStream file) {
         try {
             campaignCreate.setBaseUrl(baseUrl);
+            campaignCreate.setStatus(CampaignStatus.SCHEDULED);
             Campaign campaign = repository.save(campaignCreate);
-            handleOutreach(file, campaign);
-            dispatcher.dispatch(campaign.getId(), campaign.getServiceAccess().getId());
+            saveOutreachesInBatches(buildOutreaches(file, campaign));
+
+            if (isImmediateDispatch(campaign)) {
+                statusTransitionService.transitionTo(campaign.getId(), CampaignStatus.ACTIVE);
+                dispatcher.dispatch(campaign.getId(), campaign.getServiceAccess().getId());
+            }
+
             return campaign;
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void handleOutreach(InputStream file, Campaign campaign) throws IOException {
-        // TODO: Later make generic resolver, for now just read phone numbers and create outreach
-        outreachRepository.saveAll(getPhoneNumbers(file).stream()
-                .map(recipient -> buildOutreach(campaign, recipient))
-                .toList());
+    private List<Outreach> buildOutreaches(InputStream file, Campaign campaign) throws IOException {
+        Set<String> phoneNumbers = PhoneNumberFileReader.streamPhoneNumbers(file)
+                .collect(Collectors.toSet());
+
+        List<Outreach> outreaches = new ArrayList<>(phoneNumbers.size());
+        for (String recipient : phoneNumbers) {
+            String token = campaign.getTokenStrategy().generate(campaign.getTokenLength());
+            outreaches.add(Outreach.builder()
+                    .campaignId(campaign.getId())
+                    .recipient(recipient)
+                    .message(buildMessage(campaign, token))
+                    .sessionToken(token)
+                    .status(OutreachStatus.SCHEDULED)
+                    .scheduledAt(OffsetDateTime.now())
+                    .build());
+        }
+        return outreaches;
     }
 
-    private Outreach buildOutreach(Campaign campaign, String recipient) {
-        String token = campaign.getTokenStrategy().generate(campaign.getTokenLength());
-
-        return Outreach.builder()
-                .campaignId(campaign.getId())
-                .recipient(recipient)
-                .message(buildMessage(campaign, token))
-                .sessionToken(token)
-                .status(OutreachStatus.SCHEDULED)
-                .scheduledAt(OffsetDateTime.now())
-                .build();
+    private void saveOutreachesInBatches(List<Outreach> outreaches) {
+        for (int i = 0; i < outreaches.size(); i += BATCH_SIZE) {
+            List<Outreach> batch = outreaches.subList(i, Math.min(i + BATCH_SIZE, outreaches.size()));
+            outreachRepository.saveAll(batch);
+        }
     }
 
     private String buildMessage(Campaign campaign, String token) {
@@ -68,7 +86,8 @@ public class CampaignCreateService implements CampaignCreateUseCase {
         return campaign.getMessageTemplate().replace("{token}", url);
     }
 
-    private Set<String> getPhoneNumbers(InputStream file) throws IOException {
-        return PhoneNumberFileReader.streamPhoneNumbers(file).collect(Collectors.toSet());
+    private boolean isImmediateDispatch(Campaign campaign) {
+        return campaign.getScheduledAt() == null ||
+                !campaign.getScheduledAt().isAfter(OffsetDateTime.now());
     }
 }

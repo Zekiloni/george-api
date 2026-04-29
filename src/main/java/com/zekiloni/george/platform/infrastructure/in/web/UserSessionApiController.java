@@ -1,6 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.in.web;
 
 import com.zekiloni.george.platform.application.port.in.campaign.UserSessionCreateUseCase;
+import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -19,8 +20,8 @@ public class UserSessionApiController {
     private final UserSessionCreateUseCase createUseCase;
 
     @GetMapping("/{token}")
-    public ResponseEntity<Void> create(@PathVariable String token, HttpServletRequest request) {
-        createUseCase.handle(token, getUserAgent(request), getIpAddress(request));
-        return ResponseEntity.ok().build();
+    public ResponseEntity<PageDefinition> create(@PathVariable String token, HttpServletRequest request) {
+        PageDefinition definition = createUseCase.handle(token, getUserAgent(request), getIpAddress(request));
+        return ResponseEntity.ok(definition);
     }
 }

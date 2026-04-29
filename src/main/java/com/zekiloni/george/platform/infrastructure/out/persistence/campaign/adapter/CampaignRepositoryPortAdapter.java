@@ -7,6 +7,8 @@ import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repo
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,8 +24,24 @@ public class CampaignRepositoryPortAdapter implements CampaignRepositoryPort {
     }
 
     @Override
+    public Campaign update(Campaign campaign) {
+        var entity = jpaRepository.findById(UUID.fromString(campaign.getId()))
+                .orElseThrow(() -> new RuntimeException("Campaign not found: " + campaign.getId()));
+        mapper.updateEntityFromDomain(campaign, entity);
+        return mapper.toDomain(jpaRepository.save(entity));
+    }
+
+    @Override
     public Optional<Campaign> findById(String id) {
         return jpaRepository.findById(UUID.fromString(id))
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public List<Campaign> findScheduledReadyForDispatch() {
+        return jpaRepository.findByStatusAndScheduledAtLessThanEqual(
+                com.zekiloni.george.platform.domain.model.campaign.CampaignStatus.SCHEDULED,
+                OffsetDateTime.now()
+        ).stream().map(mapper::toDomain).toList();
     }
 }

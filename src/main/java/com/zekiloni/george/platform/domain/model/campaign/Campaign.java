@@ -26,6 +26,7 @@ public class Campaign {
     private Ref serviceAccess;  // Changed from gateway to serviceAccess
     private List<Outreach> outreach;
     private String baseUrl;
+    private OffsetDateTime scheduledAt;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

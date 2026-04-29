@@ -1,8 +1,7 @@
 package com.zekiloni.george.platform.application.port.in.campaign;
 
-
-import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
+import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 
 public interface UserSessionCreateUseCase {
-    UserSession handle(String token, String userAgent, String ipAddress);
+    PageDefinition handle(String token, String userAgent, String ipAddress);
 }

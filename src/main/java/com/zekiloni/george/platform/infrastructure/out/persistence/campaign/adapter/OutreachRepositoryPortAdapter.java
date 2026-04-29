@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
 
@@ -18,6 +19,11 @@ public class OutreachRepositoryPortAdapter implements OutreachRepositoryPort {
     private final OutreachEntityMapper mapper;
 
     @Override
+    public Outreach save(Outreach outreach) {
+        return mapper.toDomain(jpaRepository.save(mapper.toEntity(outreach)));
+    }
+
+    @Override
     public List<Outreach> saveAll(List<Outreach> outreach) {
         return mapper.toDomain(jpaRepository.saveAll(mapper.toEntity(outreach)));
     }
@@ -25,5 +31,10 @@ public class OutreachRepositoryPortAdapter implements OutreachRepositoryPort {
     @Override
     public Stream<Outreach> findByCampaignId(String campaignId) {
         return mapper.toDomain(jpaRepository.streamByCampaignId(UUID.fromString(campaignId)));
+    }
+
+    @Override
+    public Optional<Outreach> findBySessionToken(String sessionToken) {
+        return jpaRepository.findBySessionToken(sessionToken).map(mapper::toDomain);
     }
 }

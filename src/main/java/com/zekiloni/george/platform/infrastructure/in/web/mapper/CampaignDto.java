@@ -27,5 +27,5 @@ public class CampaignDto {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private Ref page;
-    private Ref gateway;
+    private Ref serviceAccess;
 }

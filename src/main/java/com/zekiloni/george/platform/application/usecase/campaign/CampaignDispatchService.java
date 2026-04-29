@@ -11,6 +11,7 @@ import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Stream;
@@ -26,18 +27,18 @@ public class CampaignDispatchService implements CampaignDispatcherPort {
     @Async("asyncTaskExecutor")
     @Override
     public void dispatch(String campaignId, String serviceAccessId) {
-        // Get the ServiceAccess to find which gateway to use
         inventoryRepository.findById(serviceAccessId)
                 .ifPresent(serviceAccess -> process(serviceAccess, campaignId));
     }
 
-    private void process(ServiceAccess serviceAccess, String campaignId) {
-        // Get the gateway associated with this ServiceAccess
+    @Transactional
+    public void process(ServiceAccess serviceAccess, String campaignId) {
         String gatewayId = serviceAccess.getGatewayId();
         gatewayRepository.findById(gatewayId)
                 .ifPresent(gateway -> {
-                    Stream<Outreach> byCampaignId = repository.findByCampaignId(campaignId);
-                    processWithGateway(gateway, serviceAccess, byCampaignId.toList());
+                    List<Outreach> outreaches = repository.findByCampaignId(campaignId).toList();
+                    processWithGateway(gateway, serviceAccess, outreaches);
+                    repository.saveAll(outreaches);
                 });
     }
 
@@ -46,9 +47,6 @@ public class CampaignDispatchService implements CampaignDispatcherPort {
                 .stream()
                 .filter(dispatcher -> dispatcher.isSupported(gateway.getType()))
                 .findFirst()
-                .ifPresent(dispatcher -> {
-                    // Pass both gateway and serviceAccess to the dispatcher
-                    dispatcher.send(outreaches, gateway, serviceAccess);
-                });
+                .ifPresent(dispatcher -> dispatcher.send(outreaches, gateway, serviceAccess));
     }
 }

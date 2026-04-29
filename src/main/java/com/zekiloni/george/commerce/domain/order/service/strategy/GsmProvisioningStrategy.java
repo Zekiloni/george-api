@@ -38,15 +38,14 @@ public class GsmProvisioningStrategy implements ProvisioningStrategy {
             // 2. Get gateway configuration
             GatewaySelectionPort.GatewayConfig gatewayConfig = gatewaySelectionPort.getGatewayConfig(gatewayId);
 
-            // 3. Generate access credentials
-            String accessId = generateAccessId(order.getTenantId());
-            String apiKey = generateApiKey();
-
+            int port = 0; // TODO: Determine port number based on order item characteristics or gateway response
+            // if order item characteristic dedicated port, extract port number
+            // int port = order.getPort(); // Assuming port is stored in order item or service access
             // 4. Call gateway API to provision access
-            provisionGsmAccessOnGateway(gatewayConfig, accessId, apiKey, orderItem);
+            provisionGsmAccessOnGateway(gatewayConfig, orderItem);
 
             // 5. Create ServiceAccess with provisioning details
-            GsmServiceAccess serviceAccess = createServiceAccess(order, orderItem, gatewayId, accessId, apiKey);
+            GsmServiceAccess serviceAccess = createServiceAccess(order, orderItem, gatewayId, port);
             serviceAccessCreateUseCase.create(serviceAccess);
 
             // 6. Record success metrics
@@ -90,8 +89,7 @@ public class GsmProvisioningStrategy implements ProvisioningStrategy {
         }
     }
 
-    private GsmServiceAccess createServiceAccess(Order order, OrderItem orderItem, String gatewayId,
-                                               String accessId, String apiKey) {
+    private GsmServiceAccess createServiceAccess(Order order, OrderItem orderItem, String gatewayId, int port) {
         return GsmServiceAccess.builder()
                 .validFrom(OffsetDateTime.now())
                 .validTo(getValidTo(orderItem))
@@ -101,17 +99,16 @@ public class GsmProvisioningStrategy implements ProvisioningStrategy {
                 .orderItem(orderItem)
                 .tenantId(order.getTenantId())
                 .gatewayId(gatewayId)  // Link to the gateway
-                .accessId(accessId)
-                .apiKey(apiKey)
+                .port(port)
                 .build();
     }
 
-    private void provisionGsmAccessOnGateway(GatewaySelectionPort.GatewayConfig gatewayConfig, String accessId, String apiKey, OrderItem orderItem) {
-        log.debug("Provisioning GSM access on gateway {}: accessId={}", gatewayConfig.gatewayId(), accessId);
+    private void provisionGsmAccessOnGateway(GatewaySelectionPort.GatewayConfig gatewayConfig, OrderItem orderItem) {
+        log.debug("Provisioning GSM access on gateway {}", gatewayConfig.gatewayId());
 
         // TODO: Implement actual GSM gateway API call (e.g., EJOIN API)
         // This is where the gateway API is called to provision access
-        // Example: call EJOIN admin API to create API access with given credentials
+        // Example: call EJOIN to see if port is available, then provision and get assigned port number
 
         log.warn("GSM access provisioning API call not yet implemented - using mock");
     }
@@ -121,11 +118,6 @@ public class GsmProvisioningStrategy implements ProvisioningStrategy {
 
         // TODO: Implement actual GSM gateway API call for access termination
         log.warn("GSM access termination API call not yet implemented - using mock");
-    }
-
-    private String generateAccessId(String tenantId) {
-        String randomChars = UUID.randomUUID().toString().substring(0, 8).toUpperCase();
-        return "gsm_" + tenantId + "_" + randomChars;
     }
 
     private String generateApiKey() {

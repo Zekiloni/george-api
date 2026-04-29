@@ -7,8 +7,10 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Entity
 @Table(name = "campaigns")
@@ -33,14 +35,22 @@ public class CampaignEntity extends TenantEntity {
     @Column
     private String messageTemplate;
 
-    @Column
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private CampaignStatus status;
 
     @Column(nullable = false)
     private String baseUrl;
 
-    //    private Ref page;
-//    private Ref channel;
+    @Column(name = "page_id")
+    private UUID pageId;
+
+    @Column(name = "service_access_id", nullable = false)
+    private UUID serviceAccessId;
+
+    @Column(name = "scheduled_at")
+    private OffsetDateTime scheduledAt;
+
     @OneToMany(
             mappedBy = "campaign",
             cascade = CascadeType.ALL,

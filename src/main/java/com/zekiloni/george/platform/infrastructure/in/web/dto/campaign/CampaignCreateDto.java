@@ -7,7 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.time.OffsetDateTime;
 
-public record CampaignCreateDto(String name, RefDto page, TokenGenerationStrategy tokenStrategy, int tokenLength,
+public record CampaignCreateDto(String name, RefDto page, RefDto serviceAccess,
+                                TokenGenerationStrategy tokenStrategy, int tokenLength,
                                 String messageTemplate,
                                 @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime scheduledAt,
                                 MultipartFile file) {
