@@ -2,8 +2,8 @@ package com.zekiloni.george.platform.infrastructure.in.web.gateway;
 
 import com.zekiloni.george.platform.application.port.in.gateway.GatewayCreateUseCase;
 import com.zekiloni.george.platform.application.port.in.gateway.GatewayQueryUseCase;
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayUpdateDto;

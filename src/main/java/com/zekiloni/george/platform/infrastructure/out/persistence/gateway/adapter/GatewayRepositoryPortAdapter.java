@@ -1,9 +1,8 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.gateway.adapter;
 
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayRepositoryPort;
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
-import com.zekiloni.george.platform.infrastructure.out.persistence.gateway.entity.GatewayEntity;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import com.zekiloni.george.platform.infrastructure.out.persistence.gateway.mapper.GatewayEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.gateway.repository.GatewayJpaRepository;
 import lombok.RequiredArgsConstructor;

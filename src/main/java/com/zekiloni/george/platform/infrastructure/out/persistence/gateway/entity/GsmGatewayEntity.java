@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.gateway.entity;
 
-import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmProvider;
+import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmProvider;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.application.port.in.gateway;
 
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

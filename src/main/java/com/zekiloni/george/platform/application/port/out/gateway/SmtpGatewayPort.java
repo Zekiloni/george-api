@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.application.port.out.gateway;
 
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGatewayProvider;
+import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
+import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGatewayProvider;
 
 public interface SmtpGatewayPort {
     boolean isSupported(SmtpGatewayProvider type);

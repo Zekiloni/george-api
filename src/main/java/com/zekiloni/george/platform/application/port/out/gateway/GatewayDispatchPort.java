@@ -2,8 +2,8 @@ package com.zekiloni.george.platform.application.port.out.gateway;
 
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 
 import java.util.List;
 

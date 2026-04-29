@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.domain.model.gatway.gsm;
+package com.zekiloni.george.platform.domain.model.gateway.gsm;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

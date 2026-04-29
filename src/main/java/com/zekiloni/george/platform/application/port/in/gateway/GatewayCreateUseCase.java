@@ -1,6 +1,6 @@
 package com.zekiloni.george.platform.application.port.in.gateway;
 
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 
 public interface GatewayCreateUseCase {
     Gateway create(Gateway gateway);

@@ -1,8 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.gateway.entity;
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -10,8 +9,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
-
-import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "gateways")

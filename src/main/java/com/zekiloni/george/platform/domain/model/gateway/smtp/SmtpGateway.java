@@ -1,6 +1,6 @@
-package com.zekiloni.george.platform.domain.model.gatway.smtp;
+package com.zekiloni.george.platform.domain.model.gateway.smtp;
 
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -7,7 +7,7 @@ import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatch
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayRepositoryPort;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;

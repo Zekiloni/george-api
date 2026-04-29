@@ -2,7 +2,12 @@
   "permissions": {
     "allow": [
       "Bash(cd /d D:\\\\Projects\\\\george\\\\george-api)",
-      "Bash(./mvnw clean *)"
+      "Bash(./mvnw clean *)",
+      "Bash(awk -F/ '{print $\\(NF-1\\)\"/\"$NF}')",
+      "Bash(awk -F/ '{print $\\(NF-2\\)\"/\"$\\(NF-1\\)\"/\"$NF}')",
+      "Bash(awk -F':import ' '{print $2}')",
+      "Bash(awk -F': ' '{print $2}')",
+      "Bash(sed 's/public class //')"
     ]
   }
 }

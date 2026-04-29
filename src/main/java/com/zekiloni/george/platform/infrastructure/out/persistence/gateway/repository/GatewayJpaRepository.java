@@ -6,13 +6,12 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface GatewayJpaRepository extends JpaRepository<GatewayEntity, UUID> {
 
-    List<GatewayEntity> findByType(com.zekiloni.george.platform.domain.model.gatway.GatewayType type);
+    List<GatewayEntity> findByType(com.zekiloni.george.platform.domain.model.gateway.GatewayType type);
 
     @Query("SELECT g FROM GatewayEntity g WHERE g.enabled = true")
     List<GatewayEntity> findByEnabled(boolean enabled);

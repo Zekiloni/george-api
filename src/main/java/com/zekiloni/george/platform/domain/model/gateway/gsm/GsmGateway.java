@@ -1,7 +1,7 @@
-package com.zekiloni.george.platform.domain.model.gatway.gsm;
+package com.zekiloni.george.platform.domain.model.gateway.gsm;
 
 
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 

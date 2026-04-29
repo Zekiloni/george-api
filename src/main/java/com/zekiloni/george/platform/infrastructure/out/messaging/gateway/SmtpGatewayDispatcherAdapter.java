@@ -4,8 +4,8 @@ import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatch
 import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
+import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;

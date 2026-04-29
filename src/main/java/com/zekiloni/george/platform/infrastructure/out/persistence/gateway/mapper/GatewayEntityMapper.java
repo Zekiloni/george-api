@@ -1,8 +1,8 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.gateway.mapper;
 
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import com.zekiloni.george.platform.infrastructure.out.persistence.gateway.entity.GatewayEntity;
 import com.zekiloni.george.platform.infrastructure.out.persistence.gateway.entity.GsmGatewayEntity;
 import com.zekiloni.george.platform.infrastructure.out.persistence.gateway.entity.SmtpGatewayEntity;

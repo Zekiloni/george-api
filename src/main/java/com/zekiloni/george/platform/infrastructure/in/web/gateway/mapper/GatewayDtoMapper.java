@@ -1,8 +1,8 @@
 package com.zekiloni.george.platform.infrastructure.in.web.gateway.mapper;
 
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GsmGatewayCreateDto;

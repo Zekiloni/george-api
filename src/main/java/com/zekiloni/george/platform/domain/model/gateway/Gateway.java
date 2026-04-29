@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.domain.model.gatway;
+package com.zekiloni.george.platform.domain.model.gateway;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

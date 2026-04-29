@@ -2,10 +2,10 @@ package com.zekiloni.george.commerce.infrastructure.out.gateway;
 
 import com.zekiloni.george.commerce.application.port.out.gateway.GatewaySelectionPort;
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayRepositoryPort;
-import com.zekiloni.george.platform.domain.model.gatway.Gateway;
-import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
-import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
+import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
+import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
