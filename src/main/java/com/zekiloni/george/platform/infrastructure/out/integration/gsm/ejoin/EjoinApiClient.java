@@ -55,4 +55,21 @@ public class EjoinApiClient {
                 .retrieve()
                 .body(new ParameterizedTypeReference<>() {});
     }
+
+    public void sendSms(String baseUrl, String username, String password, Integer port, Integer slot,
+                       String phoneNumber, String message) {
+        getApiClient(baseUrl, username, password)
+                .post()
+                .uri("/send_sms")
+                .body(new EjoinSmsRequest(port, slot, phoneNumber, message))
+                .retrieve()
+                .toEntity(Void.class);
+    }
+
+    private record EjoinSmsRequest(
+            Integer port,
+            Integer slot,
+            String phoneNumber,
+            String message
+    ) {}
 }

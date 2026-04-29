@@ -11,6 +11,7 @@ public interface GsmGatewayPort {
     PortStatus getPortStatus(GsmGateway gateway, String port);
     List<PortStatus> getAllPortsStatus(GsmGateway gateway);
 
+    void sendSms(GsmGateway gateway, String port, String phoneNumber, String message);
 
     record PortStatus(
             String port,            // "1.01", "2.01"

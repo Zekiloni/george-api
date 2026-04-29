@@ -17,4 +17,5 @@ public class SmtpServiceAccess extends ServiceAccess {
     private int port;
     private String username;
     private String password;
+    private String gatewayId;  // ID of the gateway this service uses
 }

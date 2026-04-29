@@ -290,27 +290,369 @@ public interface LeadDtoMapper {
 }
 ```
 
-### Mapping with Inheritance
+### Mapping with Inheritance and Abstractions
 
-#### Handle Polymorphic Types
+#### @SuperBuilder for Inheritance Hierarchies
+**CRITICAL**: When working with inheritance hierarchies, always use `@SuperBuilder` instead of `@Builder`.
+
 ```java
-@Mapper
-public interface ServiceAccessDtoMapper {
-    
-    // Base mapping
-    ServiceAccessDto toDto(ServiceAccess serviceAccess);
-    
-    // Specific implementations
-    @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class)
-    ServiceAccessDto toDto(SmtpServiceAccess smtpAccess);
-    
-    @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessDto.class)
-    ServiceAccessDto toDto(LeadServiceAccess leadAccess);
-    
-    // Reverse mapping
-    ServiceAccess toDomain(ServiceAccessDto dto);
+// ✅ Base class with @SuperBuilder
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public abstract class Gateway {
+    private String id;
+    private GatewayType type;
+    private String name;
+    private String description;
+    private boolean enabled;
+    private int priority;
+    private String username;
+    private String password;
+    private OffsetDateTime createdAt;
+    private OffsetDateTime updatedAt;
+}
+
+// ✅ Subclasses also use @SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SmtpGateway extends Gateway {
+    private SmtpGatewayProvider provider;
+    private String host;
+    private int port;
+    private String fromDomain;
+    private boolean useTls;
+}
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class GsmGateway extends Gateway {
+    private GsmProvider provider;
+    private String ipAddress;
+    private int port;
+    private int totalPort;
+    private List<GsmGatewaySlot> slot;
 }
 ```
+
+**Why @SuperBuilder?**
+- Regular `@Builder` doesn't work properly with inheritance
+- `@SuperBuilder` generates builder methods that handle parent class fields
+- Required for MapStruct to recognize and instantiate subclasses
+- Enables proper polymorphic object creation
+
+#### @SubclassMappings for Polymorphic Mapping
+**Use @SubclassMappings when mapping abstract classes/interfaces to concrete DTOs:**
+
+```java
+@Mapper(uses = {OrderDtoMapper.class})
+public interface ServiceAccessDtoMapper {
+
+    // ✅ Single method with @SubclassMappings for all subclasses
+    @SubclassMappings({
+            @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessDto.class),
+            @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class),
+            @SubclassMapping(source = PageServiceAccess.class, target = PageServiceAccessDto.class)
+    })
+    @Mapping(source = "orderItem.id", target = "orderItemId")
+    ServiceAccessDto toDto(ServiceAccess serviceAccess);
+}
+```
+
+**Key Principles:**
+- Use `@SubclassMappings` (plural) as a container annotation
+- List all `@SubclassMapping` pairs inside it
+- Single method signature returns the base type
+- MapStruct generates the routing logic automatically
+
+#### @ObjectFactory for Object Creation and Recognition
+**Use @ObjectFactory for reverse mapping when MapStruct can't determine the concrete type:**
+
+```java
+@Mapper(uses = {OrderDtoMapper.class})
+public interface ServiceAccessDtoMapper {
+
+    // Forward mapping - automatic with @SubclassMappings
+    @SubclassMappings({
+            @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessDto.class),
+            @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class),
+            @SubclassMapping(source = PageServiceAccess.class, target = PageServiceAccessDto.class)
+    })
+    @Mapping(source = "orderItem.id", target = "orderItemId")
+    ServiceAccessDto toDto(ServiceAccess serviceAccess);
+
+    // ✅ Reverse mapping - use @ObjectFactory with pattern matching
+    @InheritInverseConfiguration
+    @ObjectFactory
+    default ServiceAccess createServiceAccess(ServiceAccessDto dto) {
+        return switch (dto) {
+            case LeadServiceAccessDto _ -> new LeadServiceAccess();
+            case SmtpServiceAccessDto _ -> new SmtpServiceAccess();
+            case PageServiceAccessDto _ -> new PageServiceAccess();
+            default -> throw new IllegalArgumentException("Unknown ServiceAccessDto type: " + dto.getClass().getName());
+        };
+    }
+}
+```
+
+**When to use @ObjectFactory:**
+- Mapping from DTO to domain with inheritance
+- MapStruct can't determine which concrete class to instantiate
+- You need to control object creation logic
+- Using sealed interfaces or abstract base classes
+
+#### Complete Inheritance Mapping Pattern
+**Here's the complete pattern for working with abstractions:**
+
+```java
+// 1. Domain model hierarchy
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public abstract class ServiceAccess {
+    private String id;
+    private ServiceSpecification serviceSpecification;
+    private OrderItem orderItem;
+    private OffsetDateTime provisionedAt;
+    private ServiceAccessStatus status;
+}
+
+@EqualsAndHashCode(callSuper = true)
+@Data
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+public class SmtpServiceAccess extends ServiceAccess {
+    private String host;
+    private int port;
+    private String username;
+    private String fromDomain;
+    private boolean useTls;
+}
+
+// 2. DTO hierarchy (can be records or classes)
+public sealed interface ServiceAccessDto {
+    String id();
+    ServiceSpecification serviceSpecification();
+    Long orderItemId();
+    OffsetDateTime provisionedAt();
+    ServiceAccessStatus status();
+
+    record SmtpServiceAccessDto(
+        String id,
+        ServiceSpecification serviceSpecification,
+        Long orderItemId,
+        OffsetDateTime provisionedAt,
+        ServiceAccessStatus status,
+        String host,
+        int port,
+        String username,
+        String fromDomain,
+        boolean useTls
+    ) implements ServiceAccessDto {}
+}
+
+// 3. Mapper with @SubclassMappings
+@Mapper(uses = {OrderDtoMapper.class})
+public interface ServiceAccessDtoMapper {
+
+    @SubclassMappings({
+            @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class)
+    })
+    @Mapping(source = "orderItem.id", target = "orderItemId")
+    ServiceAccessDto toDto(ServiceAccess serviceAccess);
+
+    @InheritInverseConfiguration
+    @ObjectFactory
+    default ServiceAccess createServiceAccess(ServiceAccessDto dto) {
+        return switch (dto) {
+            case SmtpServiceAccessDto smtp -> SmtpServiceAccess.builder().build();
+            default -> throw new IllegalArgumentException("Unknown type: " + dto.getClass());
+        };
+    }
+}
+```
+
+#### Common Patterns and Gotchas
+
+**✅ DO:**
+- Use `@SuperBuilder` on all classes in inheritance hierarchy
+- Use `@EqualsAndHashCode(callSuper = true)` on subclasses
+- Use `@SubclassMappings` for polymorphic mapping
+- Use `@ObjectFactory` with pattern matching for reverse mapping
+- Keep DTO fields flat (single record with nullable fields)
+
+**❌ DON'T:**
+- Use regular `@Builder` with inheritance (won't work)
+- Use sealed interfaces for DTOs with @SubclassMapping (MapStruct can't instantiate)
+- Forget `callSuper = true` in @EqualsAndHashCode on subclasses
+- Mix @Builder and @SuperBuilder in same hierarchy
+- Use complex nested DTO structures that MapStruct can't handle
+
+#### Simple DTO Pattern for Inheritance
+**For simple cases, use a single DTO with nullable fields:**
+
+```java
+// ✅ Simple DTO - works great with @SubclassMapping
+public record GatewayDto(
+        String id,
+        GatewayType type,
+        String name,
+        String description,
+        boolean enabled,
+        int priority,
+        String username,
+        String provider,
+        String host,           // null for GSM gateways
+        String ipAddress,      // null for SMTP gateways
+        int port,
+        String fromDomain,     // null for GSM gateways
+        boolean useTls,        // false for GSM gateways
+        int totalPort          // 0 for SMTP gateways
+) {}
+
+@Mapper
+public interface GatewayDtoMapper {
+
+    @SubclassMappings({
+            @SubclassMapping(source = SmtpGateway.class, target = GatewayDto.class),
+            @SubclassMapping(source = GsmGateway.class, target = GatewayDto.class)
+    })
+    @Mapping(target = "provider", source = "provider.name")
+    GatewayDto toDto(Gateway gateway);
+
+    @ObjectFactory
+    default Gateway toDomain(GatewayCreateDto dto) {
+        return switch (dto.type()) {
+            case SMTP -> toSmtpDomain(dto);
+            case GSM -> toGsmDomain(dto);
+        };
+    }
+}
+```
+
+**Why this works:**
+- Single concrete DTO type (MapStruct can instantiate it)
+- Null fields for irrelevant properties per subtype
+- Simple and maintainable
+- Works well with @SubclassMapping
+
+#### Entity Mapper Pattern (CRITICAL - No @Mapping Annotations!)
+**When working with JPA entities and domain models, use this clean pattern:**
+
+```java
+@Mapper(uses = {OrderEntityMapper.class, LeadEntityMapper.class})
+public interface ServiceAccessEntityMapper {
+
+    // ✅ Only generic methods - no specific toSmtpDomain, toGsmEntity, etc.
+    @SubclassMappings({
+            @SubclassMapping(source = SmtpGatewayEntity.class, target = SmtpGateway.class),
+            @SubclassMapping(source = GsmGatewayEntity.class, target = GsmGateway.class)
+    })
+    Gateway toDomain(GatewayEntity entity);
+
+    @SubclassMappings({
+            @SubclassMapping(source = SmtpGateway.class, target = SmtpGatewayEntity.class),
+            @SubclassMapping(source = GsmGateway.class, target = GsmGatewayEntity.class)
+    })
+    GatewayEntity toEntity(Gateway gateway);
+
+    // ✅ @ObjectFactory ONLY creates instances - NO mapping logic
+    @ObjectFactory
+    default Gateway createDomain(GatewayEntity entity) {
+        return switch (entity) {
+            case SmtpGatewayEntity ignored -> new SmtpGateway();
+            case GsmGatewayEntity ignored -> new GsmGateway();
+            default -> throw new IllegalArgumentException("Unknown entity type: " + entity.getClass());
+        };
+    }
+
+    @ObjectFactory
+    default GatewayEntity createEntity(Gateway gateway) {
+        return switch (gateway) {
+            case SmtpGateway ignored -> new SmtpGatewayEntity();
+            case GsmGateway ignored -> new GsmGatewayEntity();
+            default -> throw new IllegalArgumentException("Unknown domain type: " + gateway.getClass());
+        };
+    }
+}
+```
+
+**Key Principles:**
+- ❌ **NO `@Mapping` annotations** - Let MapStruct handle everything automatically
+- ❌ **NO specific methods** like `toSmtpDomain()`, `toGsmEntity()` - only generic `toDomain()`, `toEntity()`
+- ✅ **Only 2 generic methods** - `toDomain()` and `toEntity()`
+- ✅ **`@ObjectFactory` only creates instances** - NO field mapping in factory methods
+- ✅ **Use pattern matching** - `switch (entity)` with `case SmtpGatewayEntity ignored`
+- ✅ **Let MapStruct do the heavy lifting** - it handles all field mapping automatically
+
+**Repository Adapter Pattern:**
+```java
+@Component
+@RequiredArgsConstructor
+public class GatewayRepositoryPortAdapter implements GatewayRepositoryPort {
+
+    private final GatewayJpaRepository gatewayJpaRepository;
+    private final GatewayEntityMapper entityMapper; // ✅ Inject entity mapper
+
+    @Override
+    @Transactional
+    public Gateway save(Gateway gateway) {
+        GatewayEntity entity = entityMapper.toEntity(gateway); // ✅ Use mapper
+        return entityMapper.toDomain(gatewayJpaRepository.save(entity)); // ✅ Use mapper
+    }
+
+    @Override
+    public Optional<Gateway> findById(String id) {
+        return gatewayJpaRepository.findById(UUID.fromString(id))
+                .map(entityMapper::toDomain); // ✅ Use mapper
+    }
+
+    // ✅ NO manual mapping methods in adapter
+}
+```
+
+**Entity Pattern (Pure JPA - No toDomain methods):**
+```java
+@Getter
+@Setter
+@SuperBuilder
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class SmtpGatewayEntity extends GatewayEntity {
+    private SmtpGatewayProvider provider;
+    private String host;
+    private int port;
+    private String fromDomain;
+    private boolean useTls;
+
+    // ❌ NO toDomain() method - mapper handles conversion
+}
+```
+
+**When to Use Entity Mappers:**
+- ✅ All JPA repository adapters MUST use `{domain}entitymapper`
+- ✅ Entities are pure JPA - NO conversion logic
+- ✅ Repository adapters use entity mapper for all conversions
+- ✅ NO manual mapping in adapters or entities
+
+**Anti-Patterns to Avoid:**
+- ❌ Adding `@Mapping` annotations (MapStruct handles it automatically)
+- ❌ Creating specific methods like `toSmtpDomain()`, `toGsmEntity()`
+- ❌ Putting mapping logic in `@ObjectFactory` methods
+- ❌ Adding `toDomain()` methods to entities
+- ❌ Manual field mapping in repository adapters
 
 ### Mapping Nested Objects
 
@@ -657,6 +999,80 @@ Invoke this skill when:
 - Configuring MapStruct with Lombok integration
 - Debugging mapper issues
 - Making decisions about when to use Lombok annotations
+- **Working with inheritance hierarchies in domain models**
+- **Implementing polymorphic mapping with MapStruct**
+- **Using abstract classes or interfaces as DTOs**
+- **Need to map between subclasses and their DTOs**
+
+## Recognizing When to Use Abstraction Patterns
+
+### Red Flags That Indicate Need for Abstraction Patterns:
+
+1. **Multiple similar DTOs with repeated fields:**
+   ```java
+   // ❌ Code smell - repeated fields
+   record SmtpGatewayDto(String id, String name, String provider, ...) {}
+   record GsmGatewayDto(String id, String name, String provider, ...) {}
+   ```
+
+2. **Manual type checking and casting:**
+   ```java
+   // ❌ Manual type routing - should use @SubclassMappings
+   default GatewayDto toDto(Gateway gateway) {
+       if (gateway instanceof SmtpGateway smtp) {
+           return new GatewayDto(..., smtp.getHost(), null, ...);
+       } else if (gateway instanceof GsmGateway gsm) {
+           return new GatewayDto(..., null, gsm.getIpAddress(), ...);
+       }
+   }
+   ```
+
+3. **Separate mapper methods for each subtype:**
+   ```java
+   // ❌ Should use single method with @SubclassMappings
+   SmtpGatewayDto toSmtpDto(SmtpGateway gateway);
+   GsmGatewayDto toGsmDto(GsmGateway gateway);
+   ```
+
+4. **Complex factory methods:**
+   ```java
+   // ❌ Should use @ObjectFactory with pattern matching
+   @ObjectFactory
+   default Gateway toDomain(GatewayDto dto) {
+       if (dto.type() == GatewayType.SMTP) {
+           SmtpGateway gateway = new SmtpGateway();
+           gateway.setHost(dto.host());
+           // ... many more lines
+           return gateway;
+       }
+   }
+   ```
+
+### When to Use Each Pattern:
+
+**Use @SuperBuilder when:**
+- You have inheritance hierarchies in domain models
+- Subclasses need builder pattern
+- Parent class has fields that need to be built
+- You're working with MapStruct and polymorphic mapping
+
+**Use @SubclassMappings when:**
+- Mapping from abstract base class to DTOs
+- Multiple subclasses map to same or different DTOs
+- You want single method signature for polymorphic mapping
+- You want MapStruct to handle type routing automatically
+
+**Use @ObjectFactory when:**
+- Reverse mapping (DTO to domain) with inheritance
+- MapStruct can't determine concrete type to instantiate
+- You need custom logic for object creation
+- Working with sealed interfaces or abstract classes
+
+**Use Single DTO with Nullable Fields when:**
+- Subtypes have mostly similar fields
+- Some fields are irrelevant for certain subtypes
+- You want simple, maintainable DTO structure
+- Using @SubclassMapping with concrete DTO type
 
 ## Anti-Patterns Checklist
 
@@ -667,8 +1083,17 @@ Before committing mapper code, check:
 - ❌ Not handling null values properly
 - ❌ Complex custom logic that should be in services
 - ❌ @Data on JPA entities with lazy collections (can cause issues)
+- ❌ Using @Builder instead of @SuperBuilder in inheritance hierarchies
+- ❌ Manual type routing instead of @SubclassMappings
+- ❌ Sealed interfaces for DTOs with @SubclassMapping (MapStruct can't instantiate)
+- ❌ Forgetting @EqualsAndHashCode(callSuper = true) on subclasses
+- ❌ Complex nested DTOs when simple flat DTO with nullable fields would work
 - ✅ Mappers are simple and focused
 - ✅ @Value for immutable value objects
 - ✅ @Data used pragmatically on simple entities
 - ✅ Clean separation between layers
 - ✅ Global componentModel configuration (no need to specify per mapper)
+- ✅ @SuperBuilder for inheritance hierarchies
+- ✅ @SubclassMappings for polymorphic mapping
+- ✅ @ObjectFactory for reverse mapping with pattern matching
+- ✅ Simple flat DTOs with nullable fields for inheritance scenarios

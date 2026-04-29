@@ -29,7 +29,6 @@ public class PageProvisioningStrategy implements ProvisioningStrategy {
 
     @Override
     public void deprovision(OrderItem order) {
-
     }
 
     private PageServiceAccess createServiceAccess(Order order, OrderItem orderItem) {

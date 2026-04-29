@@ -18,8 +18,6 @@ public class GsmGateway extends Gateway {
     private GsmProvider provider;
     private int totalPort;
     private List<GsmGatewaySlot> slot;
-    private String username;
-    private String password;
 
     public int getActivePortCount() {
         if (slot == null) return 0;

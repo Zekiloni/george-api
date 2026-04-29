@@ -13,6 +13,7 @@ import org.mapstruct.*;
 
 @Mapper(uses = {OrderDtoMapper.class})
 public interface ServiceAccessDtoMapper {
+
     @SubclassMappings({
             @SubclassMapping(source = LeadServiceAccess.class, target = LeadServiceAccessDto.class),
             @SubclassMapping(source = SmtpServiceAccess.class, target = SmtpServiceAccessDto.class),
@@ -21,13 +22,14 @@ public interface ServiceAccessDtoMapper {
     @Mapping(source = "orderItem.id", target = "orderItemId")
     ServiceAccessDto toDto(ServiceAccess serviceAccess);
 
+    @InheritInverseConfiguration
     @ObjectFactory
-    default ServiceAccess toDomain(ServiceAccessDto dto) {
+    default ServiceAccess createServiceAccess(ServiceAccessDto dto) {
         return switch (dto) {
             case LeadServiceAccessDto _ -> new LeadServiceAccess();
             case SmtpServiceAccessDto _ -> new SmtpServiceAccess();
             case PageServiceAccessDto _ -> new PageServiceAccess();
-            default -> throw new IllegalArgumentException("Unknown ServiceAccessDto type: " + dto.getClass());
+            default -> throw new IllegalArgumentException("Unknown ServiceAccessDto type: " + dto.getClass().getName());
         };
     }
 }

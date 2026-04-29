@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.OffsetDateTime;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -35,7 +36,7 @@ public class CampaignCreateService implements CampaignCreateUseCase {
             campaignCreate.setBaseUrl(baseUrl);
             Campaign campaign = repository.save(campaignCreate);
             handleOutreach(file, campaign);
-            dispatcher.dispatch(campaign.getId(), campaign.getGateway().getId());
+            dispatcher.dispatch(campaign.getId(), campaign.getServiceAccess().getId());
             return campaign;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -51,15 +52,14 @@ public class CampaignCreateService implements CampaignCreateUseCase {
 
     private Outreach buildOutreach(Campaign campaign, String recipient) {
         String token = campaign.getTokenStrategy().generate(campaign.getTokenLength());
-        // TODO: set campaign id to outreach
+
         return Outreach.builder()
+                .campaignId(campaign.getId())
                 .recipient(recipient)
-                // TODO: Make message template more generic, for now just replace {{token}} with generated token
-                // if we want to support more complex templates in the future, we can use a templating engine like Thymeleaf or FreeMarker
-                // token should be link to the external page with the token as a parameter or internal url to our page
                 .message(buildMessage(campaign, token))
                 .sessionToken(token)
                 .status(OutreachStatus.SCHEDULED)
+                .scheduledAt(OffsetDateTime.now())
                 .build();
     }
 

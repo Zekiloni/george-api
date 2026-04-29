@@ -43,6 +43,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) {
         http.authorizeHttpRequests((req) -> req
                 .requestMatchers("/actuator/*").permitAll()
+                .requestMatchers("/v3/api-docs").permitAll()
                 .requestMatchers("/**/webhook").permitAll()
                 .anyRequest().authenticated());
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));

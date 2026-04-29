@@ -23,7 +23,7 @@ public class Campaign {
     private String messageTemplate;
     private CampaignStatus status;
     private Ref page;
-    private Ref gateway;
+    private Ref serviceAccess;  // Changed from gateway to serviceAccess
     private List<Outreach> outreach;
     private String baseUrl;
     private OffsetDateTime createdAt;

@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd /d D:\\\\Projects\\\\george\\\\george-api)",
+      "Bash(./mvnw clean *)"
+    ]
+  }
+}

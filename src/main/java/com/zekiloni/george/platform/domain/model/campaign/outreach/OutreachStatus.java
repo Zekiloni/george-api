@@ -5,5 +5,6 @@ public enum OutreachStatus {
     SENT,
     DELIVERED,
     VISITED,
+    FAILED,
     COMPLETED,
 }

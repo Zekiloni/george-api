@@ -34,4 +34,21 @@ public class EjoinGsmGatewayPortAdapter implements GsmGatewayPort {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public void sendSms(GsmGateway gateway, String port, String phoneNumber, String message) {
+        String[] portParts = port.split("\\.");
+        Integer portNum = Integer.valueOf(portParts[0]);
+        Integer slotNum = Integer.valueOf(portParts[1]);
+
+        apiClient.sendSms(
+            gateway.getIpAddress(),
+            gateway.getUsername(),
+            gateway.getPassword(),
+            portNum,
+            slotNum,
+            phoneNumber,
+            message
+        );
+    }
 }

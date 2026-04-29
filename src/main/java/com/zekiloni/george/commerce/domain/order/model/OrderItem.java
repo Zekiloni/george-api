@@ -18,6 +18,7 @@ public class OrderItem {
     private Integer duration;
     private DurationUnit durationUnit;
     private List<Characteristic> characteristic;
+    private String gatewayId;  // ID of the gateway used for provisioning
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

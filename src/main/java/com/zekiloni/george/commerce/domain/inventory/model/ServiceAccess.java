@@ -25,5 +25,6 @@ public abstract class ServiceAccess {
     private ServiceStatus status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-    private String tenantId;;
+    private String tenantId;
+    private String gatewayId;  // ID of the gateway this service uses
 }

@@ -14,6 +14,12 @@ import java.time.OffsetDateTime;
 public abstract class Gateway {
     private String id;
     private GatewayType type;
+    private String name;
+    private String description;
+    private boolean enabled;
+    private int priority;
+    private String username;
+    private String password;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }

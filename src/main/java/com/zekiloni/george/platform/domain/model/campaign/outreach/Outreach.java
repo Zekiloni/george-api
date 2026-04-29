@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class Outreach {
     private String id;
+    private String campaignId;
     private String sessionToken;
     private String recipient;
     private String message;

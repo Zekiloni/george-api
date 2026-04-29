@@ -1,0 +1,361 @@
+openapi: 3.0.0
+info:
+  title: George API - Gateway Management
+  description: Multi-tenant SaaS platform API for gateway management
+  version: 1.0.0
+  contact:
+    name: George API Team
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Development server
+  - url: https://api.george.com/v1
+    description: Production server
+
+security:
+  - bearerAuth: []
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    Gateway:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          type: string
+          enum: [SMTP, GSM]
+        config:
+          oneOf:
+            - $ref: '#/components/schemas/SmtpGatewayConfig'
+            - $ref: '#/components/schemas/GsmGatewayConfig'
+
+    SmtpGatewayConfig:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [STALWART, SENDGRID, MAILGUN]
+        host:
+          type: string
+        port:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        fromDomain:
+          type: string
+          nullable: true
+
+    GsmGatewayConfig:
+      type: object
+      properties:
+        provider:
+          type: string
+          enum: [EJOIN, TWILIO, CLICKATELL]
+        ipAddress:
+          type: string
+        port:
+          type: integer
+        username:
+          type: string
+        password:
+          type: string
+        totalPort:
+          type: integer
+
+    GatewayCreateRequest:
+      type: object
+      required:
+        - type
+        - name
+      properties:
+        type:
+          type: string
+          enum: [SMTP, GSM]
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        priority:
+          type: integer
+          default: 0
+        maxConnections:
+          type: integer
+          minimum: 1
+          default: 100
+        smtpConfig:
+          $ref: '#/components/schemas/SmtpGatewayConfig'
+        gsmConfig:
+          $ref: '#/components/schemas/GsmGatewayConfig'
+
+    GatewayUpdateRequest:
+      type: object
+      properties:
+        name:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+          maxLength: 1000
+        priority:
+          type: integer
+        maxConnections:
+          type: integer
+          minimum: 1
+        smtpConfig:
+          $ref: '#/components/schemas/SmtpGatewayConfig'
+        gsmConfig:
+          $ref: '#/components/schemas/GsmGatewayConfig'
+
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+
+paths:
+  /gateway:
+    get:
+      summary: Get all gateways
+      description: Retrieve a list of all gateways for the current tenant
+      responses:
+        '200':
+          description: List of gateways
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Gateway'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    post:
+      summary: Create a new gateway
+      description: Create a new gateway (Admin only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GatewayCreateRequest'
+      responses:
+        '200':
+          description: Gateway created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gateway'
+        '400':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /gateway/{id}:
+    get:
+      summary: Get gateway by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Gateway details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gateway'
+        '404':
+          description: Gateway not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    put:
+      summary: Update gateway
+      description: Update gateway configuration (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GatewayUpdateRequest'
+      responses:
+        '200':
+          description: Gateway updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gateway'
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+    delete:
+      summary: Delete gateway
+      description: Delete a gateway (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Gateway deleted successfully
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /gateway/{id}/enable:
+    post:
+      summary: Enable gateway
+      description: Enable a gateway (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Gateway enabled successfully
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /gateway/{id}/disable:
+    post:
+      summary: Disable gateway
+      description: Disable a gateway (Admin only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: Gateway disabled successfully
+        '403':
+          description: Admin access required
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /gateway/type/{type}:
+    get:
+      summary: Get gateways by type
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [SMTP, GSM]
+      responses:
+        '200':
+          description: List of gateways of specified type
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Gateway'
+
+  /gateway/active:
+    get:
+      summary: Get active gateways
+      description: Get all enabled/active gateways
+      responses:
+        '200':
+          description: List of active gateways
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Gateway'
+
+  /gateway/least-loaded/{type}:
+    get:
+      summary: Get least loaded gateway
+      description: Get the gateway with the fewest active connections
+      parameters:
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [SMTP, GSM]
+      responses:
+        '200':
+          description: Least loaded gateway
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Gateway'

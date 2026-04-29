@@ -1,4 +1,4 @@
-package com.zekiloni.george.platform.application.port.out.gateway;
+package com.zekiloni.george.platform.application.port.in.gateway;
 
 import com.zekiloni.george.platform.domain.model.gatway.Gateway;
 import com.zekiloni.george.platform.domain.model.gatway.GatewayType;
@@ -6,16 +6,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Optional;
 
-public interface GatewayRepositoryPort {
-    Gateway save(Gateway gateway);
-    Gateway update(Gateway gateway);
-    void deleteById(String id);
-    Optional<Gateway> findById(String id);
+public interface GatewayQueryUseCase {
+    Gateway findById(String id);
     List<Gateway> findByType(GatewayType type);
     List<Gateway> findAll();
     Page<Gateway> findAll(Pageable pageable);
     List<Gateway> findActive();
-    boolean existsById(String id);
+    Gateway findLeastLoaded(GatewayType type);
 }
