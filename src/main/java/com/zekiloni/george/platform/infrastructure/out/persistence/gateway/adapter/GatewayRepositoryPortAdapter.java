@@ -29,15 +29,13 @@ public class GatewayRepositoryPortAdapter implements GatewayRepositoryPort {
     @Override
     @Transactional
     public Gateway save(Gateway gateway) {
-        GatewayEntity entity = entityMapper.toEntity(gateway);
-        return entityMapper.toDomain(gatewayJpaRepository.save(entity));
+        return entityMapper.toDomain(gatewayJpaRepository.save(entityMapper.toEntity(gateway)));
     }
 
     @Override
     @Transactional
     public Gateway update(Gateway gateway) {
-        GatewayEntity entity = entityMapper.toEntity(gateway);
-        return entityMapper.toDomain(gatewayJpaRepository.save(entity));
+        return entityMapper.toDomain(gatewayJpaRepository.save(entityMapper.toEntity(gateway)));
     }
 
     @Override
