@@ -28,19 +28,21 @@ public interface GatewayEntityMapper {
 
     @ObjectFactory
     default Gateway createDomain(GatewayEntity entity) {
-        return switch (entity) {
-            case SmtpGatewayEntity ignored -> new SmtpGateway();
-            case GsmGatewayEntity ignored -> new GsmGateway();
-            default -> throw new IllegalArgumentException("Unknown entity type: " + entity.getClass());
-        };
+        if (entity instanceof SmtpGatewayEntity) {
+            return new SmtpGateway();
+        } else if (entity instanceof GsmGatewayEntity) {
+            return new GsmGateway();
+        }
+        throw new IllegalArgumentException("Unknown entity type: " + entity.getClass());
     }
 
     @ObjectFactory
     default GatewayEntity createEntity(Gateway gateway) {
-        return switch (gateway) {
-            case SmtpGateway ignored -> new SmtpGatewayEntity();
-            case GsmGateway ignored -> new GsmGatewayEntity();
-            default -> throw new IllegalArgumentException("Unknown domain type: " + gateway.getClass());
-        };
+        if (gateway instanceof SmtpGateway) {
+            return new SmtpGatewayEntity();
+        } else if (gateway instanceof GsmGateway) {
+            return new GsmGatewayEntity();
+        }
+        throw new IllegalArgumentException("Unknown domain type: " + gateway.getClass());
     }
 }

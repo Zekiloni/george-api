@@ -20,14 +20,11 @@ import org.springframework.data.domain.Pageable;
 @RequiredArgsConstructor
 @Slf4j
 public class GatewayManagementService implements GatewayCreateUseCase, GatewayQueryUseCase {
-
     private final GatewayRepositoryPort gatewayRepository;
 
     @Override
     @Transactional
     public Gateway create(Gateway gateway) {
-        gateway.setCreatedAt(OffsetDateTime.now());
-        gateway.setUpdatedAt(OffsetDateTime.now());
         Gateway saved = gatewayRepository.save(gateway);
         log.info("Created gateway: id={}, type={}", saved.getId(), saved.getType());
         return saved;
@@ -36,7 +33,6 @@ public class GatewayManagementService implements GatewayCreateUseCase, GatewayQu
     @Override
     @Transactional
     public Gateway update(Gateway gateway) {
-        gateway.setUpdatedAt(OffsetDateTime.now());
         Gateway updated = gatewayRepository.update(gateway);
         log.info("Updated gateway: id={}", updated.getId());
         return updated;
@@ -55,7 +51,6 @@ public class GatewayManagementService implements GatewayCreateUseCase, GatewayQu
         Gateway gateway = gatewayRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Gateway not found: " + id));
         gateway.setEnabled(true);
-        gateway.setUpdatedAt(OffsetDateTime.now());
         gatewayRepository.update(gateway);
         log.info("Enabled gateway: id={}", id);
     }
@@ -66,7 +61,6 @@ public class GatewayManagementService implements GatewayCreateUseCase, GatewayQu
         Gateway gateway = gatewayRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Gateway not found: " + id));
         gateway.setEnabled(false);
-        gateway.setUpdatedAt(OffsetDateTime.now());
         gatewayRepository.update(gateway);
         log.info("Disabled gateway: id={}", id);
     }
