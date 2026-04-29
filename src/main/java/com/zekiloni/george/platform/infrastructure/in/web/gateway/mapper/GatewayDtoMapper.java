@@ -2,11 +2,11 @@ package com.zekiloni.george.platform.infrastructure.in.web.gateway.mapper;
 
 import com.zekiloni.george.platform.domain.model.gatway.Gateway;
 import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmGateway;
-import com.zekiloni.george.platform.domain.model.gatway.gsm.GsmProvider;
 import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGateway;
-import com.zekiloni.george.platform.domain.model.gatway.smtp.SmtpGatewayProvider;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayDto;
+import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GsmGatewayCreateDto;
+import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.SmtpGatewayCreateDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.ObjectFactory;
 import org.mapstruct.SubclassMapping;
@@ -21,46 +21,20 @@ public interface GatewayDtoMapper {
     })
     GatewayDto toDto(Gateway gateway);
 
-    default Gateway toDomain(GatewayCreateDto dto) {
-        return switch (dto.type()) {
-            case SMTP -> {
-                SmtpGateway gateway = new SmtpGateway();
-                gateway.setType(dto.type());
-                gateway.setName(dto.name());
-                gateway.setDescription(dto.description());
-                gateway.setPriority(dto.priority());
-                gateway.setUsername(dto.smtpConfig().username());
-                gateway.setProvider(SmtpGatewayProvider.valueOf(dto.smtpConfig().provider()));
-                gateway.setHost(dto.smtpConfig().host());
-                gateway.setPort(dto.smtpConfig().port());
-                gateway.setFromDomain(dto.smtpConfig().fromDomain());
-                gateway.setUseTls(dto.smtpConfig().useTls());
-                yield gateway;
-            }
-            case GSM -> {
-                GsmGateway gateway = new GsmGateway();
-                gateway.setType(dto.type());
-                gateway.setName(dto.name());
-                gateway.setDescription(dto.description());
-                gateway.setPriority(dto.priority());
-                gateway.setUsername(dto.gsmConfig().username());
-                gateway.setProvider(GsmProvider.valueOf(dto.gsmConfig().provider()));
-                gateway.setIpAddress(dto.gsmConfig().ipAddress());
-                gateway.setPort(dto.gsmConfig().port());
-                gateway.setTotalPort(dto.gsmConfig().totalPort());
-                yield gateway;
-            }
-        };
-    }
+    @SubclassMappings({
+            @SubclassMapping(source = SmtpGatewayCreateDto.class, target = SmtpGateway.class),
+            @SubclassMapping(source = GsmGatewayCreateDto.class, target = GsmGateway.class)
+    })
+
+    Gateway toDomain(GatewayCreateDto dto);
 
     @ObjectFactory
     default Gateway createGateway(GatewayCreateDto dto) {
-        if (dto.type() == null) {
-            throw new IllegalArgumentException("Gateway type cannot be null");
-        }
-        return switch (dto.type()) {
-            case SMTP -> new SmtpGateway();
-            case GSM -> new GsmGateway();
+        return switch (dto) {
+            case SmtpGatewayCreateDto smtp -> new SmtpGateway();
+            case GsmGatewayCreateDto gsm -> new GsmGateway();
+            default -> throw new IllegalStateException("Unexpected value: " + dto);
         };
     }
+
 }
