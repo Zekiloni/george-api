@@ -2,6 +2,7 @@ package com.zekiloni.george.platform.infrastructure.in.ws;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserEvent;
+import com.zekiloni.george.platform.infrastructure.in.ws.bus.SessionEventBus;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.ConnectedSession;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.UserSessionRegistry;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,11 @@ import java.net.URI;
 public class OperatorWebSocketHandler extends TextWebSocketHandler {
 
     private static final String SESSION_ID_ATTR = "sessionId";
+    private static final String SUBSCRIPTION_ATTR = "eventsSubscription";
     private static final CloseStatus SESSION_NOT_FOUND = new CloseStatus(4004, "session not found");
 
     private final UserSessionRegistry registry;
+    private final SessionEventBus eventBus;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -34,23 +37,37 @@ public class OperatorWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        ConnectedSession connected = registry.get(sessionId).orElse(null);
-        if (connected == null) {
-            ws.close(SESSION_NOT_FOUND);
-            return;
-        }
-
         ws.getAttributes().put(SESSION_ID_ATTR, sessionId);
         registry.subscribeOperator(sessionId, ws);
-        replayBuffer(ws, connected);
+
+        registry.get(sessionId).ifPresent(connected -> replayBuffer(ws, connected));
+
+        SessionEventBus.Subscription subscription = eventBus.subscribe(
+                SessionEventBus.eventsChannel(sessionId),
+                msg -> deliverEventToOperator(ws, msg));
+        ws.getAttributes().put(SUBSCRIPTION_ATTR, subscription);
+
         log.info("Operator subscribed: sessionId={}", sessionId);
     }
 
     @Override
     public void afterConnectionClosed(WebSocketSession ws, CloseStatus status) throws Exception {
+        SessionEventBus.Subscription subscription = (SessionEventBus.Subscription) ws.getAttributes().remove(SUBSCRIPTION_ATTR);
+        if (subscription != null) {
+            subscription.close();
+        }
         registry.unsubscribeOperator(ws);
         String sessionId = (String) ws.getAttributes().get(SESSION_ID_ATTR);
         log.info("Operator unsubscribed: sessionId={}, status={}", sessionId, status);
+    }
+
+    private void deliverEventToOperator(WebSocketSession ws, String message) {
+        if (!ws.isOpen()) return;
+        try {
+            ws.sendMessage(new TextMessage(message));
+        } catch (IOException e) {
+            log.warn("Failed to deliver event to operator: {}", e.getMessage());
+        }
     }
 
     private void replayBuffer(WebSocketSession ws, ConnectedSession connected) {

@@ -15,6 +15,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserSession {
     private String id;
+    private String tenantId;
     private String wsToken;
     private String fingerprint;
     private String userAgent;

@@ -7,4 +7,5 @@ public enum OutreachStatus {
     VISITED,
     FAILED,
     COMPLETED,
+    ABANDONED,
 }

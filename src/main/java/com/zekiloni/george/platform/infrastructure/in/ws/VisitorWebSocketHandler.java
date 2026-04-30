@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.application.port.out.campaign.UserSessionRep
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.InteractionType;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserEvent;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
+import com.zekiloni.george.platform.infrastructure.in.ws.bus.SessionEventBus;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.ConnectedSession;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.UserSessionLifecycleService;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.UserSessionRegistry;
@@ -20,7 +21,6 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 import java.io.IOException;
 import java.net.URI;
 import java.time.OffsetDateTime;
-import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -29,12 +29,13 @@ import java.util.UUID;
 public class VisitorWebSocketHandler extends TextWebSocketHandler {
 
     private static final String SESSION_ID_ATTR = "sessionId";
+    private static final String SUBSCRIPTION_ATTR = "actionsSubscription";
     private static final CloseStatus AUTH_FAILED = new CloseStatus(4001, "auth failed");
-    private static final CloseStatus RATE_LIMITED = new CloseStatus(4002, "rate limited");
 
     private final UserSessionRepositoryPort sessionRepository;
     private final UserSessionRegistry registry;
     private final UserSessionLifecycleService lifecycleService;
+    private final SessionEventBus eventBus;
     private final ObjectMapper objectMapper;
     private final AuditorAware<String> auditorAware;
 
@@ -52,9 +53,16 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        ws.getAttributes().put(SESSION_ID_ATTR, session.getId());
-        registry.registerVisitor(session.getId(), ws);
-        log.info("Visitor connected: sessionId={}", session.getId());
+        String sessionId = session.getId();
+        ws.getAttributes().put(SESSION_ID_ATTR, sessionId);
+        registry.registerVisitor(sessionId, ws);
+
+        SessionEventBus.Subscription subscription = eventBus.subscribe(
+                SessionEventBus.actionsChannel(sessionId),
+                msg -> deliverActionToVisitor(ws, sessionId, msg));
+        ws.getAttributes().put(SUBSCRIPTION_ATTR, subscription);
+
+        log.info("Visitor connected: sessionId={}", sessionId);
     }
 
     @Override
@@ -92,7 +100,7 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
         connected.appendEvent(event);
         connected.touchHeartbeat();
 
-        broadcastToOperators(connected, message);
+        eventBus.publish(SessionEventBus.eventsChannel(sessionId), objectMapper.writeValueAsString(event));
 
         if (event.getType() == InteractionType.SUBMIT) {
             lifecycleService.markCompleted(sessionId);
@@ -101,19 +109,31 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionClosed(WebSocketSession ws, CloseStatus status) throws Exception {
+        SessionEventBus.Subscription subscription = (SessionEventBus.Subscription) ws.getAttributes().remove(SUBSCRIPTION_ATTR);
+        if (subscription != null) {
+            subscription.close();
+        }
         String sessionId = (String) ws.getAttributes().get(SESSION_ID_ATTR);
         if (sessionId == null) return;
         log.info("Visitor disconnected: sessionId={}, status={}", sessionId, status);
     }
 
-    private void broadcastToOperators(ConnectedSession connected, TextMessage message) {
-        for (WebSocketSession opWs : connected.getOperatorSockets()) {
-            if (!opWs.isOpen()) continue;
+    private void deliverActionToVisitor(WebSocketSession ws, String sessionId, String message) {
+        registry.get(sessionId).ifPresent(connected -> {
             try {
-                opWs.sendMessage(message);
-            } catch (IOException e) {
-                log.warn("Failed to forward event to operator socket: {}", e.getMessage());
+                UserEvent action = objectMapper.readValue(message, UserEvent.class);
+                if (!connected.getBuffer().contains(action)) {
+                    connected.appendEvent(action);
+                }
+            } catch (Exception e) {
+                log.debug("Action message not parseable for buffer append on session {}: {}", sessionId, e.getMessage());
             }
+        });
+        if (!ws.isOpen()) return;
+        try {
+            ws.sendMessage(new TextMessage(message));
+        } catch (IOException e) {
+            log.warn("Failed to deliver action to visitor: {}", e.getMessage());
         }
     }
 

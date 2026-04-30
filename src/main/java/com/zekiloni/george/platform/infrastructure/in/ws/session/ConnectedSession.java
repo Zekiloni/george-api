@@ -35,7 +35,8 @@ public class ConnectedSession {
     @Getter
     private final AtomicLong lastHeartbeatAt = new AtomicLong(Instant.now().toEpochMilli());
 
-    private final RateLimiter rateLimiter = new RateLimiter(20, 50);
+    private final RateLimiter eventRateLimiter = new RateLimiter(20, 50);
+    private final RateLimiter commandRateLimiter = new RateLimiter(5, 10);
 
     public ConnectedSession(String sessionId, WebSocketSession visitorSocket) {
         this.sessionId = sessionId;
@@ -54,7 +55,11 @@ public class ConnectedSession {
     }
 
     public boolean tryConsumeEventToken() {
-        return rateLimiter.tryConsume();
+        return eventRateLimiter.tryConsume();
+    }
+
+    public boolean tryConsumeCommandToken() {
+        return commandRateLimiter.tryConsume();
     }
 
     public void touchHeartbeat() {

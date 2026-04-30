@@ -14,6 +14,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     private final VisitorWebSocketHandler visitorHandler;
     private final OperatorWebSocketHandler operatorHandler;
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
 
     @Value("${api.cors.allowed-origins}")
     private String allowedOrigins;
@@ -23,6 +24,7 @@ public class WebSocketConfig implements WebSocketConfigurer {
         registry.addHandler(visitorHandler, "/ws/visitor")
                 .setAllowedOrigins(allowedOrigins);
         registry.addHandler(operatorHandler, "/ws/operator")
+                .addInterceptors(jwtHandshakeInterceptor)
                 .setAllowedOrigins(allowedOrigins);
     }
 }

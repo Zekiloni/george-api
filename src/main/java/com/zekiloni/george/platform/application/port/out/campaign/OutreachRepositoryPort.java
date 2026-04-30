@@ -12,4 +12,5 @@ public interface OutreachRepositoryPort {
 
     Stream<Outreach> findByCampaignId(String campaignId);
     Optional<Outreach> findBySessionToken(String sessionToken);
+    Optional<Outreach> findById(String id);
 }

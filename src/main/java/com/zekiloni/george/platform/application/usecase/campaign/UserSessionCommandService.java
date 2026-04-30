@@ -1,20 +1,20 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zekiloni.george.platform.application.port.in.campaign.UserSessionCommandUseCase;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserEvent;
+import com.zekiloni.george.platform.infrastructure.in.ws.bus.SessionEventBus;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.ConnectedSession;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.UserSessionRegistry;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.AuditorAware;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.socket.TextMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.server.ResponseStatusException;
 
-import java.io.IOException;
 import java.time.OffsetDateTime;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Service
@@ -23,27 +23,30 @@ import java.util.UUID;
 public class UserSessionCommandService implements UserSessionCommandUseCase {
 
     private final UserSessionRegistry registry;
+    private final SessionEventBus eventBus;
     private final ObjectMapper objectMapper;
     private final AuditorAware<String> auditorAware;
 
     @Override
     public void send(String sessionId, UserEvent command) {
-        ConnectedSession connected = registry.get(sessionId)
-                .orElseThrow(() -> new NoSuchElementException("Session not connected: " + sessionId));
+        ConnectedSession connected = registry.get(sessionId).orElse(null);
+        if (connected != null && !connected.tryConsumeCommandToken()) {
+            throw new ResponseStatusException(HttpStatus.TOO_MANY_REQUESTS, "Command rate limit exceeded");
+        }
 
         stamp(command);
-        connected.appendEvent(command);
-
-        WebSocketSession visitor = connected.getVisitorSocket();
-        if (visitor == null || !visitor.isOpen()) {
-            log.warn("Visitor socket not open for session {}; command dropped (no offline queue)", sessionId);
-            return;
+        if (connected != null) {
+            connected.appendEvent(command);
         }
 
         try {
-            visitor.sendMessage(new TextMessage(objectMapper.writeValueAsString(command)));
-        } catch (IOException e) {
-            log.error("Failed to send command to visitor for session {}: {}", sessionId, e.getMessage());
+            eventBus.publish(SessionEventBus.actionsChannel(sessionId), objectMapper.writeValueAsString(command));
+        } catch (JsonProcessingException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Failed to serialize command", e);
+        }
+
+        if (connected == null) {
+            log.debug("No local visitor for session {}; command published to bus for remote instance", sessionId);
         }
     }
 
