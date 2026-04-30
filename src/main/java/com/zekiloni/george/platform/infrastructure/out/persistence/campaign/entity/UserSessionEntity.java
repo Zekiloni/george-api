@@ -1,12 +1,16 @@
 package com.zekiloni.george.platform.infrastructure.out.persistence.campaign.entity;
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.TenantEntity;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserEvent;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "user_sessions")
@@ -18,6 +22,9 @@ import java.time.OffsetDateTime;
 @EqualsAndHashCode(callSuper = true)
 @ToString(exclude = {"outreach"})
 public class UserSessionEntity extends TenantEntity {
+    @Column(name = "ws_token", unique = true)
+    private String wsToken;
+
     @Column(name = "fingerprint")
     private String fingerprint;
 
@@ -40,4 +47,8 @@ public class UserSessionEntity extends TenantEntity {
 
     @Column(name = "last_activity_at")
     private OffsetDateTime lastActivityAt;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "events", columnDefinition = "jsonb")
+    private List<UserEvent> events;
 }

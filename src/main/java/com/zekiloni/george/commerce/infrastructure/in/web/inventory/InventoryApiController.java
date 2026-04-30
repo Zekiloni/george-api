@@ -1,5 +1,6 @@
 package com.zekiloni.george.commerce.infrastructure.in.web.inventory;
 
+import com.zekiloni.george.commerce.application.port.in.ServiceAccessCancelUseCase;
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessQueryUseCase;
 import com.zekiloni.george.commerce.infrastructure.in.web.inventory.dto.ServiceAccessDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.inventory.mapper.ServiceAccessDtoMapper;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class InventoryApiController {
     private final ServiceAccessQueryUseCase queryUseCase;
+    private final ServiceAccessCancelUseCase cancelUseCase;
     private final ServiceAccessDtoMapper mapper;
 
     @GetMapping
@@ -28,6 +31,13 @@ public class InventoryApiController {
                 .map(mapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PreAuthorize("hasRole('admin')")
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<Void> cancelServiceAccess(@PathVariable String id) {
+        cancelUseCase.cancel(id);
+        return ResponseEntity.noContent().build();
     }
 
 }

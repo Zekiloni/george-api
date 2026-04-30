@@ -15,10 +15,11 @@ import java.util.List;
 @AllArgsConstructor
 public class UserSession {
     private String id;
+    private String wsToken;
     private String fingerprint;
     private String userAgent;
     private String ipAddress;
-    private List<UserEvent> event;
+    private List<UserEvent> events;
     private Outreach outreach;
     private UserSessionStatus status;
     private int viewCount;

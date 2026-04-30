@@ -3,6 +3,7 @@ package com.zekiloni.george.commerce.domain.order.service.strategy;
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessCreateUseCase;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.PageServiceAccess;
+import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.commerce.domain.order.model.Order;
 import com.zekiloni.george.commerce.domain.order.model.OrderItem;
@@ -28,7 +29,7 @@ public class PageProvisioningStrategy implements ProvisioningStrategy {
     }
 
     @Override
-    public void deprovision(OrderItem order) {
+    public void deprovision(ServiceAccess access) {
     }
 
     private PageServiceAccess createServiceAccess(Order order, OrderItem orderItem) {

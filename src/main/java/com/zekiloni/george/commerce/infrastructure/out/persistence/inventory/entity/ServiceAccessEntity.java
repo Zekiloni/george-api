@@ -51,4 +51,7 @@ public abstract class ServiceAccessEntity extends TenantEntity {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_item_id", nullable = false, unique = true)
     private OrderItemEntity orderItem;
+
+    @Column(name = "gateway_id")
+    private String gatewayId;
 }

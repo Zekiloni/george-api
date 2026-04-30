@@ -19,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.Base64;
 
@@ -30,9 +31,11 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
     private final PageRepositoryPort pageRepository;
     private final UserSessionRepositoryPort userSessionRepository;
 
+    private static final SecureRandom RANDOM = new SecureRandom();
+
     @Override
     @Transactional
-    public PageDefinition handle(String token, String userAgent, String ipAddress) {
+    public Result handle(String token, String userAgent, String ipAddress) {
         Outreach outreach = outreachRepository.findBySessionToken(token)
                 .orElseThrow(() -> new RuntimeException("Outreach not found for token: " + token));
 
@@ -45,6 +48,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         String fingerprint = generateFingerprint(token, userAgent, ipAddress);
 
         UserSession session = UserSession.builder()
+                .wsToken(generateWsToken())
                 .fingerprint(fingerprint)
                 .userAgent(userAgent)
                 .ipAddress(ipAddress)
@@ -54,14 +58,20 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
                 .lastActivityAt(OffsetDateTime.now())
                 .build();
 
-        userSessionRepository.save(session);
+        UserSession saved = userSessionRepository.save(session);
 
         if (outreach.getStatus() == OutreachStatus.SENT) {
             outreach.setStatus(OutreachStatus.VISITED);
             outreachRepository.save(outreach);
         }
 
-        return page.getDefinition();
+        return new Result(saved.getId(), saved.getWsToken(), page.getDefinition());
+    }
+
+    private String generateWsToken() {
+        byte[] bytes = new byte[32];
+        RANDOM.nextBytes(bytes);
+        return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
     }
 
     private String generateFingerprint(String token, String userAgent, String ipAddress) {

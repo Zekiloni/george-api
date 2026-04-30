@@ -10,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface InventoryRepositoryPort {
     ServiceAccess save(ServiceAccess serviceAccess);
@@ -18,6 +19,10 @@ public interface InventoryRepositoryPort {
     Optional<ServiceAccess> findById(String id);
 
     boolean hasActiveAccess(ServiceSpecification serviceSpecification);
+
+    Set<Integer> findAllocatedGsmPorts(String gatewayId);
+
+    List<ServiceAccess> findExpired(ServiceStatus status, OffsetDateTime cutoff);
 
     int updateToSuspended(
             ServiceStatus currentStatus,

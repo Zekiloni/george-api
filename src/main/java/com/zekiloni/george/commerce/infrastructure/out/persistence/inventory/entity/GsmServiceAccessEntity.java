@@ -10,18 +10,9 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "smtp_service_access")
-public class SmtpServiceAccessEntity extends ServiceAccessEntity {
-
-    @Column(name = "smtp_server")
-    private String smtpServer;
+@Table(name = "gsm_service_access")
+public class GsmServiceAccessEntity extends ServiceAccessEntity {
 
     @Column(name = "port")
     private int port;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
 }

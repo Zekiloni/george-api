@@ -1,6 +1,7 @@
 package com.zekiloni.george.commerce.domain.order.service.strategy;
 
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
+import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.commerce.domain.order.model.Order;
 import com.zekiloni.george.commerce.domain.order.model.OrderItem;
 
@@ -11,7 +12,7 @@ public interface ProvisioningStrategy {
 
     void provision(Order order, OrderItem orderItem);
 
-    void deprovision(OrderItem order);
+    void deprovision(ServiceAccess access);
 
     default OffsetDateTime getValidTo(OrderItem orderItem) {
         OffsetDateTime now = OffsetDateTime.now();

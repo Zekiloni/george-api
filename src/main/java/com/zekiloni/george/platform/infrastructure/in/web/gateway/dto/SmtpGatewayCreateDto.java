@@ -19,4 +19,5 @@ public class SmtpGatewayCreateDto extends GatewayCreateDto {
     private @Positive int port;
     private String fromDomain;
     private boolean useTls;
+    private String adminUrl;
 }

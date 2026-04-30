@@ -7,6 +7,9 @@ import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repo
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Component
 @RequiredArgsConstructor
 public class UserSessionRepositoryPortAdapter implements UserSessionRepositoryPort {
@@ -16,5 +19,15 @@ public class UserSessionRepositoryPortAdapter implements UserSessionRepositoryPo
     @Override
     public UserSession save(UserSession session) {
         return mapper.toDomain(jpaRepository.save(mapper.toEntity(session)));
+    }
+
+    @Override
+    public Optional<UserSession> findById(String id) {
+        return jpaRepository.findById(UUID.fromString(id)).map(mapper::toDomain);
+    }
+
+    @Override
+    public Optional<UserSession> findByWsToken(String wsToken) {
+        return jpaRepository.findByWsToken(wsToken).map(mapper::toDomain);
     }
 }

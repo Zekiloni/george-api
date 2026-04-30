@@ -18,4 +18,5 @@ public class SmtpGateway extends Gateway {
     private int port;
     private String fromDomain;
     private boolean useTls;
+    private String adminUrl;
 }

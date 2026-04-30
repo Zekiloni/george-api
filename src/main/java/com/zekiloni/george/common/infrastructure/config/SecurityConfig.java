@@ -45,6 +45,8 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/*").permitAll()
                 .requestMatchers("/v3/api-docs").permitAll()
                 .requestMatchers("/**/webhook").permitAll()
+                .requestMatchers("/**/user-session/**").permitAll()
+                .requestMatchers("/ws/visitor/**").permitAll()
                 .anyRequest().authenticated());
         http.cors(cors -> cors.configurationSource(corsConfigurationSource()));
         http.csrf(AbstractHttpConfigurer::disable);

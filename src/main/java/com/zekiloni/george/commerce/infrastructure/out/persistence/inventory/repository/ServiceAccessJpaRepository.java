@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 @Repository
@@ -57,4 +58,15 @@ public interface ServiceAccessJpaRepository
             @Param("now") OffsetDateTime now,
             @Param("gracePeriodEnd") OffsetDateTime gracePeriodEnd
     );
+
+    @Query("""
+        SELECT g.port
+        FROM GsmServiceAccessEntity g
+        WHERE g.gatewayId = :gatewayId
+          AND g.port <> 0
+          AND g.status = com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus.ACTIVE
+        """)
+    Set<Integer> findAllocatedGsmPorts(@Param("gatewayId") String gatewayId);
+
+    List<ServiceAccessEntity> findAllByStatusAndValidToBefore(ServiceStatus status, OffsetDateTime cutoff);
 }

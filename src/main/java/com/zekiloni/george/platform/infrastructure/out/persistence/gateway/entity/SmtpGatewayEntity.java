@@ -33,4 +33,7 @@ public class SmtpGatewayEntity extends GatewayEntity {
 
     @Column(name = "use_tls")
     private boolean useTls;
+
+    @Column(name = "admin_url")
+    private String adminUrl;
 }

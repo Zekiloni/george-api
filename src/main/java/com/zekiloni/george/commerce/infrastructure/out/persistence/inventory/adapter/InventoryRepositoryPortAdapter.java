@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 @Component
@@ -58,5 +59,17 @@ public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
     @Override
     public boolean hasActiveAccess(ServiceSpecification serviceSpecification) {
         return repository.hasActiveAccess(serviceSpecification);
+    }
+
+    @Override
+    public Set<Integer> findAllocatedGsmPorts(String gatewayId) {
+        return repository.findAllocatedGsmPorts(gatewayId);
+    }
+
+    @Override
+    public List<ServiceAccess> findExpired(ServiceStatus status, OffsetDateTime cutoff) {
+        return repository.findAllByStatusAndValidToBefore(status, cutoff).stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

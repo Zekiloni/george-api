@@ -4,8 +4,11 @@ import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.enti
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
 public interface UserSessionJpaRepository extends JpaRepository<UserSessionEntity, UUID> {
+
+    Optional<UserSessionEntity> findByWsToken(String wsToken);
 }

@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.domain.model.lead.Lead;
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessCreateUseCase;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.LeadServiceAccess;
+import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.commerce.domain.order.model.Order;
 import com.zekiloni.george.commerce.domain.order.model.OrderItem;
@@ -43,8 +44,10 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
     }
 
     @Override
-    public void deprovision(OrderItem order) {
-        // No deprovisioning needed for leads as they are not consumed or depleted
+    public void deprovision(ServiceAccess access) {
+        if (access instanceof LeadServiceAccess lead) {
+            lead.setLeads(List.of());
+        }
     }
 
     private @NonNull List<Lead> getLeads(OrderItem order) {

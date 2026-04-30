@@ -1,6 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.in.web;
 
 import com.zekiloni.george.platform.application.port.in.campaign.UserSessionCreateUseCase;
+import com.zekiloni.george.platform.application.port.in.campaign.UserSessionCreateUseCase.Result;
 import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,13 @@ public class UserSessionApiController {
     private final UserSessionCreateUseCase createUseCase;
 
     @GetMapping("/{token}")
-    public ResponseEntity<PageDefinition> create(@PathVariable String token, HttpServletRequest request) {
-        PageDefinition definition = createUseCase.handle(token, getUserAgent(request), getIpAddress(request));
-        return ResponseEntity.ok(definition);
+    public ResponseEntity<UserSessionBootstrapDto> create(@PathVariable String token, HttpServletRequest request) {
+        Result result = createUseCase.handle(token, getUserAgent(request), getIpAddress(request));
+        return ResponseEntity.ok(new UserSessionBootstrapDto(
+                result.sessionId(),
+                result.wsToken(),
+                result.pageDefinition()));
     }
+
+    public record UserSessionBootstrapDto(String sessionId, String wsToken, PageDefinition pageDefinition) {}
 }
