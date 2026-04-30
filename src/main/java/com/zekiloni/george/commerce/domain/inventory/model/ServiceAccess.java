@@ -26,5 +26,4 @@ public abstract class ServiceAccess {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private String tenantId;
-    private String gatewayId;
 }
