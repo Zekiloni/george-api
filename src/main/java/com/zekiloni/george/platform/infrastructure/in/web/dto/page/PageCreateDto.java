@@ -1,5 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.in.web.dto.page;
 
+import com.zekiloni.george.platform.domain.model.page.PageStatus;
 import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
@@ -45,6 +46,11 @@ public class PageCreateDto {
      * URL do favicon-a
      */
     private String faviconUrl;
+
+    /**
+     * Status stranice (DRAFT, PUBLISHED, ARCHIVED). Default je DRAFT ako nije naveden.
+     */
+    private PageStatus status;
 
     /**
      * Inicijalna definicija stranice

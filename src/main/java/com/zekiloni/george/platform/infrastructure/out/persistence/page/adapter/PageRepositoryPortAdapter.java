@@ -26,7 +26,9 @@ public class PageRepositoryPortAdapter implements PageRepositoryPort {
 
     @Override
     public Optional<Page> findById(String id) {
-        return repository.findById(UUID.fromString(id)).map(mapper::toDomain);
+        return parseUuid(id)
+            .flatMap(repository::findById)
+            .map(mapper::toDomain);
     }
 
     @Override
@@ -41,16 +43,25 @@ public class PageRepositoryPortAdapter implements PageRepositoryPort {
 
     @Override
     public void deleteById(String id) {
-        repository.deleteById(UUID.fromString(id));
+        parseUuid(id).ifPresent(repository::deleteById);
     }
 
     @Override
     public boolean existsById(String id) {
-        return repository.existsById(UUID.fromString(id));
+        return parseUuid(id).map(repository::existsById).orElse(false);
     }
 
     @Override
     public boolean existsBySlug(String slug) {
         return repository.findBySlug(slug).isPresent();
+    }
+
+    private static Optional<UUID> parseUuid(String id) {
+        if (id == null || id.isBlank()) return Optional.empty();
+        try {
+            return Optional.of(UUID.fromString(id));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 }
