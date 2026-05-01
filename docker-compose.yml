@@ -1,6 +1,11 @@
 name: 'george'
 version: '3.8'
 
+x-environment: &default-environment
+    POSTGRES_USER: g-user
+    POSTGRES_PASSWORD: g-pw
+    POSTGRES_DB: postgres
+
 services:
   postgres:
     image: postgres:18-alpine

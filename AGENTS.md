@@ -6,6 +6,7 @@
 - Use IntelliJ IDEA default code style for Java.
 
 ## Functional Programming
+
 - Use Stream API for collection processing.
 - Use `Optional` to handle nullable values instead of null checks.
 - Use method references and lambda expressions for cleaner code.
@@ -19,6 +20,7 @@
 - Use `Stream.ofNullable()` to handle potential null collections gracefully.
 
 ## Coding Conventions
+
 - Follow standard Java naming conventions: classes in PascalCase, methods and variables in camelCase, constants in UPPER_SNAKE_CASE.
 - Use `final` keyword for method parameters and local variables to indicate immutability.
 - Avoid using `this` keyword unless necessary for disambiguation.
