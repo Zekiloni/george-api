@@ -22,7 +22,6 @@ public class CampaignQueryService implements CampaignQueryUseCase {
 
     @Override
     public Page<Campaign> findAll(Pageable pageable) {
-        // TODO: implement paginated query in repository
-        throw new UnsupportedOperationException("Not yet implemented");
+        return repository.findAll(pageable);
     }
 }

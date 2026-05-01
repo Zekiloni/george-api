@@ -7,6 +7,7 @@ import com.zekiloni.george.platform.application.port.in.page.PageUpdateUseCase;
 
 import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageUpdateDto;
 
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.PageDtoMapper;
 import jakarta.validation.Valid;
@@ -32,7 +33,23 @@ public class PageApiController {
     public ResponseEntity<PageDto> create(
         @RequestBody @Valid PageCreateDto pageCreate
     ) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(webDtoMapper.toDto(webDtoMapper.toDomain(pageCreate)));
+        var saved = createUseCase.handle(webDtoMapper.toDomain(pageCreate));
+        return ResponseEntity.status(HttpStatus.CREATED).body(webDtoMapper.toDto(saved));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<PageDto> update(
+        @PathVariable String id,
+        @RequestBody @Valid PageUpdateDto update
+    ) {
+        return queryUseCase.findById(id)
+            .map(existing -> {
+                webDtoMapper.updateDomainFromDto(update, existing);
+                return updateUseCase.handle(id, existing);
+            })
+            .map(webDtoMapper::toDto)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
 

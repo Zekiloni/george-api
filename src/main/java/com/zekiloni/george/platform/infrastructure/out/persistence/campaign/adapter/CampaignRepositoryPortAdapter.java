@@ -5,6 +5,8 @@ import com.zekiloni.george.platform.domain.model.campaign.Campaign;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.mapper.CampaignEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repository.CampaignJpaRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
@@ -35,6 +37,11 @@ public class CampaignRepositoryPortAdapter implements CampaignRepositoryPort {
     public Optional<Campaign> findById(String id) {
         return jpaRepository.findById(UUID.fromString(id))
                 .map(mapper::toDomain);
+    }
+
+    @Override
+    public Page<Campaign> findAll(Pageable pageable) {
+        return jpaRepository.findAll(pageable).map(mapper::toDomain);
     }
 
     @Override

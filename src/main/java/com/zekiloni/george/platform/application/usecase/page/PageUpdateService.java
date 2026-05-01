@@ -14,11 +14,11 @@ public class PageUpdateService implements PageUpdateUseCase {
 
     @Override
     public Page handle(String id, Page command) {
-
-        Page existingPage = repository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Page with id '" + id + "' not found"));
-
-        return repository.save(existingPage);
+        if (repository.findById(id).isEmpty()) {
+            throw new IllegalArgumentException("Page with id '" + id + "' not found");
+        }
+        command.setId(id);
+        return repository.save(command);
     }
 }
 

@@ -8,6 +8,8 @@ import com.zekiloni.george.platform.infrastructure.in.web.mapper.CampaignDto;
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.CampaignDtoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,6 +32,11 @@ public class CampaignApiController {
     public ResponseEntity<Void> createCampaign(@ModelAttribute @Valid CampaignCreateDto campaignCreate) throws IOException {
         createUseCase.handle(mapper.toDomain(campaignCreate), campaignCreate.file().getInputStream());
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<CampaignDto>> findAll(Pageable pageable) {
+        return ResponseEntity.ok(queryUseCase.findAll(pageable).map(mapper::toDto));
     }
 
     @GetMapping("/{id}")
