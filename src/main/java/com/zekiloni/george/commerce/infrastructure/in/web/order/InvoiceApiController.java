@@ -30,4 +30,20 @@ public class InvoiceApiController {
     public ResponseEntity<Page<InvoiceDto>> getAll(Pageable pageable, InvoiceSpecification specification) {
         return ResponseEntity.ok(queryUseCase.getAll(pageable, specification).map(mapper::toDto));
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<InvoiceDto> getById(@PathVariable String id) {
+        return queryUseCase.getById(id)
+                .map(mapper::toDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping("/order/{orderId}")
+    public ResponseEntity<InvoiceDto> getByOrderId(@PathVariable String orderId) {
+        return queryUseCase.getByOrderId(orderId)
+                .map(mapper::toDto)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
 }

@@ -10,6 +10,8 @@ import java.util.UUID;
 
 public interface InvoiceRepositoryPort {
 
+    Optional<Invoice> findById(UUID id);
+
     Optional<Invoice> findByOrderId(UUID orderId);
 
     Invoice save(Invoice invoice);

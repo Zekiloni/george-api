@@ -20,6 +20,11 @@ public class InvoiceRepositoryPortAdapter implements InvoiceRepositoryPort {
     private final InvoiceEntityMapper mapper;
 
     @Override
+    public Optional<Invoice> findById(UUID id) {
+        return repository.findById(id).map(mapper::toDomain);
+    }
+
+    @Override
     public Optional<Invoice> findByOrderId(UUID orderId) {
         return repository.findByOrderId(orderId)
                 .map(mapper::toDomain);

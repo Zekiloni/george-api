@@ -8,6 +8,7 @@ import org.springframework.data.domain.Pageable;
 import java.util.Optional;
 
 public interface InvoiceQueryUseCase {
+    Optional<Invoice> getById(String id);
     Optional<Invoice> getByOrderId(String orderId);
     Page<Invoice> getAll(Pageable pageable, InvoiceSpecification specification);
 }

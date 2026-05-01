@@ -18,8 +18,23 @@ public class InvoiceQueryService implements InvoiceQueryUseCase {
     private final InvoiceRepositoryPort repositoryPort;
 
     @Override
+    public Optional<Invoice> getById(String id) {
+        if (id == null || id.isBlank()) return Optional.empty();
+        try {
+            return repositoryPort.findById(UUID.fromString(id));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public Optional<Invoice> getByOrderId(String orderId) {
-        return repositoryPort.findByOrderId(UUID.fromString(orderId));
+        if (orderId == null || orderId.isBlank()) return Optional.empty();
+        try {
+            return repositoryPort.findByOrderId(UUID.fromString(orderId));
+        } catch (IllegalArgumentException e) {
+            return Optional.empty();
+        }
     }
 
     @Override
