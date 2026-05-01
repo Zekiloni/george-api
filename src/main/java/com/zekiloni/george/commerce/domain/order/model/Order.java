@@ -1,5 +1,6 @@
 package com.zekiloni.george.commerce.domain.order.model;
 
+import com.zekiloni.george.commerce.domain.order.model.invoice.Invoice;
 import lombok.Builder;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class Order {
     private OrderStatus status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private Invoice invoice;
     private String tenantId;;
 }
 

@@ -2,6 +2,7 @@ package com.zekiloni.george.commerce.infrastructure.out.persistence.order.adapte
 
 import com.zekiloni.george.commerce.application.port.out.OrderRepositoryPort;
 import com.zekiloni.george.commerce.domain.order.model.Order;
+import com.zekiloni.george.commerce.infrastructure.out.persistence.order.entity.OrderSpecification;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.order.mapper.OrderEntityMapper;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.order.repository.OrderJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,7 +36,7 @@ public class OrderRepositoryPortAdapter implements OrderRepositoryPort {
     }
 
     @Override
-    public Page<Order> findAll(Pageable pageable) {
-        return repository.findAll(pageable).map(mapper::toDomain);
+    public Page<Order> findAll(Pageable pageable, OrderSpecification specification) {
+        return repository.findAll(specification, pageable).map(mapper::toDomain);
     }
 }

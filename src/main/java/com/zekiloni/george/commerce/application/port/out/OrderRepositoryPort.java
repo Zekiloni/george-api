@@ -1,6 +1,7 @@
 package com.zekiloni.george.commerce.application.port.out;
 
 import com.zekiloni.george.commerce.domain.order.model.Order;
+import com.zekiloni.george.commerce.infrastructure.out.persistence.order.entity.OrderSpecification;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -13,6 +14,6 @@ public interface OrderRepositoryPort {
 
     void deleteById(String id);
 
-    Page<Order> findAll(Pageable pageable);
+    Page<Order> findAll(Pageable pageable, OrderSpecification specification);
 }
 

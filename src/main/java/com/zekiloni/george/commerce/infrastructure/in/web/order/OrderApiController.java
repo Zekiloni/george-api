@@ -6,6 +6,7 @@ import com.zekiloni.george.commerce.application.port.in.OrderQueryUseCase;
 import com.zekiloni.george.commerce.infrastructure.in.web.order.dto.OrderCreateDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.order.dto.OrderDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.order.mapper.OrderDtoMapper;
+import com.zekiloni.george.commerce.infrastructure.out.persistence.order.entity.OrderSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -27,8 +28,8 @@ public class OrderApiController {
     }
 
     @GetMapping
-    public ResponseEntity<Page<OrderDto>> getOrders(Pageable pageable) {
-        return ResponseEntity.ok(queryUseCase.getAll(pageable).map(mapper::toDto));
+    public ResponseEntity<Page<OrderDto>> getOrders(Pageable pageable, OrderSpecification specification) {
+        return ResponseEntity.ok(queryUseCase.getAll(pageable, specification).map(mapper::toDto));
     }
 
     @GetMapping("/{id}")
