@@ -20,6 +20,10 @@ public class ServiceAccessDto {
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
     private ServiceStatus status;
+    private OffsetDateTime suspendedAt;
+    private OffsetDateTime terminatedAt;
+    private int renewalCount;
+    private boolean cancelAtPeriodEnd;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private String tenantId;

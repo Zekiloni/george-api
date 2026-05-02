@@ -2,6 +2,7 @@ package com.zekiloni.george.commerce.infrastructure.in.web.inventory;
 
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessCancelUseCase;
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessQueryUseCase;
+import com.zekiloni.george.commerce.application.port.in.ServiceAccessRenewalControlUseCase;
 import com.zekiloni.george.commerce.infrastructure.in.web.inventory.dto.ServiceAccessDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.inventory.mapper.ServiceAccessDtoMapper;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.entity.ServiceAccessSpecification;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class InventoryApiController {
     private final ServiceAccessQueryUseCase queryUseCase;
     private final ServiceAccessCancelUseCase cancelUseCase;
+    private final ServiceAccessRenewalControlUseCase renewalControlUseCase;
     private final ServiceAccessDtoMapper mapper;
 
     @GetMapping
@@ -40,5 +42,17 @@ public class InventoryApiController {
         return ResponseEntity.noContent().build();
     }
 
-}
+    /** Customer-facing: stop auto-renewal so the service expires at validTo. */
+    @PostMapping("/{id}/cancel-renewal")
+    public ResponseEntity<Void> cancelRenewal(@PathVariable String id) {
+        renewalControlUseCase.setCancelAtPeriodEnd(id, true);
+        return ResponseEntity.noContent().build();
+    }
 
+    /** Customer-facing: undo a previous cancel-renewal request. */
+    @PostMapping("/{id}/resume-renewal")
+    public ResponseEntity<Void> resumeRenewal(@PathVariable String id) {
+        renewalControlUseCase.setCancelAtPeriodEnd(id, false);
+        return ResponseEntity.noContent().build();
+    }
+}

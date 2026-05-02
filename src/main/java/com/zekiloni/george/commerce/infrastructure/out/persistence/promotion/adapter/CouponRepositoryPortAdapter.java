@@ -39,4 +39,9 @@ public class CouponRepositoryPortAdapter implements CouponRepositoryPort {
             return Optional.empty();
         }
     }
+
+    @Override
+    public java.util.List<Coupon> findAll() {
+        return repository.findAll().stream().map(mapper::toDomain).toList();
+    }
 }

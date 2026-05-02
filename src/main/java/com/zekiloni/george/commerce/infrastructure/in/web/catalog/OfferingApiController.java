@@ -2,6 +2,7 @@ package com.zekiloni.george.commerce.infrastructure.in.web.catalog;
 
 import com.zekiloni.george.commerce.application.port.in.OfferingCreateUseCase;
 import com.zekiloni.george.commerce.application.port.in.OfferingQueryUseCase;
+import com.zekiloni.george.commerce.application.port.in.OfferingUpdateUseCase;
 import com.zekiloni.george.commerce.infrastructure.in.web.catalog.dto.OfferingCreateDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.catalog.dto.OfferingDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.catalog.mapper.OfferingDtoMapper;
@@ -19,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OfferingApiController {
     private final OfferingCreateUseCase createUseCase;
+    private final OfferingUpdateUseCase updateUseCase;
     private final OfferingQueryUseCase queryUseCase;
     private final OfferingDtoMapper mapper;
 
@@ -26,6 +28,13 @@ public class OfferingApiController {
     @PostMapping
     public ResponseEntity<OfferingDto> createOffering(@RequestBody OfferingCreateDto offeringCreate) {
         return ResponseEntity.ok(mapper.toDto(createUseCase.create(mapper.toDomain(offeringCreate))));
+    }
+
+    @PreAuthorize("hasRole('admin')")
+    @PutMapping("/{id}")
+    public ResponseEntity<OfferingDto> updateOffering(@PathVariable String id,
+                                                      @RequestBody OfferingCreateDto offeringUpdate) {
+        return ResponseEntity.ok(mapper.toDto(updateUseCase.update(id, mapper.toDomain(offeringUpdate))));
     }
 
     @PreAuthorize("hasRole('admin')")
@@ -47,4 +56,3 @@ public class OfferingApiController {
                 .orElse(ResponseEntity.notFound().build());
     }
 }
-

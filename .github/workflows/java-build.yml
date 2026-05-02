@@ -12,11 +12,11 @@ on:
       java-distribution:
         required: false
         type: string
-        default: 'corretto'
+        default: 'temurin'
       java-version:
         required: false
         type: string
-        default: '17'
+        default: '25'
       image-name:
         required: true
         type: string
@@ -43,7 +43,11 @@ jobs:
         with:
           distribution: ${{ inputs.java-distribution }}
           java-version: ${{ inputs.java-version }}
+          cache: 'maven'
 
+      # `--enable-preview` is configured inside the pom; mvn picks it up.
+      # Tests are skipped here — they run in a separate workflow gate
+      # (TODO: wire `mvn verify` once Testcontainers is healthy in CI).
       - name: Build with Maven
         run: mvn -f ${{ inputs.maven-path }} clean package -DskipTests
 
@@ -54,27 +58,36 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GHCR_ACCESS_TOKEN }}
 
+      # Build context is the REPO ROOT — Dockerfile sits there and references
+      # `target/*.jar` written by the previous step.
       - name: Build & Push Image
         uses: docker/build-push-action@v6
         with:
-          context: ${{ inputs.service-name }}
+          context: .
           file: ${{ inputs.dockerfile }}
           push: true
-          tags: ${{ inputs.image-name }}:${{ github.sha }}
+          tags: |
+            ${{ inputs.image-name }}:${{ github.sha }}
+            ${{ inputs.image-name }}:${{ inputs.env }}-latest
 
-      - name: Checkout Target Repository
-        uses: actions/checkout@v3
+      - name: Checkout gitops repo
+        uses: actions/checkout@v4
         with:
           repository: Zekiloni/george-gitops
           token: ${{ secrets.GIT_TOKEN }}
+          path: gitops
 
-      - name: Update GitOps repo
+      # Bumps the `newTag` field of the matching entry in
+      # k8s/overlays/<env>/kustomization.yaml's `images:` block. The block
+      # must already exist with a placeholder — see the gitops repo overlays.
+      - name: Bump image tag in gitops
         uses: fjogeleit/yaml-update-action@main
         with:
           repository: Zekiloni/george-gitops
           token: ${{ secrets.GIT_TOKEN }}
+          workDir: gitops
           valueFile: k8s/overlays/${{ inputs.env }}/kustomization.yaml
-          propertyPath: images[?(@.name=="${{ inputs.image-name }}")].newTag
+          propertyPath: $.images[?(@.name=='${{ inputs.image-name }}')].newTag
           value: ${{ github.sha }}
           commitChange: true
           message: "deploy(${{ inputs.service-name }}): ${{ inputs.env }} -> ${{ github.sha }}"

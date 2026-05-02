@@ -1,16 +1,15 @@
-# .github/workflows/api-deploy.yml
 name: API Deployment
 
 on:
   workflow_dispatch:
     inputs:
       env:
-        description: 'Deployment environment'
+        description: 'Deployment environment (matches gitops overlay name)'
         required: true
-        default: 'test'
+        default: 'dev'
         type: choice
         options:
-          - test
+          - dev
           - prod
 
 jobs:
@@ -18,23 +17,13 @@ jobs:
     name: Validate
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v4
 
-      - name: Validate Dockerfile & pom.xml
+      - name: Validate Dockerfile & pom.xml exist
         run: |
-          if [ ! -f "Dockerfile" ]; then
-            echo "❌ Dockerfile not found"
-            exit 1
-          fi
-
-          if [ ! -f "pom.xml" ]; then
-            echo "❌ pom.xml not found"
-            exit 1
-          fi
-
-      - name: Success
-        run: echo "✅ Validation passed"
+          test -f Dockerfile || { echo "❌ Dockerfile not found"; exit 1; }
+          test -f pom.xml    || { echo "❌ pom.xml not found";    exit 1; }
+          echo "✅ Validation passed"
 
   deploy:
     name: Build & Push Image

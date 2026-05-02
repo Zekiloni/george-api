@@ -2,6 +2,7 @@ package com.zekiloni.george.commerce.application.port.out.promotion;
 
 import com.zekiloni.george.commerce.domain.promotion.model.Coupon;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface CouponRepositoryPort {
@@ -10,4 +11,6 @@ public interface CouponRepositoryPort {
     Coupon save(Coupon coupon);
 
     Optional<Coupon> findById(String id);
+
+    List<Coupon> findAll();
 }

@@ -1,0 +1,35 @@
+# Active during AbstractIntegrationTest (and any test using @ActiveProfiles("test")).
+# - Datasource is wired by Testcontainers @ServiceConnection on PostgreSQLContainer.
+# - JWT issuer-uri is wired by AbstractIntegrationTest.registerKeycloak.
+
+spring:
+  jpa:
+    hibernate:
+      # create-drop is fine for tests: container is reused, schema rebuilt each context start.
+      ddl-auto: create-drop
+    properties:
+      hibernate:
+        # Multi-tenancy still active — tests that need it must seed TenantContext.
+        multiTenancy: DISCRIMINATOR
+
+  flyway:
+    enabled: false
+
+  # No background fleet during tests. Tests that need to exercise lifecycle/renewal
+  # crons should call the use-case directly (RenewalInvoiceUseCase, ServiceAccessLifecycleUseCase).
+  task:
+    scheduling:
+      enabled: false
+
+# BTCPay defaults harmless — outbound calls stubbed at the port level in tests that need them.
+btc-pay:
+  store-id: test-store
+  api:
+    base-url: http://localhost:0
+    api-key: test-key
+
+logging:
+  level:
+    org.springframework.web: WARN
+    org.hibernate.SQL: WARN
+    com.zekiloni.george: INFO

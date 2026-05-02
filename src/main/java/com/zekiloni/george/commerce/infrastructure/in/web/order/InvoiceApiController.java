@@ -2,11 +2,15 @@ package com.zekiloni.george.commerce.infrastructure.in.web.order;
 
 import com.zekiloni.george.commerce.application.port.in.InvoiceEventHandleUseCase;
 import com.zekiloni.george.commerce.application.port.in.InvoiceQueryUseCase;
+import com.zekiloni.george.commerce.application.port.out.ExternalInvoicePort;
+import com.zekiloni.george.commerce.domain.order.model.invoice.Invoice;
 import com.zekiloni.george.commerce.infrastructure.in.web.order.dto.InvoiceDto;
+import com.zekiloni.george.commerce.infrastructure.in.web.order.dto.InvoicePaymentStatusDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.order.dto.event.BtcPayEventDto;
 import com.zekiloni.george.commerce.infrastructure.in.web.order.mapper.InvoiceDtoMapper;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.order.entity.InvoiceSpecification;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -15,9 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("${api.base.path:/api/v1}/invoice")
 @RequiredArgsConstructor
+@Slf4j
 public class InvoiceApiController {
     private final InvoiceEventHandleUseCase processUseCase;
     private final InvoiceQueryUseCase queryUseCase;
+    private final ExternalInvoicePort externalInvoicePort;
     private final InvoiceDtoMapper mapper;
 
     @PostMapping("/webhook")
@@ -45,5 +51,42 @@ public class InvoiceApiController {
                 .map(mapper::toDto)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    /**
+     * Live payment-status proxy. Pulls the current state of the invoice from
+     * the external provider (BTCPay) — addresses, amounts due, status, expiry —
+     * so the customer's payment screen can render QR + address + countdown
+     * without exposing BTCPay credentials to the browser.
+     */
+    @GetMapping("/{id}/payment-status")
+    public ResponseEntity<InvoicePaymentStatusDto> getPaymentStatus(@PathVariable String id) {
+        Invoice invoice = queryUseCase.getById(id).orElse(null);
+        if (invoice == null || invoice.getInvoiceNumber() == null) {
+            return ResponseEntity.notFound().build();
+        }
+        try {
+            ExternalInvoicePort.ExternalInvoiceStatus s =
+                    externalInvoicePort.getInvoiceStatus(invoice.getInvoiceNumber());
+            return ResponseEntity.ok(new InvoicePaymentStatusDto(
+                    s.invoiceId(),
+                    s.status(),
+                    s.expiresAt(),
+                    s.paymentMethods().stream()
+                            .map(m -> new InvoicePaymentStatusDto.PaymentMethodDto(
+                                    m.paymentMethod(),
+                                    m.destination(),
+                                    m.paymentLink(),
+                                    m.rate(),
+                                    m.due(),
+                                    m.amount(),
+                                    m.totalPaid()
+                            ))
+                            .toList()
+            ));
+        } catch (Exception e) {
+            log.warn("Failed to fetch payment status for invoice {}: {}", id, e.getMessage());
+            return ResponseEntity.status(502).build();
+        }
     }
 }
