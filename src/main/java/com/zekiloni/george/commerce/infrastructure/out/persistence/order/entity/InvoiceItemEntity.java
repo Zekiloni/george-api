@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
-import java.math.BigDecimal;
-
 @Entity
 @Table(name = "invoice_items")
 @SuperBuilder
@@ -24,13 +22,15 @@ public class InvoiceItemEntity extends TenantEntity {
     @JoinColumn(name = "offering_id", nullable = false)
     private OfferingEntity offering;
 
-    @Column(name = "quantity", nullable = false)
-    private int quantity;
+    @Column(name = "units", nullable = false)
+    private int units;
 
+    @AttributeOverrides({
+            @AttributeOverride(name = "amount", column = @Column(name = "total_amount", nullable = false)),
+            @AttributeOverride(name = "currency", column = @Column(name = "total_currency", nullable = false))
+    })
     @Embedded
-    private Money unitPrice;
-
-    private BigDecimal discountAmount;
+    private Money totalAmount;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "invoice_id", nullable = false)

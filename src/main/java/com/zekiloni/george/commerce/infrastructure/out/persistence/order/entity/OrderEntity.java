@@ -24,11 +24,10 @@ public class OrderEntity extends TenantEntity {
     @Column(nullable = false)
     private OrderStatus status;
 
+    @Column(name = "coupon_code")
+    private String couponCode;
+
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "order_id")
     List<OrderItemEntity> item;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "invoice_id", referencedColumnName = "id")
-    private InvoiceEntity invoice;
 }

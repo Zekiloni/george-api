@@ -1,5 +1,6 @@
 package com.zekiloni.george.commerce.infrastructure.in.web.catalog.dto.specification.characteristic;
 
+import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.common.infrastructure.in.web.dto.TimePeriodDto;
 import lombok.*;
 
@@ -18,4 +19,5 @@ public class CharacteristicValueSpecificationCreateDto {
     private String valueType;
     private TimePeriodDto validFor;
     private Object value;
+    private Money priceAdjustment;
 }

@@ -69,4 +69,26 @@ public interface ServiceAccessJpaRepository
     Set<Integer> findAllocatedGsmPorts(@Param("gatewayId") String gatewayId);
 
     List<ServiceAccessEntity> findAllByStatusAndValidToBefore(ServiceStatus status, OffsetDateTime cutoff);
+
+    /**
+     * Active accesses with validTo in (now, now+horizon], not flagged for cancellation,
+     * and without a recent open RENEWAL invoice. Used by the renewal-invoice cron.
+     *
+     * NOTE: the "no recent open invoice" check is enforced in the application layer
+     * (since invoice and access live in different aggregates) — this query covers the
+     * time window and cancellation flag.
+     */
+    @Query("""
+        SELECT s
+        FROM ServiceAccessEntity s
+        WHERE s.status = com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus.ACTIVE
+          AND s.cancelAtPeriodEnd = false
+          AND s.validTo IS NOT NULL
+          AND s.validTo > :now
+          AND s.validTo <= :horizon
+        """)
+    List<ServiceAccessEntity> findRenewable(
+            @Param("now") OffsetDateTime now,
+            @Param("horizon") OffsetDateTime horizon
+    );
 }

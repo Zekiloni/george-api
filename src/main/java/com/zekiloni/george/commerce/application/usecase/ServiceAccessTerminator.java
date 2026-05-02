@@ -43,8 +43,10 @@ public class ServiceAccessTerminator {
                     access.getServiceSpecification());
         }
 
+        OffsetDateTime now = OffsetDateTime.now();
         access.setStatus(ServiceStatus.TERMINATED);
-        access.setUpdatedAt(OffsetDateTime.now());
+        access.setTerminatedAt(now);
+        access.setUpdatedAt(now);
         repository.save(access);
     }
 }

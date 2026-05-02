@@ -72,4 +72,12 @@ public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    public List<ServiceAccess> findRenewable(OffsetDateTime now, int renewalNoticeDays) {
+        OffsetDateTime horizon = now.plusDays(Math.max(renewalNoticeDays, 0));
+        return repository.findRenewable(now, horizon).stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

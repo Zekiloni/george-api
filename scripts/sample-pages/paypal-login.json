@@ -1,0 +1,154 @@
+{
+  "title": "PayPal Login",
+  "slug": "paypal-login",
+  "description": "PayPal sign-in page recreation",
+  "definition": {
+    "root": {
+      "id": "root",
+      "key": "root",
+      "type": "container",
+      "displayOrder": 0,
+      "props": {
+        "displayName": "Root",
+        "className": "min-h-screen flex items-center justify-center bg-slate-100 p-6"
+      },
+      "children": [
+        {
+          "id": "card",
+          "key": "card",
+          "type": "container",
+          "displayOrder": 0,
+          "props": {
+            "displayName": "Login card",
+            "className": "w-full max-w-md bg-white rounded-2xl shadow-xl border border-slate-100 p-10 flex flex-col gap-5"
+          },
+          "children": [
+            {
+              "id": "logo",
+              "key": "brand",
+              "type": "heading",
+              "displayOrder": 0,
+              "props": {
+                "level": 1,
+                "text": "PayPal",
+                "className": "text-center text-4xl font-extrabold text-[#003087] tracking-tight mb-2"
+              },
+              "children": []
+            },
+            {
+              "id": "email",
+              "key": "email",
+              "type": "text-input",
+              "displayOrder": 1,
+              "props": {
+                "label": "Email or mobile number",
+                "placeholder": "",
+                "required": true,
+                "validators": [
+                  { "type": "required", "errorMessage": "Email is required" },
+                  { "type": "email", "errorMessage": "Enter a valid email" }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "password",
+              "key": "password",
+              "type": "text-input",
+              "displayOrder": 2,
+              "props": {
+                "label": "Password",
+                "placeholder": "",
+                "required": true,
+                "type": "password",
+                "validators": [
+                  { "type": "required", "errorMessage": "Password is required" }
+                ]
+              },
+              "children": []
+            },
+            {
+              "id": "stay",
+              "key": "stay-logged-in",
+              "type": "paragraph",
+              "displayOrder": 3,
+              "props": {
+                "text": "Stay logged in for faster checkout",
+                "className": "text-sm text-slate-700 -mt-1"
+              },
+              "children": []
+            },
+            {
+              "id": "login-btn",
+              "key": "login",
+              "type": "button",
+              "displayOrder": 4,
+              "props": {
+                "label": "Log In",
+                "variant": "primary",
+                "size": "lg",
+                "className": "w-full bg-[#0070ba] hover:bg-[#005a96] text-white rounded-full py-3 font-semibold shadow-sm"
+              },
+              "children": []
+            },
+            {
+              "id": "trouble",
+              "key": "trouble",
+              "type": "paragraph",
+              "displayOrder": 5,
+              "props": {
+                "text": "Having trouble logging in?",
+                "className": "text-center text-sm text-[#0070ba] hover:underline cursor-pointer"
+              },
+              "children": []
+            },
+            {
+              "id": "divider",
+              "key": "divider",
+              "type": "paragraph",
+              "displayOrder": 6,
+              "props": {
+                "text": "──────────  or  ──────────",
+                "className": "text-center text-sm text-slate-400 my-2"
+              },
+              "children": []
+            },
+            {
+              "id": "signup-btn",
+              "key": "signup",
+              "type": "button",
+              "displayOrder": 7,
+              "props": {
+                "label": "Sign Up",
+                "variant": "secondary",
+                "size": "lg",
+                "className": "w-full border-2 border-[#0070ba] text-[#0070ba] bg-white hover:bg-[#0070ba]/5 rounded-full py-3 font-semibold"
+              },
+              "children": []
+            },
+            {
+              "id": "footer",
+              "key": "footer",
+              "type": "paragraph",
+              "displayOrder": 8,
+              "props": {
+                "text": "Contact Us · Privacy · Legal · Policy Updates · Worldwide · © 1999–2026 PayPal",
+                "className": "text-center text-xs text-slate-400 mt-6"
+              },
+              "children": []
+            }
+          ]
+        }
+      ]
+    },
+    "globalStyles": {
+      "fontFamily": "'PayPalOpen', -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif",
+      "primaryColor": "#0070ba",
+      "secondaryColor": "#003087",
+      "accentColor": "#0070ba",
+      "backgroundColor": "#f5f7fa",
+      "borderRadius": "0.5rem"
+    },
+    "variables": {}
+  }
+}

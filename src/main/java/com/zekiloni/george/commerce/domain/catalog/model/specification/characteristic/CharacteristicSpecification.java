@@ -31,11 +31,18 @@ public class CharacteristicSpecification {
     private Integer maxCardinality;
 
     private Integer minCardinality;
-    
+
     private String regex;
-    
+
     private TimePeriod validFor;
-    
+
+    /**
+     * When this characteristic's chosen value adjusts the price. Defaults to NONE.
+     * The actual amount lives on each {@link CharacteristicValueSpecification#getPriceAdjustment()}.
+     */
+    @Builder.Default
+    private PriceImpact priceImpact = PriceImpact.NONE;
+
     private List<CharacteristicValueSpecification> characteristicValueSpecification;
 
     private OffsetDateTime createdAt;

@@ -37,4 +37,10 @@ public interface InventoryRepositoryPort {
             OffsetDateTime now,
             OffsetDateTime gracePeriodEnd
     );
+
+    /**
+     * Find ACTIVE accesses with {@code validTo} between {@code now} and {@code now + noticeDays},
+     * not flagged {@code cancelAtPeriodEnd}, and without a recent open RENEWAL invoice.
+     */
+    List<ServiceAccess> findRenewable(OffsetDateTime now, int renewalNoticeDays);
 }

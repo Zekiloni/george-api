@@ -1,6 +1,5 @@
 package com.zekiloni.george.commerce.domain.order.model;
 
-import com.zekiloni.george.commerce.domain.order.model.invoice.Invoice;
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,9 +12,12 @@ public class Order {
     private String id;
     private List<OrderItem> item;
     private OrderStatus status;
+
+    /** Optional coupon code redeemed at checkout. Resolved by the validator into a {@link com.zekiloni.george.commerce.domain.promotion.model.Coupon}. */
+    private String couponCode;
+
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-    private Invoice invoice;
-    private String tenantId;;
+    private String tenantId;
 }
 

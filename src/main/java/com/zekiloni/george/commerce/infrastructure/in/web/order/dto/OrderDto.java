@@ -8,9 +8,9 @@ import java.util.List;
 public record OrderDto(
         String id,
         List<OrderItemDto> item,
+        String couponCode,
         OffsetDateTime createdAt,
         OffsetDateTime updatedAt,
         OrderStatus status
 ) {
 }
-

@@ -1,0 +1,51 @@
+# .github/workflows/api-deploy.yml
+name: API Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Deployment environment'
+        required: true
+        default: 'test'
+        type: choice
+        options:
+          - test
+          - prod
+
+jobs:
+  validate:
+    name: Validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Validate Dockerfile & pom.xml
+        run: |
+          if [ ! -f "Dockerfile" ]; then
+            echo "❌ Dockerfile not found"
+            exit 1
+          fi
+
+          if [ ! -f "pom.xml" ]; then
+            echo "❌ pom.xml not found"
+            exit 1
+          fi
+
+      - name: Success
+        run: echo "✅ Validation passed"
+
+  deploy:
+    name: Build & Push Image
+    needs: validate
+    uses: ./.github/workflows/java-build.yml
+    with:
+      service-name: george-api
+      dockerfile: Dockerfile
+      image-name: ghcr.io/zekiloni/george-api
+      maven-path: pom.xml
+      env: ${{ github.event.inputs.env }}
+    secrets:
+      GHCR_ACCESS_TOKEN: ${{ secrets.GHCR_ACCESS_TOKEN }}
+      GIT_TOKEN: ${{ secrets.GIT_TOKEN }}

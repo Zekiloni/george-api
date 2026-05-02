@@ -13,7 +13,18 @@ import java.util.List;
 public class Invoice {
     private String id;
     private String invoiceNumber;
+
     private Order order;
+
+    @Builder.Default
+    private InvoiceType invoiceType = InvoiceType.NEW_PURCHASE;
+
+    /**
+     * For RENEWAL invoices: the {@code ServiceAccess} that gets its {@code validTo}
+     * extended on payment. Null for NEW_PURCHASE invoices.
+     */
+    private String serviceAccessId;
+
     private InvoiceStatus status;
     private List<InvoiceItem> items;
     private String paymentReference;

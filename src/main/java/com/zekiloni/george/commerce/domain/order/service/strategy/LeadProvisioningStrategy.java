@@ -50,8 +50,8 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
         }
     }
 
-    private @NonNull List<Lead> getLeads(OrderItem order) {
-        return leadQueryUseCase.handle(Pageable.ofSize(order.getQuantity()), null)
-                .getContent();
+    private @NonNull List<Lead> getLeads(OrderItem item) {
+        int units = item.getUnits() == null ? 0 : item.getUnits();
+        return leadQueryUseCase.handle(Pageable.ofSize(units), null).getContent();
     }
 }

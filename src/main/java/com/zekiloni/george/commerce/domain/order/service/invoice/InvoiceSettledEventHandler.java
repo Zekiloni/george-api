@@ -1,22 +1,23 @@
 package com.zekiloni.george.commerce.domain.order.service.invoice;
 
-import com.zekiloni.george.commerce.application.port.in.OrderQueryUseCase;
-import com.zekiloni.george.commerce.application.port.in.OrderUpdateUseCase;
-import com.zekiloni.george.commerce.domain.order.model.Order;
-import com.zekiloni.george.commerce.domain.order.model.OrderStatus;
+import com.zekiloni.george.commerce.application.port.out.InvoiceRepositoryPort;
+import com.zekiloni.george.commerce.application.usecase.InvoiceSettlementService;
 import com.zekiloni.george.commerce.domain.order.model.invoice.event.InvoiceSettledEvent;
-import com.zekiloni.george.commerce.domain.order.service.OrderProvisioningService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+/**
+ * BTCPay's canonical "invoice fully settled" signal — always settle on this event.
+ * Idempotency is enforced inside {@link InvoiceSettlementService#settle}.
+ */
 @Slf4j
 @Component
 @RequiredArgsConstructor
 public class InvoiceSettledEventHandler implements InvoiceEventHandler<InvoiceSettledEvent> {
-    private final OrderQueryUseCase orderQueryUseCase;
-    private final OrderProvisioningService orderProvisioningService;
-    private final OrderUpdateUseCase orderUpdateUseCase;
+
+    private final InvoiceRepositoryPort invoiceRepository;
+    private final InvoiceSettlementService settlementService;
 
     @Override
     public Class<InvoiceSettledEvent> getEventType() {
@@ -25,13 +26,12 @@ public class InvoiceSettledEventHandler implements InvoiceEventHandler<InvoiceSe
 
     @Override
     public void handle(InvoiceSettledEvent event) {
-        orderQueryUseCase.getById(event.getOrderId())
-                .ifPresent(this::update);
+        invoiceRepository.findByInvoiceNumber(event.getInvoiceId())
+                .ifPresentOrElse(settlementService::settle,
+                        () -> log(event));
     }
 
-    private void update(Order order) {
-        orderProvisioningService.handle(order);
-        order.setStatus(OrderStatus.COMPLETED);
-        orderUpdateUseCase.update(order);
+    private void log(InvoiceSettledEvent event) {
+        log.warn("Received settlement event for unknown invoice {}", event.getInvoiceId());
     }
 }

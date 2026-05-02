@@ -1,6 +1,7 @@
 package com.zekiloni.george.commerce.infrastructure.in.web.catalog.dto.specification.characteristic;
 
 import com.zekiloni.george.common.infrastructure.in.web.dto.TimePeriodDto;
+import com.zekiloni.george.commerce.domain.catalog.model.specification.characteristic.PriceImpact;
 import lombok.*;
 
 import java.time.OffsetDateTime;
@@ -33,6 +34,8 @@ public class CharacteristicSpecificationDto {
     private String regex;
 
     private TimePeriodDto validFor;
+
+    private PriceImpact priceImpact;
 
     private List<CharacteristicValueSpecificationDto> characteristicValueSpecification;
 

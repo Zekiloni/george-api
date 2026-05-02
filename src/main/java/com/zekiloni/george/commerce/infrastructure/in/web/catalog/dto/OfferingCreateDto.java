@@ -1,14 +1,16 @@
 package com.zekiloni.george.commerce.infrastructure.in.web.catalog.dto;
 
+import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.commerce.domain.catalog.model.OfferingStatus;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
+import com.zekiloni.george.commerce.domain.catalog.model.TierMode;
 import com.zekiloni.george.commerce.infrastructure.in.web.catalog.dto.specification.characteristic.CharacteristicSpecificationCreateDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.OffsetDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
 @Data
@@ -21,10 +23,15 @@ public class OfferingCreateDto {
     private String identifier;
     private OfferingStatus status;
     private ServiceSpecification serviceSpecification;
-    private BillingConfigCreateDto billingConfig;
-    private List<CharacteristicSpecificationCreateDto> characteristicSpecification;
-    private List<OfferingPriceCreateDto> pricing;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
-}
 
+    private Money unitAmount;
+    private String unitLabel;
+    private ChronoUnit timeUnit;
+    private Integer intervalCount;
+    private Integer minUnits;
+    private Integer maxUnits;
+    private TierMode tierMode;
+    private List<DiscountTierCreateDto> tiers;
+
+    private List<CharacteristicSpecificationCreateDto> characteristicSpecification;
+}

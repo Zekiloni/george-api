@@ -17,4 +17,10 @@ public interface InvoiceRepositoryPort {
     Invoice save(Invoice invoice);
 
     Page<Invoice> findAll(Pageable pageable, InvoiceSpecification specification);
+
+    /** True if any non-final-status invoice already exists for this ServiceAccess. */
+    boolean hasOpenRenewalForServiceAccess(String serviceAccessId);
+
+    /** Look up an invoice by its external (BTCPay) invoice number. */
+    Optional<Invoice> findByInvoiceNumber(String invoiceNumber);
 }

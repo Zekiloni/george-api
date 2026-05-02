@@ -23,6 +23,16 @@ public abstract class ServiceAccess {
     private OffsetDateTime validFrom;
     private OffsetDateTime validTo;
     private ServiceStatus status;
+
+    /** When the service was last suspended (null for ACTIVE/TERMINATED). */
+    private OffsetDateTime suspendedAt;
+    /** When the service was permanently terminated (null until TERMINATED). */
+    private OffsetDateTime terminatedAt;
+    /** How many times this access has been renewed (incremented on RENEWAL invoice PAID). */
+    private int renewalCount;
+    /** If true, the renewal generator will skip this access — it will expire and terminate normally. */
+    private boolean cancelAtPeriodEnd;
+
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private String tenantId;

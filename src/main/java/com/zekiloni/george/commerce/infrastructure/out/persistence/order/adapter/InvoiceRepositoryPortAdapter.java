@@ -40,4 +40,16 @@ public class InvoiceRepositoryPortAdapter implements InvoiceRepositoryPort {
         return repository.findAll(specification, pageable)
                 .map(mapper::toDomain);
     }
+
+    @Override
+    public boolean hasOpenRenewalForServiceAccess(String serviceAccessId) {
+        if (serviceAccessId == null) return false;
+        return repository.existsOpenRenewalForServiceAccess(serviceAccessId);
+    }
+
+    @Override
+    public Optional<Invoice> findByInvoiceNumber(String invoiceNumber) {
+        if (invoiceNumber == null) return Optional.empty();
+        return repository.findByInvoiceNumber(invoiceNumber).map(mapper::toDomain);
+    }
 }

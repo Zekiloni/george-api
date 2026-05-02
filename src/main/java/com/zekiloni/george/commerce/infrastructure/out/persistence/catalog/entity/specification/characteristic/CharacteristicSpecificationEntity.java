@@ -2,6 +2,7 @@ package com.zekiloni.george.commerce.infrastructure.out.persistence.catalog.enti
 
 import com.zekiloni.george.common.domain.model.TimePeriod;
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
+import com.zekiloni.george.commerce.domain.catalog.model.specification.characteristic.PriceImpact;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -44,6 +45,10 @@ public class CharacteristicSpecificationEntity extends BaseEntity {
 
     @Embedded
     private TimePeriod validFor;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "price_impact", nullable = false)
+    private PriceImpact priceImpact;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @JoinColumn(name = "characteristic_specification_id")

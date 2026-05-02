@@ -40,6 +40,18 @@ public abstract class ServiceAccessEntity extends TenantEntity {
     @Column(name = "status", nullable = false)
     private ServiceStatus status;
 
+    @Column(name = "suspended_at")
+    private OffsetDateTime suspendedAt;
+
+    @Column(name = "terminated_at")
+    private OffsetDateTime terminatedAt;
+
+    @Column(name = "renewal_count", nullable = false)
+    private int renewalCount;
+
+    @Column(name = "cancel_at_period_end", nullable = false)
+    private boolean cancelAtPeriodEnd;
+
     @ManyToMany
     @JoinTable(
             name = "service_access_characteristics",

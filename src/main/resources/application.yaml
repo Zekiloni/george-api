@@ -6,6 +6,9 @@ server:
 
 app:
   base-url: ${APP_BASE_URL:http://localhost:4200}
+  lifecycle:
+    renewal-notice-days: ${RENEWAL_NOTICE_DAYS:3}
+    grace-period-days: ${GRACE_PERIOD_DAYS:1}
 
 # API Configuration
 api:

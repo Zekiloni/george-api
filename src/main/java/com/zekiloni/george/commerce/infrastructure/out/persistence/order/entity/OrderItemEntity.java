@@ -2,7 +2,6 @@ package com.zekiloni.george.commerce.infrastructure.out.persistence.order.entity
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.CharacteristicEntity;
-import com.zekiloni.george.commerce.domain.catalog.model.DurationUnit;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.catalog.entity.OfferingEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -26,19 +25,8 @@ public class OrderItemEntity extends BaseEntity {
     @JoinColumn(name = "offering_id", nullable = false)
     private OfferingEntity offering;
 
-    @Column
-    private Integer quantity;
-
-    @Column
-    private Integer duration;
-
-    @Enumerated(EnumType.STRING)
-    @Column(name = "duration_unit")
-    private DurationUnit durationUnit;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "invoice_id", referencedColumnName = "id")
-    private InvoiceEntity invoice;
+    @Column(name = "units", nullable = false)
+    private Integer units;
 
     @ManyToMany
     @JoinTable(

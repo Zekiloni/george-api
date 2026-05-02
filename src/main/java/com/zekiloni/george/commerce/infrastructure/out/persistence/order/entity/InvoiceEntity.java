@@ -2,6 +2,7 @@ package com.zekiloni.george.commerce.infrastructure.out.persistence.order.entity
 
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.TenantEntity;
 import com.zekiloni.george.commerce.domain.order.model.invoice.InvoiceStatus;
+import com.zekiloni.george.commerce.domain.order.model.invoice.InvoiceType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -24,6 +25,13 @@ public class InvoiceEntity extends TenantEntity {
     @Column(name = "status", nullable = false)
     private InvoiceStatus status;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "invoice_type", nullable = false)
+    private InvoiceType invoiceType;
+
+    @Column(name = "service_access_id")
+    private String serviceAccessId;
+
     @OneToMany(mappedBy = "invoice", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InvoiceItemEntity> items;
 
@@ -38,6 +46,7 @@ public class InvoiceEntity extends TenantEntity {
 
     private String note;
 
-    @OneToOne(mappedBy = "invoice")
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_id", referencedColumnName = "id", unique = true)
     private OrderEntity order;
 }

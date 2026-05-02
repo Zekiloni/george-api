@@ -15,10 +15,9 @@ import java.time.OffsetDateTime;
 
 @Mapper(uses = {OfferingDtoMapper.class})
 public interface InvoiceDtoMapper {
+    @Mapping(target = "totalAmount", source = "total")
     InvoiceDto toDto(Invoice invoice);
 
-    @Mapping(target = "subtotalAmount", expression = "java(map(invoiceItem))")
-    @Mapping(target = "totalAmount", expression = "java(mapTotal(invoiceItem))")
     InvoiceItemDto toDto(InvoiceItem invoiceItem);
 
     default MoneyDto toMoneyDto(Money money) {
@@ -41,16 +40,6 @@ public interface InvoiceDtoMapper {
         return OffsetDateTime.ofInstant(java.time.Instant.ofEpochMilli(epochMilli), java.time.ZoneOffset.UTC);
     }
 
-    default MoneyDto map(InvoiceItem item) {
-        return item.getSubtotal() != null ?
-            new MoneyDto(item.getSubtotal().getCurrency(), item.getSubtotal().getAmount()) : null;
-    }
-
-    default MoneyDto mapTotal(InvoiceItem item) {
-        return item.getTotal() != null ?
-            new MoneyDto(item.getTotal().getCurrency(), item.getTotal().getAmount()) : null;
-    }
-
     @ObjectFactory
     default <T extends InvoiceEvent> T createInvoiceEvent(@TargetType Class<T> targetType) {
         try {
@@ -60,4 +49,3 @@ public interface InvoiceDtoMapper {
         }
     }
 }
-

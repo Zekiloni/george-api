@@ -1,0 +1,80 @@
+name: Build & Push Java Image
+
+on:
+  workflow_call:
+    inputs:
+      service-name:
+        required: true
+        type: string
+      dockerfile:
+        required: true
+        type: string
+      java-distribution:
+        required: false
+        type: string
+        default: 'corretto'
+      java-version:
+        required: false
+        type: string
+        default: '17'
+      image-name:
+        required: true
+        type: string
+      maven-path:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+    secrets:
+      GHCR_ACCESS_TOKEN:
+        required: true
+      GIT_TOKEN:
+        required: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: ${{ inputs.java-distribution }}
+          java-version: ${{ inputs.java-version }}
+
+      - name: Build with Maven
+        run: mvn -f ${{ inputs.maven-path }} clean package -DskipTests
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_ACCESS_TOKEN }}
+
+      - name: Build & Push Image
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ inputs.service-name }}
+          file: ${{ inputs.dockerfile }}
+          push: true
+          tags: ${{ inputs.image-name }}:${{ github.sha }}
+
+      - name: Checkout Target Repository
+        uses: actions/checkout@v3
+        with:
+          repository: Zekiloni/george-gitops
+          token: ${{ secrets.GIT_TOKEN }}
+
+      - name: Update GitOps repo
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          repository: Zekiloni/george-gitops
+          token: ${{ secrets.GIT_TOKEN }}
+          valueFile: k8s/overlays/${{ inputs.env }}/kustomization.yaml
+          propertyPath: images[?(@.name=="${{ inputs.image-name }}")].newTag
+          value: ${{ github.sha }}
+          commitChange: true
+          message: "deploy(${{ inputs.service-name }}): ${{ inputs.env }} -> ${{ github.sha }}"
