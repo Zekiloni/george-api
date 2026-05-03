@@ -33,4 +33,4 @@ build/
 .vscode/
 
 ### Temporary files ###
-.tmp
+.tmp/
