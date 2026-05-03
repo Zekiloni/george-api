@@ -59,6 +59,7 @@ public interface GatewaySelectionPort {
             String type,
             String host,
             int port,
-            String provider
+            String provider,
+            String fromDomain
     ) {}
 }

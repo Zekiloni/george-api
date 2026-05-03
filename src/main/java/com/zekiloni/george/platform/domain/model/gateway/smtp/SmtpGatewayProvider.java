@@ -8,7 +8,9 @@ public enum SmtpGatewayProvider {
     STALWART(
             Set.of(GatewayConfigKeys.HOST, GatewayConfigKeys.PORT, GatewayConfigKeys.USE_TLS,
                     GatewayConfigKeys.FROM_DOMAIN, GatewayConfigKeys.ADMIN_URL),
-            Set.of(GatewayConfigKeys.API_KEY)
+            // apiKey is preferred (Bearer); username+password is the Basic-auth
+            // fallback used while bootstrapping with the admin account.
+            Set.of(GatewayConfigKeys.API_KEY, GatewayConfigKeys.USERNAME, GatewayConfigKeys.PASSWORD)
     ),
     POSTAL(
             Set.of(GatewayConfigKeys.HOST, GatewayConfigKeys.FROM_DOMAIN),

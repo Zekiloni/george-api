@@ -45,7 +45,10 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
 
         String username = generateUsername(order.getTenantId());
         String password = generatePassword();
-        String email = username + "@" + config.host();
+        String mailDomain = config.fromDomain() != null && !config.fromDomain().isBlank()
+                ? config.fromDomain()
+                : config.host();
+        String email = username + "@" + mailDomain;
 
         smtpProvisioningPort.createAccount(gatewayId, username, password, email);
 

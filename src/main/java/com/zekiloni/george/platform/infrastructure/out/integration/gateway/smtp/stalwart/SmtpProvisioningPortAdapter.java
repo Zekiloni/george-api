@@ -20,7 +20,7 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
         SmtpGateway gateway = loadSmtpGateway(gatewayId);
         stalwartClient.createPrincipal(
                 requireConfig(gateway, GatewayConfigKeys.ADMIN_URL),
-                requireConfig(gateway, GatewayConfigKeys.API_KEY),
+                buildAuthHeader(gateway),
                 username,
                 password,
                 email);
@@ -31,7 +31,7 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
         SmtpGateway gateway = loadSmtpGateway(gatewayId);
         stalwartClient.deletePrincipal(
                 requireConfig(gateway, GatewayConfigKeys.ADMIN_URL),
-                requireConfig(gateway, GatewayConfigKeys.API_KEY),
+                buildAuthHeader(gateway),
                 username);
     }
 
@@ -42,6 +42,26 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
             throw new IllegalArgumentException("Gateway " + gatewayId + " is not an SMTP gateway");
         }
         return smtp;
+    }
+
+    /**
+     * Stalwart accepts either a Bearer API token or Basic admin credentials.
+     * Use whichever the gateway has configured: prefer apiKey if present,
+     * fall back to username+password.
+     */
+    private static String buildAuthHeader(SmtpGateway gateway) {
+        String apiKey = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.API_KEY);
+        if (apiKey != null && !apiKey.isBlank()) {
+            return StalwartAdminApiClient.bearer(apiKey);
+        }
+        String user = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.USERNAME);
+        String pass = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.PASSWORD);
+        if (user != null && !user.isBlank() && pass != null && !pass.isBlank()) {
+            return StalwartAdminApiClient.basic(user, pass);
+        }
+        throw new IllegalStateException(
+                "Gateway " + gateway.getId() + " has no Stalwart auth configured: set either config.apiKey "
+                        + "(Bearer token) or config.username + config.password (Basic auth).");
     }
 
     private static String requireConfig(SmtpGateway gateway, String key) {

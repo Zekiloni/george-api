@@ -95,14 +95,16 @@ public class GatewaySelectionPortAdapter implements GatewaySelectionPort {
                     "SMTP",
                     GatewayConfigKeys.string(smtp.getConfig(), GatewayConfigKeys.HOST),
                     GatewayConfigKeys.intValue(smtp.getConfig(), GatewayConfigKeys.PORT, 0),
-                    smtp.getProvider().name()
+                    smtp.getProvider().name(),
+                    GatewayConfigKeys.string(smtp.getConfig(), GatewayConfigKeys.FROM_DOMAIN)
             );
             case GsmGateway gsm -> new GatewayConfig(
                     gateway.getId(),
                     "GSM",
                     GatewayConfigKeys.string(gsm.getConfig(), GatewayConfigKeys.IP_ADDRESS),
                     GatewayConfigKeys.intValue(gsm.getConfig(), GatewayConfigKeys.PORT, 0),
-                    gsm.getProvider().name()
+                    gsm.getProvider().name(),
+                    null
             );
             default -> throw new RuntimeException("Unknown gateway type: " + gateway.getClass());
         };
