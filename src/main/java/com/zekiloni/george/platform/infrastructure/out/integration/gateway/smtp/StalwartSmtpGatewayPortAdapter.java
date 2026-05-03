@@ -39,13 +39,12 @@ public class StalwartSmtpGatewayPortAdapter implements SmtpGatewayPort {
     }
 
     @Override
-    public void sendEmail(SmtpGateway gateway, String from, String to, String subject, String body) {
+    public void sendEmail(SmtpGateway gateway, SmtpCredentials credentials,
+                          String from, String to, String subject, String body) {
         Map<String, String> cfg = gateway.getConfig();
         String host = GatewayConfigKeys.string(cfg, GatewayConfigKeys.HOST);
         int port = GatewayConfigKeys.intValue(cfg, GatewayConfigKeys.PORT, 25);
         boolean useTls = GatewayConfigKeys.boolValue(cfg, GatewayConfigKeys.USE_TLS, false);
-        String smtpUser = GatewayConfigKeys.string(cfg, GatewayConfigKeys.SMTP_USERNAME);
-        String smtpPass = GatewayConfigKeys.string(cfg, GatewayConfigKeys.SMTP_PASSWORD);
 
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
@@ -58,7 +57,7 @@ public class StalwartSmtpGatewayPortAdapter implements SmtpGatewayPort {
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(smtpUser, smtpPass);
+                return new PasswordAuthentication(credentials.username(), credentials.password());
             }
         });
 
@@ -70,9 +69,11 @@ public class StalwartSmtpGatewayPortAdapter implements SmtpGatewayPort {
             message.setText(body);
 
             Transport.send(message);
-            log.info("Email sent via STALWART SMTP to {}", maskRecipient(to));
+            log.info("Email sent via STALWART SMTP as {} to {}",
+                    credentials.username(), maskRecipient(to));
         } catch (MessagingException e) {
-            log.error("Failed to send email via STALWART SMTP to {}: {}", maskRecipient(to), e.getMessage());
+            log.error("Failed to send email via STALWART SMTP as {} to {}: {}",
+                    credentials.username(), maskRecipient(to), e.getMessage());
             throw new RuntimeException("SMTP send failed", e);
         }
     }

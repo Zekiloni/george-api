@@ -14,11 +14,14 @@ public class StalwartAdminApiClient {
 
     public void createPrincipal(String adminUrl, String authHeader,
                                 String name, String password, String email) {
+        // "user" role grants SMTP/IMAP/JMAP submission permissions; without it
+        // the principal authenticates but can't actually send or read mail.
         client(adminUrl, authHeader)
                 .post()
                 .uri("/api/principal")
                 .contentType(MediaType.APPLICATION_JSON)
-                .body(new CreatePrincipalRequest("individual", name, List.of(password), List.of(email)))
+                .body(new CreatePrincipalRequest(
+                        "individual", name, List.of(password), List.of(email), List.of("user")))
                 .retrieve()
                 .toBodilessEntity();
     }
@@ -53,6 +56,7 @@ public class StalwartAdminApiClient {
             String type,
             String name,
             List<String> secrets,
-            List<String> emails
+            List<String> emails,
+            List<String> roles
     ) {}
 }
