@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -25,6 +24,8 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
     private static final String PASSWORD_CHARS =
             "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
     private static final int PASSWORD_LENGTH = 24;
+    private static final String USERNAME_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
+    private static final int USERNAME_LENGTH = 12;
     private static final SecureRandom RANDOM = new SecureRandom();
 
     private final ServiceAccessCreateUseCase serviceAccessCreateUseCase;
@@ -43,7 +44,7 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
         String gatewayId = gatewaySelectionPort.selectLeastLoadedGateway("SMTP");
         GatewaySelectionPort.GatewayConfig config = gatewaySelectionPort.getGatewayConfig(gatewayId);
 
-        String username = generateUsername(order.getTenantId());
+        String username = generateUsername();
         String password = generatePassword();
         String mailDomain = config.fromDomain() != null && !config.fromDomain().isBlank()
                 ? config.fromDomain()
@@ -91,9 +92,12 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
         log.info("Deleted SMTP account {} on gateway {}", smtp.getUsername(), smtp.getGatewayId());
     }
 
-    private String generateUsername(String tenantId) {
-        String suffix = UUID.randomUUID().toString().substring(0, 8);
-        return "smtp_" + tenantId + "_" + suffix;
+    private String generateUsername() {
+        StringBuilder sb = new StringBuilder(USERNAME_LENGTH);
+        for (int i = 0; i < USERNAME_LENGTH; i++) {
+            sb.append(USERNAME_CHARS.charAt(RANDOM.nextInt(USERNAME_CHARS.length())));
+        }
+        return sb.toString();
     }
 
     private String generatePassword() {
