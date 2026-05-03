@@ -4,6 +4,7 @@ import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatch
 import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +32,8 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported SMTP gateway type: " + gateway.getProvider()));
 
-        log.info("Sending {} outreach messages via SMTP gateway: {}", outreach.size(), gateway.getHost());
+        log.info("Sending {} outreach messages via SMTP gateway: {}",
+                outreach.size(), GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.HOST));
 
         for (Outreach out : outreach) {
             try {
@@ -53,7 +55,11 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
             maskRecipient(recipient), maskEmail(email));
 
         String subject = "Campaign Message";
-        String from = gateway.getUsername();
+        String fromDomain = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.FROM_DOMAIN);
+        String host = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.HOST);
+        String from = fromDomain != null
+                ? "noreply@" + fromDomain
+                : gateway.getConfig().getOrDefault(GatewayConfigKeys.SMTP_USERNAME, "noreply@" + host);
 
         port.sendEmail(gateway, from, email, subject, outreach.getMessage());
     }
@@ -65,7 +71,8 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
             cleanPhone = cleanPhone.substring(1);
         }
 
-        return cleanPhone + "@" + gateway.getHost().replace("smtp.", "mail2sms.");
+        String host = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.HOST);
+        return cleanPhone + "@" + host.replace("smtp.", "mail2sms.");
     }
 
     private void updateOutreachStatus(Outreach outreach, OutreachStatus status) {

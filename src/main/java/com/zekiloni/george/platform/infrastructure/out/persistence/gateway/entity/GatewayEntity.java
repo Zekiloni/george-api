@@ -9,6 +9,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @Entity
 @Table(name = "gateways")
@@ -37,12 +42,7 @@ public abstract class GatewayEntity extends BaseEntity {
     @Column(name = "priority")
     private int priority;
 
-    @Column(name = "max_connections")
-    private int maxConnections;
-
-    @Column(name = "username")
-    private String username;
-
-    @Column(name = "password")
-    private String password;
+    @Column(name = "config", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private Map<String, String> config = new HashMap<>();
 }

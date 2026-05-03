@@ -3,6 +3,7 @@ package com.zekiloni.george.platform.infrastructure.out.integration.gateway.smtp
 import com.zekiloni.george.commerce.application.port.out.gateway.SmtpProvisioningPort;
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayRepositoryPort;
 import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -18,9 +19,8 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
     public void createAccount(String gatewayId, String username, String password, String email) {
         SmtpGateway gateway = loadSmtpGateway(gatewayId);
         stalwartClient.createPrincipal(
-                gateway.getAdminUrl(),
-                gateway.getUsername(),
-                gateway.getPassword(),
+                requireConfig(gateway, GatewayConfigKeys.ADMIN_URL),
+                requireConfig(gateway, GatewayConfigKeys.API_KEY),
                 username,
                 password,
                 email);
@@ -30,9 +30,8 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
     public void deleteAccount(String gatewayId, String username) {
         SmtpGateway gateway = loadSmtpGateway(gatewayId);
         stalwartClient.deletePrincipal(
-                gateway.getAdminUrl(),
-                gateway.getUsername(),
-                gateway.getPassword(),
+                requireConfig(gateway, GatewayConfigKeys.ADMIN_URL),
+                requireConfig(gateway, GatewayConfigKeys.API_KEY),
                 username);
     }
 
@@ -43,5 +42,13 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
             throw new IllegalArgumentException("Gateway " + gatewayId + " is not an SMTP gateway");
         }
         return smtp;
+    }
+
+    private static String requireConfig(SmtpGateway gateway, String key) {
+        String value = GatewayConfigKeys.string(gateway.getConfig(), key);
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException("Gateway " + gateway.getId() + " is missing config." + key);
+        }
+        return value;
     }
 }

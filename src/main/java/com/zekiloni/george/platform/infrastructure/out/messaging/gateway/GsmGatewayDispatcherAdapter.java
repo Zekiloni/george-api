@@ -7,6 +7,7 @@ import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatch
 import com.zekiloni.george.platform.application.port.out.gateway.GsmGatewayPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
 import lombok.RequiredArgsConstructor;
@@ -42,13 +43,14 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported GSM provider: " + gateway.getProvider()));
 
         List<GsmGatewayPort.PortStatus> availablePorts = selectPorts(port, gateway, serviceAccess);
+        String ip = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.IP_ADDRESS);
         if (availablePorts.isEmpty()) {
-            log.error("No GSM ports available for dispatch on gateway {}", gateway.getIpAddress());
+            log.error("No GSM ports available for dispatch on gateway {}", ip);
             throw new RuntimeException("No GSM ports available");
         }
 
         log.info("Sending {} outreach messages via GSM gateway {} on {} port(s)",
-                outreach.size(), gateway.getIpAddress(), availablePorts.size());
+                outreach.size(), ip, availablePorts.size());
 
         for (int i = 0; i < outreach.size(); i++) {
             Outreach out = outreach.get(i);

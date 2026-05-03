@@ -1,6 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.out.integration.gateway.smtp;
 
 import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGatewayProvider;
 import jakarta.mail.Authenticator;
@@ -14,6 +15,7 @@ import jakarta.mail.internet.MimeMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.util.Map;
 import java.util.Properties;
 
 @Slf4j
@@ -27,24 +29,36 @@ public class StalwartSmtpGatewayPortAdapter implements SmtpGatewayPort {
 
     @Override
     public SmtpAccount createSmtpAccount(SmtpGateway gateway, String username, String password, boolean useTls) {
-        return new SmtpAccount(gateway.getHost(), gateway.getPort(), username, password, useTls);
+        Map<String, String> cfg = gateway.getConfig();
+        return new SmtpAccount(
+                GatewayConfigKeys.string(cfg, GatewayConfigKeys.HOST),
+                GatewayConfigKeys.intValue(cfg, GatewayConfigKeys.PORT, 25),
+                username,
+                password,
+                useTls);
     }
 
     @Override
     public void sendEmail(SmtpGateway gateway, String from, String to, String subject, String body) {
+        Map<String, String> cfg = gateway.getConfig();
+        String host = GatewayConfigKeys.string(cfg, GatewayConfigKeys.HOST);
+        int port = GatewayConfigKeys.intValue(cfg, GatewayConfigKeys.PORT, 25);
+        boolean useTls = GatewayConfigKeys.boolValue(cfg, GatewayConfigKeys.USE_TLS, false);
+        String smtpUser = GatewayConfigKeys.string(cfg, GatewayConfigKeys.SMTP_USERNAME);
+        String smtpPass = GatewayConfigKeys.string(cfg, GatewayConfigKeys.SMTP_PASSWORD);
+
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
-        props.put("mail.smtp.host", gateway.getHost());
-        props.put("mail.smtp.port", String.valueOf(gateway.getPort()));
-
-        if (gateway.isUseTls()) {
+        props.put("mail.smtp.host", host);
+        props.put("mail.smtp.port", String.valueOf(port));
+        if (useTls) {
             props.put("mail.smtp.starttls.enable", "true");
         }
 
         Session session = Session.getInstance(props, new Authenticator() {
             @Override
             protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(gateway.getUsername(), gateway.getPassword());
+                return new PasswordAuthentication(smtpUser, smtpPass);
             }
         });
 

@@ -21,19 +21,4 @@ public class SmtpGatewayEntity extends GatewayEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false)
     private SmtpGatewayProvider provider;
-
-    @Column(name = "host", nullable = false)
-    private String host;
-
-    @Column(name = "port", nullable = false)
-    private int port;
-
-    @Column(name = "from_domain")
-    private String fromDomain;
-
-    @Column(name = "use_tls")
-    private boolean useTls;
-
-    @Column(name = "admin_url")
-    private String adminUrl;
 }

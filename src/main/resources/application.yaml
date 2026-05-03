@@ -79,6 +79,14 @@ spring:
       max-file-size: 3MB
       max-request-size: 3MB
 
+  # Spring Boot 4 ships both Jackson 2 (com.fasterxml.jackson.databind) and
+  # Jackson 3 (tools.jackson.databind) on the classpath and prefers Jackson 3
+  # for HTTP conversion. Our DTOs and JacksonConfig still target Jackson 2
+  # (annotations, ObjectMapper, modules), so force Jackson 2 until we migrate.
+  http:
+    converters:
+      preferred-json-mapper: jackson2
+
 btc-pay:
     store-id: ${BTC_PAY_STORE_ID:4YTS8vsii3jKm26PFauoCHzxFAjRy2WnBN3gbXesLzdr}
     api:

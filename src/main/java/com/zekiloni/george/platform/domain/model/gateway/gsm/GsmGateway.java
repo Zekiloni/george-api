@@ -1,8 +1,10 @@
 package com.zekiloni.george.platform.domain.model.gateway.gsm;
 
-
 import com.zekiloni.george.platform.domain.model.gateway.Gateway;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
 import java.util.List;
@@ -13,10 +15,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GsmGateway extends Gateway {
-    private String ipAddress;
-    private int port;
     private GsmProvider provider;
-    private int totalPort;
     private List<GsmGatewaySlot> slot;
 
     public int getActivePortCount() {

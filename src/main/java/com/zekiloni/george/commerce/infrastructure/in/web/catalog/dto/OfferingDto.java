@@ -1,6 +1,10 @@
 package com.zekiloni.george.commerce.infrastructure.in.web.catalog.dto;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.zekiloni.george.common.domain.model.Money;
+import com.zekiloni.george.common.infrastructure.config.jackson.ChronoUnitFlexibleDeserializer;
+import com.zekiloni.george.common.infrastructure.config.jackson.ChronoUnitNameSerializer;
 import com.zekiloni.george.commerce.domain.catalog.model.OfferingStatus;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.catalog.model.TierMode;
@@ -28,6 +32,8 @@ public class OfferingDto {
 
     private Money unitAmount;
     private String unitLabel;
+    @JsonDeserialize(using = ChronoUnitFlexibleDeserializer.class)
+    @JsonSerialize(using = ChronoUnitNameSerializer.class)
     private ChronoUnit timeUnit;
     private int intervalCount;
     private Integer minUnits;

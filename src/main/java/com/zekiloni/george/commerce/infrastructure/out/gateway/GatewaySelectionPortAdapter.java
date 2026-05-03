@@ -3,6 +3,7 @@ package com.zekiloni.george.commerce.infrastructure.out.gateway;
 import com.zekiloni.george.commerce.application.port.out.gateway.GatewaySelectionPort;
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayRepositoryPort;
 import com.zekiloni.george.platform.domain.model.gateway.Gateway;
+import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
@@ -92,15 +93,15 @@ public class GatewaySelectionPortAdapter implements GatewaySelectionPort {
             case SmtpGateway smtp -> new GatewayConfig(
                     gateway.getId(),
                     "SMTP",
-                    smtp.getHost(),
-                    smtp.getPort(),
+                    GatewayConfigKeys.string(smtp.getConfig(), GatewayConfigKeys.HOST),
+                    GatewayConfigKeys.intValue(smtp.getConfig(), GatewayConfigKeys.PORT, 0),
                     smtp.getProvider().name()
             );
             case GsmGateway gsm -> new GatewayConfig(
                     gateway.getId(),
                     "GSM",
-                    gsm.getIpAddress(),
-                    gsm.getPort(),
+                    GatewayConfigKeys.string(gsm.getConfig(), GatewayConfigKeys.IP_ADDRESS),
+                    GatewayConfigKeys.intValue(gsm.getConfig(), GatewayConfigKeys.PORT, 0),
                     gsm.getProvider().name()
             );
             default -> throw new RuntimeException("Unknown gateway type: " + gateway.getClass());

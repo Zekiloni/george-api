@@ -5,8 +5,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 import lombok.Data;
+
+import java.util.Map;
 
 @Data
 @JsonTypeInfo(
@@ -19,10 +21,16 @@ import lombok.Data;
         @JsonSubTypes.Type(value = GsmGatewayCreateDto.class, name = "GSM")
 })
 public abstract class GatewayCreateDto {
-    private @NotNull GatewayType type;
-    private @NotBlank String name;
+    private GatewayType type;
+
+    @NotBlank
+    private String name;
+
     private String description;
-    private @Positive int priority;
-    private @NotBlank String username;
-    private @NotBlank String password;
+
+    @PositiveOrZero
+    private int priority;
+
+    @NotNull
+    private Map<String, String> config;
 }
