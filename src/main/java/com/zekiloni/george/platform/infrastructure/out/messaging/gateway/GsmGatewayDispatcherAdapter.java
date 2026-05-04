@@ -1,6 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.out.messaging.gateway;
 
 import com.zekiloni.george.commerce.application.port.out.InventoryRepositoryPort;
+import com.zekiloni.george.commerce.application.usecase.ServiceUsageQuotaService;
 import com.zekiloni.george.commerce.domain.inventory.model.GsmServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatchPort;
@@ -24,6 +25,7 @@ import java.util.Set;
 public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGateway> {
     private final List<GsmGatewayPort> gsmGateway;
     private final InventoryRepositoryPort inventoryRepository;
+    private final ServiceUsageQuotaService quotaService;
 
     @Override
     public boolean isSupported(GatewayType gatewayType) {
@@ -49,10 +51,24 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
             throw new RuntimeException("No GSM ports available");
         }
 
-        log.info("Sending {} outreach messages via GSM gateway {} on {} port(s)",
-                outreach.size(), ip, availablePorts.size());
+        // Quota: reserve up-front for whatever portion this access can still send.
+        // Anything beyond the granted count is marked FAILED (quota exhausted).
+        String accessId = serviceAccess != null ? serviceAccess.getId() : null;
+        int reserved = accessId != null ? quotaService.reserve(accessId, outreach.size()) : outreach.size();
+        if (reserved < outreach.size()) {
+            log.warn("Quota allowed {} of {} requested for ServiceAccess {}",
+                    reserved, outreach.size(), accessId != null ? accessId : "n/a");
+            for (Outreach blocked : outreach.subList(reserved, outreach.size())) {
+                updateOutreachStatus(blocked, OutreachStatus.FAILED);
+            }
+        }
+        if (reserved == 0) return;
 
-        for (int i = 0; i < outreach.size(); i++) {
+        log.info("Sending {} outreach messages via GSM gateway {} on {} port(s)",
+                reserved, ip, availablePorts.size());
+
+        int failed = 0;
+        for (int i = 0; i < reserved; i++) {
             Outreach out = outreach.get(i);
             GsmGatewayPort.PortStatus portStatus = availablePorts.get(i % availablePorts.size());
 
@@ -63,7 +79,13 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
                 log.error("Failed to send outreach via GSM: recipient={}, port={}, error={}",
                         maskRecipient(out.getRecipient()), portStatus.port(), e.getMessage());
                 updateOutreachStatus(out, OutreachStatus.FAILED);
+                failed++;
             }
+        }
+
+        if (accessId != null && failed > 0) {
+            // Refund the quota we reserved but didn't actually consume.
+            quotaService.release(accessId, failed);
         }
     }
 

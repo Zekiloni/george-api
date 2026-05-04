@@ -5,6 +5,7 @@ import com.zekiloni.george.commerce.application.port.out.InventoryRepositoryPort
 import com.zekiloni.george.commerce.application.port.out.gateway.GatewaySelectionPort;
 import com.zekiloni.george.commerce.application.port.out.gateway.GsmProvisioningPort;
 import com.zekiloni.george.commerce.application.port.out.gateway.GsmProvisioningPort.GsmPortInfo;
+import com.zekiloni.george.commerce.application.usecase.ServiceUsageBootstrap;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.GsmServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
@@ -32,6 +33,7 @@ public class GsmProvisioningStrategy implements ProvisioningStrategy {
     private final GatewaySelectionPort gatewaySelectionPort;
     private final GsmProvisioningPort gsmProvisioningPort;
     private final InventoryRepositoryPort inventoryRepository;
+    private final ServiceUsageBootstrap usageBootstrap;
 
     @Override
     public ServiceSpecification getType() {
@@ -57,7 +59,9 @@ public class GsmProvisioningStrategy implements ProvisioningStrategy {
                 .port(port)
                 .build();
 
-        serviceAccessCreateUseCase.create(serviceAccess);
+        ServiceAccess saved = serviceAccessCreateUseCase.create(serviceAccess);
+        usageBootstrap.initialize(saved, orderItem, order.getTenantId());
+
         gatewaySelectionPort.recordSuccess(gatewayId);
         gatewaySelectionPort.incrementConnectionCount(gatewayId);
 

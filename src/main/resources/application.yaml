@@ -9,6 +9,17 @@ app:
   lifecycle:
     renewal-notice-days: ${RENEWAL_NOTICE_DAYS:3}
     grace-period-days: ${GRACE_PERIOD_DAYS:1}
+  usage:
+    # Default per-day cap for any new ServiceAccess (SMTP, GSM, ...). Stored on
+    # ServiceUsage; on top of the total cap from OrderItem.units. Set to 0 to
+    # disable the daily cap. Per-access overrides can be set directly on the
+    # ServiceUsage row by an admin.
+    default-daily-limit: ${APP_USAGE_DEFAULT_DAILY_LIMIT:50000}
+  outreach:
+    # Shared bearer token for the delivery-event webhook (POST /api/v1/outreach/events).
+    # Configure on every provider that pushes delivery outcomes back (Stalwart bounce
+    # poller, Postal, EJOIN DLR, etc.). Leave blank in dev to skip auth.
+    delivery-webhook-secret: ${APP_OUTREACH_DELIVERY_WEBHOOK_SECRET:}
 
 # API Configuration
 api:
@@ -92,6 +103,10 @@ btc-pay:
     api:
       base-url: ${BTC_PAY_URL:http://localhost:49392/api/v1}
       api-key: ${BTC_PAY_API_KEY:74a069139477a54999c59082fa98874a8c43c750}
+    webhook:
+      # HMAC-SHA256 secret configured in BTCPay's webhook UI. Leave blank in dev to skip
+      # verification; required in prod to reject spoofed webhook calls.
+      secret: ${BTC_PAY_WEBHOOK_SECRET:}
 
 # Logging
 logging:

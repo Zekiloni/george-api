@@ -3,6 +3,7 @@ package com.zekiloni.george.commerce.domain.order.service.strategy;
 import com.zekiloni.george.commerce.application.port.in.ServiceAccessCreateUseCase;
 import com.zekiloni.george.commerce.application.port.out.gateway.GatewaySelectionPort;
 import com.zekiloni.george.commerce.application.port.out.gateway.SmtpProvisioningPort;
+import com.zekiloni.george.commerce.application.usecase.ServiceUsageBootstrap;
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
@@ -31,6 +32,7 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
     private final ServiceAccessCreateUseCase serviceAccessCreateUseCase;
     private final GatewaySelectionPort gatewaySelectionPort;
     private final SmtpProvisioningPort smtpProvisioningPort;
+    private final ServiceUsageBootstrap usageBootstrap;
 
     @Override
     public ServiceSpecification getType() {
@@ -68,7 +70,9 @@ public class SmtpProvisioningStrategy implements ProvisioningStrategy {
                 .port(config.port())
                 .build();
 
-        serviceAccessCreateUseCase.create(serviceAccess);
+        ServiceAccess saved = serviceAccessCreateUseCase.create(serviceAccess);
+        usageBootstrap.initialize(saved, orderItem, order.getTenantId());
+
         gatewaySelectionPort.recordSuccess(gatewayId);
         gatewaySelectionPort.incrementConnectionCount(gatewayId);
 

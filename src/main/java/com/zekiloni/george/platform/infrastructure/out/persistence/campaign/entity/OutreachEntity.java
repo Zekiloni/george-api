@@ -49,4 +49,13 @@ public class OutreachEntity extends TenantEntity {
 
     @Column
     private OffsetDateTime failedAt;
+
+    @Column
+    private OffsetDateTime bouncedAt;
+
+    @Column
+    private OffsetDateTime complainedAt;
+
+    @Column(length = 500)
+    private String failureReason;
 }

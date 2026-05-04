@@ -26,4 +26,8 @@ public class Outreach {
     private OffsetDateTime dispatchedAt;
     private OffsetDateTime deliveredAt;
     private OffsetDateTime failedAt;
+    private OffsetDateTime bouncedAt;
+    private OffsetDateTime complainedAt;
+    /** Free-form reason from the provider (DSN status, SMS error code, etc.). */
+    private String failureReason;
 }

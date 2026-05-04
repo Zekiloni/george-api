@@ -3,23 +3,22 @@ package com.zekiloni.george.platform.application.port.out.gateway;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGatewayProvider;
 
+import java.util.List;
+
 public interface SmtpGatewayPort {
     boolean isSupported(SmtpGatewayProvider type);
 
     SmtpAccount createSmtpAccount(SmtpGateway gateway, String username, String password, boolean useTls);
 
     /**
-     * Send a single message authenticated as the tenant's SMTP account.
+     * Send a batch of messages over a single authenticated SMTP session.
+     * One TCP+TLS+AUTH handshake for the whole batch instead of N — cuts
+     * per-message latency drastically once outreach lists exceed a few dozen.
      *
-     * @param gateway      the SMTP gateway (host/port/TLS, no credentials)
-     * @param credentials  per-tenant SMTP-AUTH user/pass from the customer's SmtpServiceAccess
-     * @param from         envelope from
-     * @param to           envelope to
-     * @param subject      message subject
-     * @param body         plain-text body
+     * @return one {@link EmailResult} per input message, in the same order.
+     *         Senders correlate back to their domain entity via {@code correlationId}.
      */
-    void sendEmail(SmtpGateway gateway, SmtpCredentials credentials,
-                   String from, String to, String subject, String body);
+    List<EmailResult> sendBatch(SmtpGateway gateway, SmtpCredentials credentials, List<EmailMessage> messages);
 
     record SmtpAccount(
             String host,
@@ -30,4 +29,21 @@ public interface SmtpGatewayPort {
     ) {}
 
     record SmtpCredentials(String username, String password) {}
+
+    record EmailMessage(
+            String correlationId,
+            String from,
+            String to,
+            String subject,
+            String body
+    ) {}
+
+    record EmailResult(
+            String correlationId,
+            boolean success,
+            String error
+    ) {
+        public static EmailResult ok(String correlationId) { return new EmailResult(correlationId, true, null); }
+        public static EmailResult failed(String correlationId, String error) { return new EmailResult(correlationId, false, error); }
+    }
 }

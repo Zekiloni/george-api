@@ -1,9 +1,12 @@
 package com.zekiloni.george.platform.infrastructure.out.messaging.gateway;
 
+import com.zekiloni.george.commerce.application.usecase.ServiceUsageQuotaService;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.SmtpServiceAccess;
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatchPort;
 import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort;
+import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort.EmailMessage;
+import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort.EmailResult;
 import com.zekiloni.george.platform.application.port.out.gateway.SmtpGatewayPort.SmtpCredentials;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
@@ -15,13 +18,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGateway> {
     private final List<SmtpGatewayPort> smtpGatewayPorts;
+    private final ServiceUsageQuotaService quotaService;
 
     @Override
     public boolean isSupported(GatewayType gatewayType) {
@@ -30,63 +37,77 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
 
     @Override
     public void send(List<Outreach> outreach, SmtpGateway gateway) {
-        // No tenant ServiceAccess available — fall back to gateway-config credentials
-        // (e.g. legacy "shared SMTP user" gateways). New campaigns always come in via
-        // the ServiceAccess overload below.
+        // No tenant ServiceAccess: use the gateway's static credentials and skip quota
+        // (legacy/admin path). New campaigns always come in via the ServiceAccess overload.
         SmtpCredentials creds = gatewayCredentials(gateway);
-        process(outreach, gateway, creds);
+        sendBatchInternal(outreach, gateway, creds, null);
     }
 
     @Override
     public void send(List<Outreach> outreach, SmtpGateway gateway, ServiceAccess serviceAccess) {
         if (!(serviceAccess instanceof SmtpServiceAccess smtpAccess)) {
-            log.warn("Expected SmtpServiceAccess for SMTP dispatch but got {}; falling back to gateway credentials",
+            log.warn("Expected SmtpServiceAccess but got {}; falling back to gateway credentials",
                     serviceAccess == null ? "null" : serviceAccess.getClass().getSimpleName());
             send(outreach, gateway);
             return;
         }
         SmtpCredentials creds = new SmtpCredentials(smtpAccess.getUsername(), smtpAccess.getPassword());
-        process(outreach, gateway, creds);
+        sendBatchInternal(outreach, gateway, creds, smtpAccess);
     }
 
-    private void process(List<Outreach> outreach, SmtpGateway gateway, SmtpCredentials creds) {
+    private void sendBatchInternal(List<Outreach> outreach,
+                                   SmtpGateway gateway,
+                                   SmtpCredentials creds,
+                                   SmtpServiceAccess access) {
+        if (outreach.isEmpty()) return;
+
         SmtpGatewayPort port = smtpGatewayPorts.stream()
                 .filter(p -> p.isSupported(gateway.getProvider()))
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException(
                         "Unsupported SMTP gateway type: " + gateway.getProvider()));
 
-        String host = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.HOST);
-        log.info("Sending {} outreach messages via SMTP gateway {} as {}",
-                outreach.size(), host, creds.username());
-
-        for (Outreach out : outreach) {
-            try {
-                sendOutreach(port, gateway, creds, out);
-                updateOutreachStatus(out, OutreachStatus.SENT);
-            } catch (Exception e) {
-                log.error("Failed to send outreach: recipient={}, error={}",
-                        maskRecipient(out.getRecipient()), e.getMessage());
-                updateOutreachStatus(out, OutreachStatus.FAILED);
+        // Quota: reserve up-front for whatever portion we're allowed to send.
+        // Anything beyond the reserved count is marked FAILED (quota exhausted).
+        String accessId = access != null ? access.getId() : null;
+        int reserved = accessId != null ? quotaService.reserve(accessId, outreach.size()) : outreach.size();
+        if (reserved < outreach.size()) {
+            log.warn("Quota allowed {} of {} requested for SmtpServiceAccess {}",
+                    reserved, outreach.size(), accessId != null ? accessId : "n/a");
+            for (Outreach blocked : outreach.subList(reserved, outreach.size())) {
+                markStatus(blocked, OutreachStatus.FAILED);
             }
         }
-    }
+        if (reserved == 0) return;
 
-    private void sendOutreach(SmtpGatewayPort port, SmtpGateway gateway,
-                              SmtpCredentials creds, Outreach outreach) {
-        String recipient = outreach.getRecipient();
-        String email = convertPhoneToEmail(recipient, gateway);
-
-        log.debug("Converting phone to email for mail2SMS: phone={}, email={}",
-                maskRecipient(recipient), maskEmail(email));
-
-        String subject = "Campaign Message";
+        List<Outreach> toSend = outreach.subList(0, reserved);
+        Map<String, Outreach> byId = new HashMap<>(toSend.size());
+        List<EmailMessage> messages = new ArrayList<>(toSend.size());
         String fromDomain = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.FROM_DOMAIN);
-        String from = fromDomain != null
-                ? creds.username() + "@" + fromDomain
-                : creds.username();
+        String from = fromDomain != null ? creds.username() + "@" + fromDomain : creds.username();
 
-        port.sendEmail(gateway, creds, from, email, subject, outreach.getMessage());
+        for (Outreach o : toSend) {
+            byId.put(o.getId(), o);
+            String email = convertPhoneToEmail(o.getRecipient(), gateway);
+            messages.add(new EmailMessage(o.getId(), from, email, "Campaign Message", o.getMessage()));
+        }
+
+        String host = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.HOST);
+        log.info("Dispatching {} messages via {} as {}", messages.size(), host, creds.username());
+
+        List<EmailResult> results = port.sendBatch(gateway, creds, messages);
+
+        int failed = 0;
+        for (EmailResult r : results) {
+            Outreach o = byId.get(r.correlationId());
+            if (o == null) continue;
+            markStatus(o, r.success() ? OutreachStatus.SENT : OutreachStatus.FAILED);
+            if (!r.success()) failed++;
+        }
+        if (accessId != null && failed > 0) {
+            // Refund the quota we reserved but didn't actually consume.
+            quotaService.release(accessId, failed);
+        }
     }
 
     private SmtpCredentials gatewayCredentials(SmtpGateway gateway) {
@@ -104,27 +125,9 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
         return cleanPhone + "@" + host.replace("smtp.", "mail2sms.");
     }
 
-    private void updateOutreachStatus(Outreach outreach, OutreachStatus status) {
+    private static void markStatus(Outreach outreach, OutreachStatus status) {
         outreach.setStatus(status);
-        if (status == OutreachStatus.SENT) {
-            outreach.setDispatchedAt(OffsetDateTime.now());
-        } else if (status == OutreachStatus.FAILED) {
-            outreach.setFailedAt(OffsetDateTime.now());
-        }
-    }
-
-    private String maskRecipient(String recipient) {
-        if (recipient == null || recipient.length() <= 4) return "***";
-        return recipient.substring(0, 2) + "***" + recipient.substring(recipient.length() - 2);
-    }
-
-    private String maskEmail(String email) {
-        if (email == null || email.isEmpty()) return "***";
-        int atIndex = email.indexOf("@");
-        if (atIndex <= 0) return "***";
-        String localPart = email.substring(0, atIndex);
-        String domain = email.substring(atIndex);
-        if (localPart.length() <= 2) return "***" + domain;
-        return localPart.charAt(0) + "***" + localPart.charAt(localPart.length() - 1) + domain;
+        if (status == OutreachStatus.SENT) outreach.setDispatchedAt(OffsetDateTime.now());
+        else if (status == OutreachStatus.FAILED) outreach.setFailedAt(OffsetDateTime.now());
     }
 }

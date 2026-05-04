@@ -1,5 +1,6 @@
 package com.zekiloni.george.commerce.infrastructure.in.web.order;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zekiloni.george.commerce.application.port.in.InvoiceEventHandleUseCase;
 import com.zekiloni.george.commerce.application.port.in.InvoiceQueryUseCase;
 import com.zekiloni.george.commerce.application.port.out.ExternalInvoicePort;
@@ -25,10 +26,29 @@ public class InvoiceApiController {
     private final InvoiceQueryUseCase queryUseCase;
     private final ExternalInvoicePort externalInvoicePort;
     private final InvoiceDtoMapper mapper;
+    private final BtcPayWebhookVerifier webhookVerifier;
+    private final ObjectMapper objectMapper;
 
+    /**
+     * BTCPay sends each webhook signed with HMAC-SHA256 in the {@code BTCPay-Sig}
+     * header. We accept the raw body here so the signature can be validated
+     * byte-for-byte before we deserialize and act on it.
+     */
     @PostMapping("/webhook")
-    public ResponseEntity<Object> handle(@RequestBody BtcPayEventDto event) {
-        processUseCase.handle(mapper.toDomain(event));
+    public ResponseEntity<Object> handle(
+            @RequestHeader(value = "BTCPay-Sig", required = false) String signature,
+            @RequestBody String rawBody) {
+        if (!webhookVerifier.verify(signature, rawBody)) {
+            log.warn("Rejected BTCPay webhook with invalid or missing signature");
+            return ResponseEntity.status(401).build();
+        }
+        try {
+            BtcPayEventDto event = objectMapper.readValue(rawBody, BtcPayEventDto.class);
+            processUseCase.handle(mapper.toDomain(event));
+        } catch (Exception e) {
+            log.error("BTCPay webhook processing failed: {}", e.getMessage(), e);
+            return ResponseEntity.status(400).build();
+        }
         return ResponseEntity.ok().build();
     }
 
