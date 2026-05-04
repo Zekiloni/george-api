@@ -73,7 +73,7 @@ jobs:
       - name: Checkout gitops repo
         uses: actions/checkout@v4
         with:
-          repository: Zekiloni/george-gitops
+          repository: Zekiloni/relay-gitops
           token: ${{ secrets.GIT_TOKEN }}
           path: gitops
 
@@ -83,7 +83,7 @@ jobs:
       - name: Bump image tag in gitops
         uses: fjogeleit/yaml-update-action@main
         with:
-          repository: Zekiloni/george-gitops
+          repository: Zekiloni/relay-gitops
           token: ${{ secrets.GIT_TOKEN }}
           workDir: gitops
           valueFile: k8s/overlays/${{ inputs.env }}/kustomization.yaml
