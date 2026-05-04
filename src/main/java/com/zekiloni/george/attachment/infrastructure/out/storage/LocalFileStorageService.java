@@ -1,5 +1,6 @@
 package com.zekiloni.george.attachment.infrastructure.out.storage;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -14,9 +15,10 @@ import java.util.zip.*;
 @Component
 @ConditionalOnProperty(name = "app.storage.type", havingValue = "local", matchIfMissing = true)
 public class LocalFileStorageService implements FileStorageService {
-    private final Path storageDir = Paths.get("uploads");
+    private final Path storageDir;
 
-    public LocalFileStorageService() throws IOException {
+    public LocalFileStorageService(@Value("${app.storage.local.path:uploads}") String configuredPath) throws IOException {
+        this.storageDir = Paths.get(configuredPath);
         if (!Files.exists(storageDir)) {
             Files.createDirectories(storageDir);
         }

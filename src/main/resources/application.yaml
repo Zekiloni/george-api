@@ -20,6 +20,14 @@ app:
     # Configure on every provider that pushes delivery outcomes back (Stalwart bounce
     # poller, Postal, EJOIN DLR, etc.). Leave blank in dev to skip auth.
     delivery-webhook-secret: ${APP_OUTREACH_DELIVERY_WEBHOOK_SECRET:}
+  storage:
+    type: ${APP_STORAGE_TYPE:local}
+    local:
+      # Where uploaded attachments are written. Default is `uploads` (relative,
+      # resolves to /app/uploads in the container) for local-dev convenience.
+      # In k8s set this to a path backed by a writable PVC (e.g. /var/data/uploads)
+      # via APP_STORAGE_LOCAL_PATH env var on the Deployment.
+      path: ${APP_STORAGE_LOCAL_PATH:uploads}
 
 # API Configuration
 api:
