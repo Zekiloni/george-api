@@ -18,6 +18,12 @@ public interface InventoryRepositoryPort {
     Page<ServiceAccess> findAll(ServiceAccessSpecification specification, Pageable pageable);
     Optional<ServiceAccess> findById(String id);
 
+    /**
+     * Acquire a row-level write lock and return the access. Use only inside an
+     * existing transaction; the lock is released at commit/rollback.
+     */
+    Optional<ServiceAccess> lockById(String id);
+
     boolean hasActiveAccess(ServiceSpecification serviceSpecification);
 
     Set<Integer> findAllocatedGsmPorts(String gatewayId);

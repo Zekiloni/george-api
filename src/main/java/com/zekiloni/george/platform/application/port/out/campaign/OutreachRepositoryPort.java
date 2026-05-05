@@ -2,6 +2,7 @@ package com.zekiloni.george.platform.application.port.out.campaign;
 
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 
+import java.time.OffsetDateTime;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Stream;
@@ -13,4 +14,6 @@ public interface OutreachRepositoryPort {
     Stream<Outreach> findByCampaignId(String campaignId);
     Optional<Outreach> findBySessionToken(String sessionToken);
     Optional<Outreach> findById(String id);
+
+    long countDispatchedSinceByServiceAccessId(String serviceAccessId, OffsetDateTime since);
 }

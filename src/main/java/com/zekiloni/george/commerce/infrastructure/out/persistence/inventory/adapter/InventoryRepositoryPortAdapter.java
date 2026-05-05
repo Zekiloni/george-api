@@ -47,6 +47,11 @@ public class InventoryRepositoryPortAdapter implements InventoryRepositoryPort {
     }
 
     @Override
+    public Optional<ServiceAccess> lockById(String id) {
+        return repository.lockById(UUID.fromString(id)).map(mapper::toDomain);
+    }
+
+    @Override
     public int updateToSuspended(ServiceStatus currentStatus, ServiceStatus newStatus, OffsetDateTime now, OffsetDateTime gracePeriodEnd) {
         return repository.updateToSuspended(currentStatus, newStatus, now, gracePeriodEnd);
     }

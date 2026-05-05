@@ -13,6 +13,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,6 +44,19 @@ public class LeadRepositoryPortAdapter implements LeadRepositoryPort {
     @Override
     public void deleteById(String id) {
         repository.deleteById(UUID.fromString(id));
+    }
+
+    @Override
+    public List<Lead> findRandom(LeadFilter filter, int limit) {
+        return mapper.toDomain(repository.findRandom(
+                filter.country(), filter.areaCode(), filter.regionCode(),
+                filter.carrier(), filter.location(), limit));
+    }
+
+    @Override
+    public List<Lead> findByPhoneNumberIn(Collection<String> phoneNumbers) {
+        if (phoneNumbers == null || phoneNumbers.isEmpty()) return List.of();
+        return mapper.toDomain(repository.findByPhoneNumberIn(phoneNumbers));
     }
 
     private void applyAccessFilter() {

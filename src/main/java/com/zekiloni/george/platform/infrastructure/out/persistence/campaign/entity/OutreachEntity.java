@@ -34,6 +34,12 @@ public class OutreachEntity extends TenantEntity {
     @Column
     private String externalId;
 
+    @Column
+    private String country;
+
+    @Column
+    private String carrier;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id", nullable = false, updatable = false)
     private CampaignEntity campaign;

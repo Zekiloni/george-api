@@ -1,9 +1,9 @@
 package com.zekiloni.george.platform.infrastructure.out.messaging.gateway;
 
 import com.zekiloni.george.commerce.application.port.out.InventoryRepositoryPort;
-import com.zekiloni.george.commerce.application.usecase.ServiceUsageQuotaService;
 import com.zekiloni.george.commerce.domain.inventory.model.GsmServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
+import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayDispatchPort;
 import com.zekiloni.george.platform.application.port.out.gateway.GsmGatewayPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
@@ -11,21 +11,34 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatu
 import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 import java.util.Set;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
 public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGateway> {
     private final List<GsmGatewayPort> gsmGateway;
     private final InventoryRepositoryPort inventoryRepository;
-    private final ServiceUsageQuotaService quotaService;
+    private final OutreachRepositoryPort outreachRepository;
+    private final int defaultDailyLimit;
+
+    public GsmGatewayDispatcherAdapter(List<GsmGatewayPort> gsmGateway,
+                                       InventoryRepositoryPort inventoryRepository,
+                                       OutreachRepositoryPort outreachRepository,
+                                       @Value("${app.usage.default-daily-limit:50000}") int defaultDailyLimit) {
+        this.gsmGateway = gsmGateway;
+        this.inventoryRepository = inventoryRepository;
+        this.outreachRepository = outreachRepository;
+        this.defaultDailyLimit = defaultDailyLimit;
+    }
 
     @Override
     public boolean isSupported(GatewayType gatewayType) {
@@ -38,6 +51,7 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
     }
 
     @Override
+    @Transactional
     public void send(List<Outreach> outreach, GsmGateway gateway, ServiceAccess serviceAccess) {
         GsmGatewayPort port = gsmGateway.stream()
                 .filter(p -> p.isSupported(gateway.getProvider()))
@@ -51,24 +65,20 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
             throw new RuntimeException("No GSM ports available");
         }
 
-        // Quota: reserve up-front for whatever portion this access can still send.
-        // Anything beyond the granted count is marked FAILED (quota exhausted).
-        String accessId = serviceAccess != null ? serviceAccess.getId() : null;
-        int reserved = accessId != null ? quotaService.reserve(accessId, outreach.size()) : outreach.size();
-        if (reserved < outreach.size()) {
+        int granted = serviceAccess != null ? computeGranted(serviceAccess, outreach.size()) : outreach.size();
+        if (granted < outreach.size()) {
             log.warn("Quota allowed {} of {} requested for ServiceAccess {}",
-                    reserved, outreach.size(), accessId != null ? accessId : "n/a");
-            for (Outreach blocked : outreach.subList(reserved, outreach.size())) {
+                    granted, outreach.size(), serviceAccess != null ? serviceAccess.getId() : "n/a");
+            for (Outreach blocked : outreach.subList(granted, outreach.size())) {
                 updateOutreachStatus(blocked, OutreachStatus.FAILED);
             }
         }
-        if (reserved == 0) return;
+        if (granted == 0) return;
 
         log.info("Sending {} outreach messages via GSM gateway {} on {} port(s)",
-                reserved, ip, availablePorts.size());
+                granted, ip, availablePorts.size());
 
-        int failed = 0;
-        for (int i = 0; i < reserved; i++) {
+        for (int i = 0; i < granted; i++) {
             Outreach out = outreach.get(i);
             GsmGatewayPort.PortStatus portStatus = availablePorts.get(i % availablePorts.size());
 
@@ -79,14 +89,26 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
                 log.error("Failed to send outreach via GSM: recipient={}, port={}, error={}",
                         maskRecipient(out.getRecipient()), portStatus.port(), e.getMessage());
                 updateOutreachStatus(out, OutreachStatus.FAILED);
-                failed++;
             }
         }
+    }
 
-        if (accessId != null && failed > 0) {
-            // Refund the quota we reserved but didn't actually consume.
-            quotaService.release(accessId, failed);
-        }
+    private int computeGranted(ServiceAccess access, int requested) {
+        ServiceAccess locked = inventoryRepository.lockById(access.getId())
+                .orElseThrow(() -> new IllegalStateException("ServiceAccess not found: " + access.getId()));
+
+        OffsetDateTime startOfDayUtc = LocalDate.now(ZoneOffset.UTC).atStartOfDay().atOffset(ZoneOffset.UTC);
+        long dailyLimit = locked.getDailyLimit().map(Integer::longValue).orElse((long) defaultDailyLimit);
+        long usedToday = outreachRepository.countDispatchedSinceByServiceAccessId(locked.getId(), startOfDayUtc);
+        long dailyRemaining = Math.max(0, dailyLimit - usedToday);
+
+        long lifetimeRemaining = locked.getMessageQuota().map(quota -> {
+            long usedLifetime = outreachRepository.countDispatchedSinceByServiceAccessId(
+                    locked.getId(), locked.getValidFrom());
+            return Math.max(0L, quota - usedLifetime);
+        }).orElse(Long.MAX_VALUE);
+
+        return (int) Math.min(requested, Math.min(dailyRemaining, lifetimeRemaining));
     }
 
     private List<GsmGatewayPort.PortStatus> selectPorts(GsmGatewayPort port, GsmGateway gateway, ServiceAccess access) {

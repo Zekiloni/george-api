@@ -3,8 +3,10 @@ package com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.re
 import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.commerce.infrastructure.out.persistence.inventory.entity.ServiceAccessEntity;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -69,6 +72,15 @@ public interface ServiceAccessJpaRepository
     Set<Integer> findAllocatedGsmPorts(@Param("gatewayId") String gatewayId);
 
     List<ServiceAccessEntity> findAllByStatusAndValidToBefore(ServiceStatus status, OffsetDateTime cutoff);
+
+    /**
+     * Acquire a row-level write lock on a single access. Used by the dispatcher
+     * to serialize concurrent send attempts against the same access while
+     * computing the daily quota count.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT s FROM ServiceAccessEntity s WHERE s.id = :id")
+    Optional<ServiceAccessEntity> lockById(@Param("id") UUID id);
 
     /**
      * Active accesses with validTo in (now, now+horizon], not flagged for cancellation,

@@ -4,10 +4,12 @@ import com.zekiloni.george.platform.application.port.in.campaign.CampaignCreateU
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignDispatcherPort;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
+import com.zekiloni.george.platform.application.port.out.lead.LeadRepositoryPort;
 import com.zekiloni.george.platform.domain.model.campaign.Campaign;
 import com.zekiloni.george.platform.domain.model.campaign.CampaignStatus;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
+import com.zekiloni.george.platform.domain.model.lead.Lead;
 import com.zekiloni.george.platform.domain.util.PhoneNumberFileReader;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -19,7 +21,9 @@ import java.io.InputStream;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -29,6 +33,7 @@ public class CampaignCreateService implements CampaignCreateUseCase {
 
     private final CampaignRepositoryPort repository;
     private final OutreachRepositoryPort outreachRepository;
+    private final LeadRepositoryPort leadRepository;
     private final CampaignDispatcherPort dispatcher;
     private final CampaignStatusTransitionService statusTransitionService;
 
@@ -59,9 +64,16 @@ public class CampaignCreateService implements CampaignCreateUseCase {
         Set<String> phoneNumbers = PhoneNumberFileReader.streamPhoneNumbers(file)
                 .collect(Collectors.toSet());
 
+        // Stamp country/carrier from the customer's lead pool — used by the SMTP
+        // dispatcher to pick the correct mail2sms domain. Phones not in the pool
+        // get null fields and fall back to the gateway default at dispatch.
+        Map<String, Lead> leadByPhone = leadRepository.findByPhoneNumberIn(phoneNumbers).stream()
+                .collect(Collectors.toMap(Lead::getPhoneNumber, Function.identity(), (a, b) -> a));
+
         List<Outreach> outreaches = new ArrayList<>(phoneNumbers.size());
         for (String recipient : phoneNumbers) {
             String token = campaign.getTokenStrategy().generate(campaign.getTokenLength());
+            Lead lead = leadByPhone.get(recipient);
             outreaches.add(Outreach.builder()
                     .campaignId(campaign.getId())
                     .recipient(recipient)
@@ -69,6 +81,8 @@ public class CampaignCreateService implements CampaignCreateUseCase {
                     .sessionToken(token)
                     .status(OutreachStatus.SCHEDULED)
                     .scheduledAt(OffsetDateTime.now())
+                    .country(lead != null ? lead.getCountry() : null)
+                    .carrier(lead != null ? lead.getCarrier() : null)
                     .build());
         }
         return outreaches;

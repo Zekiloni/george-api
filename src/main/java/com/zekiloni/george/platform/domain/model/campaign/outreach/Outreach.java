@@ -22,6 +22,10 @@ public class Outreach {
     private String externalId;
     private OutreachStatus status;
     private List<UserSession> session;
+    /** ISO-3166 country code of the recipient (lower-case), copied from the matching {@code Lead}. */
+    private String country;
+    /** Carrier slug (lower-case, e.g. {@code bell}/{@code fido}), copied from the matching {@code Lead}. */
+    private String carrier;
     private OffsetDateTime scheduledAt;
     private OffsetDateTime dispatchedAt;
     private OffsetDateTime deliveredAt;

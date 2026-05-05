@@ -7,6 +7,7 @@ import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repo
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,5 +42,10 @@ public class OutreachRepositoryPortAdapter implements OutreachRepositoryPort {
     @Override
     public Optional<Outreach> findById(String id) {
         return jpaRepository.findById(UUID.fromString(id)).map(mapper::toDomain);
+    }
+
+    @Override
+    public long countDispatchedSinceByServiceAccessId(String serviceAccessId, OffsetDateTime since) {
+        return jpaRepository.countDispatchedSinceByServiceAccessId(UUID.fromString(serviceAccessId), since);
     }
 }
