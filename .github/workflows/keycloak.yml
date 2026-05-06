@@ -1,0 +1,66 @@
+name: Keycloak Theme Deployment
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: 'Deployment environment (matches gitops overlay name)'
+        required: true
+        default: 'dev'
+        type: choice
+        options:
+          - dev
+          - prod
+
+jobs:
+  build-and-push:
+    name: Bake relay theme into Keycloak image, bump gitops tag
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Validate theme + Dockerfile
+        run: |
+          test -f keycloak/Dockerfile                              || { echo "❌ keycloak/Dockerfile missing"; exit 1; }
+          test -f src/main/resources/theme/relay/login/theme.properties   || { echo "❌ login/theme.properties missing"; exit 1; }
+          test -f src/main/resources/theme/relay/account/theme.properties || { echo "❌ account/theme.properties missing"; exit 1; }
+          echo "✅ Validation passed"
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GHCR_ACCESS_TOKEN }}
+
+      - name: Build & push Keycloak image
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: keycloak/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/zekiloni/keycloak-george:${{ github.sha }}
+            ghcr.io/zekiloni/keycloak-george:${{ github.event.inputs.env }}-latest
+
+      - name: Checkout gitops repo
+        uses: actions/checkout@v4
+        with:
+          repository: Zekiloni/relay-gitops
+          token: ${{ secrets.GIT_TOKEN }}
+          path: gitops
+
+      - name: Bump image tag in gitops
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          repository: Zekiloni/relay-gitops
+          token: ${{ secrets.GIT_TOKEN }}
+          workDir: gitops
+          valueFile: k8s/overlays/${{ github.event.inputs.env }}/kustomization.yaml
+          propertyPath: $.images[?(@.name=='ghcr.io/zekiloni/keycloak-george')].newTag
+          value: ${{ github.sha }}
+          commitChange: true
+          message: "deploy(keycloak-theme): ${{ github.event.inputs.env }} -> ${{ github.sha }}"

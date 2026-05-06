@@ -1,0 +1,156 @@
+/* Relay account console — overrides classic FTL account theme. Branding
+   variables match the login theme so both screens feel like one app. */
+
+:root {
+    --relay-brand-500: #6366f1;
+    --relay-brand-600: #4f46e5;
+    --relay-brand-700: #4338ca;
+
+    --relay-bg: #f8fafc;
+    --relay-surface: #ffffff;
+    --relay-border: #e2e8f0;
+    --relay-text: #0f172a;
+    --relay-text-muted: #475569;
+    --relay-radius: 12px;
+}
+
+html,
+body {
+    background: var(--relay-bg) !important;
+    font-family:
+        "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        sans-serif !important;
+    color: var(--relay-text);
+}
+
+.navbar,
+.navbar-pf,
+.navbar-default {
+    background: var(--relay-surface) !important;
+    border-bottom: 1px solid var(--relay-border) !important;
+    box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+}
+
+.navbar-title,
+.navbar-brand {
+    color: var(--relay-text) !important;
+    font-weight: 600 !important;
+}
+
+.navbar-utility a {
+    color: var(--relay-text-muted) !important;
+}
+
+.navbar-utility a:hover {
+    color: var(--relay-brand-600) !important;
+}
+
+.bs-sidebar {
+    background: var(--relay-surface);
+    border: 1px solid var(--relay-border);
+    border-radius: var(--relay-radius);
+    padding: 0.5rem;
+    margin-top: 1.5rem;
+}
+
+.bs-sidebar ul li {
+    list-style: none;
+}
+
+.bs-sidebar ul li a {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    color: var(--relay-text-muted);
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.15s;
+}
+
+.bs-sidebar ul li a:hover {
+    background: #f1f5f9;
+    color: var(--relay-text);
+}
+
+.bs-sidebar ul li.active a {
+    background: #eef2ff;
+    color: var(--relay-brand-700);
+}
+
+.content-area {
+    background: var(--relay-surface);
+    border: 1px solid var(--relay-border);
+    border-radius: var(--relay-radius);
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+}
+
+label {
+    color: var(--relay-text);
+    font-weight: 500;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="tel"],
+select {
+    border: 1px solid #cbd5e1 !important;
+    border-radius: 8px !important;
+    padding: 0.5rem 0.75rem !important;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s !important;
+}
+
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+input[type="tel"]:focus,
+select:focus {
+    border-color: var(--relay-brand-500) !important;
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 0.18) !important;
+    outline: none !important;
+}
+
+button[type="submit"],
+input[type="submit"],
+.btn-primary {
+    background: var(--relay-brand-600) !important;
+    border-color: var(--relay-brand-600) !important;
+    border-radius: 8px !important;
+    font-weight: 500 !important;
+    padding: 0.5rem 1rem !important;
+}
+
+button[type="submit"]:hover,
+input[type="submit"]:hover,
+.btn-primary:hover {
+    background: var(--relay-brand-700) !important;
+    border-color: var(--relay-brand-700) !important;
+}
+
+a,
+a:visited {
+    color: var(--relay-brand-600);
+}
+
+a:hover {
+    color: var(--relay-brand-700);
+}
+
+.alert-success {
+    background: #ecfdf5;
+    border-color: #a7f3d0;
+    color: #065f46;
+    border-radius: 8px;
+}
+
+.alert-error,
+.alert-danger {
+    background: #fef2f2;
+    border-color: #fecaca;
+    color: #b91c1c;
+    border-radius: 8px;
+}
