@@ -1,6 +1,11 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
+import com.zekiloni.george.commerce.application.port.in.ServiceAccessQueryUseCase;
+import com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification;
+import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
+import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.platform.application.port.in.campaign.CampaignCreateUseCase;
+import com.zekiloni.george.platform.application.port.in.page.PageQueryUseCase;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignDispatcherPort;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
@@ -36,6 +41,8 @@ public class CampaignCreateService implements CampaignCreateUseCase {
     private final LeadRepositoryPort leadRepository;
     private final CampaignDispatcherPort dispatcher;
     private final CampaignStatusTransitionService statusTransitionService;
+    private final PageQueryUseCase pageQueryUseCase;
+    private final ServiceAccessQueryUseCase serviceAccessQueryUseCase;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -44,6 +51,7 @@ public class CampaignCreateService implements CampaignCreateUseCase {
     @Transactional
     public Campaign handle(Campaign campaignCreate, InputStream file) {
         try {
+            validateReferences(campaignCreate);
             campaignCreate.setBaseUrl(baseUrl);
             campaignCreate.setStatus(CampaignStatus.SCHEDULED);
             Campaign campaign = repository.save(campaignCreate);
@@ -103,5 +111,36 @@ public class CampaignCreateService implements CampaignCreateUseCase {
     private boolean isImmediateDispatch(Campaign campaign) {
         return campaign.getScheduledAt() == null ||
                 !campaign.getScheduledAt().isAfter(OffsetDateTime.now());
+    }
+
+    /**
+     * Reject the create early if the user picked a Page or Service Access that
+     * the dispatcher will choke on later. Cheaper than letting the campaign
+     * land in {@code SCHEDULED} and discovering on dispatch that the gateway
+     * isn't a messaging gateway.
+     */
+    private void validateReferences(Campaign campaign) {
+        if (campaign.getPage() == null || campaign.getPage().getId() == null) {
+            throw new IllegalArgumentException("page is required");
+        }
+        pageQueryUseCase.findById(campaign.getPage().getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "Page not found: " + campaign.getPage().getId()));
+
+        if (campaign.getServiceAccess() == null || campaign.getServiceAccess().getId() == null) {
+            throw new IllegalArgumentException("serviceAccess is required");
+        }
+        ServiceAccess access = serviceAccessQueryUseCase.getById(campaign.getServiceAccess().getId())
+                .orElseThrow(() -> new IllegalArgumentException(
+                        "ServiceAccess not found: " + campaign.getServiceAccess().getId()));
+        if (access.getStatus() != ServiceStatus.ACTIVE) {
+            throw new IllegalArgumentException(
+                    "ServiceAccess must be ACTIVE (was " + access.getStatus() + ")");
+        }
+        ServiceSpecification spec = access.getServiceSpecification();
+        if (spec != ServiceSpecification.SMTP && spec != ServiceSpecification.GSM) {
+            throw new IllegalArgumentException(
+                    "ServiceAccess must be SMTP or GSM (was " + spec + ")");
+        }
     }
 }

@@ -1,28 +1,17 @@
 package com.zekiloni.george.platform.domain.model.page;
 
-import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
 
-import java.time.OffsetDateTime;
-
-
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Page {
-    private String id;
-    private String title;
-    private String slug;
-    private String description;
-    private String keywords;
-    private String faviconUrl;
+@SuperBuilder
+public class Page extends PageContent {
     private PageStatus status;
-    private PageDefinition definition;
     private String createdBy;
-    private OffsetDateTime createdAt;
-    private OffsetDateTime updatedAt;
 }

@@ -197,6 +197,13 @@
             <version>3.10.0</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- jsoup: HTML→ComponentNode tree conversion for the page builder. -->
+        <dependency>
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.21.1</version>
+        </dependency>
     </dependencies>
 
     <build>
