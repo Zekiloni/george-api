@@ -17,7 +17,9 @@
                         error=kcSanitize(messagesPerField.getFirstError('username','password'))?no_esc />
                 </#if>
 
-                <@field.password name="password" label=msg("password")
+                <#-- error="" so the combined username/password message renders only
+                     once (under the username field) instead of duplicating here. -->
+                <@field.password name="password" label=msg("password") error=""
                     forgotPassword=realm.resetPasswordAllowed
                     autofocus=usernameHidden??
                     autocomplete="current-password">

@@ -380,11 +380,19 @@ textarea:focus {
 
 .pf-v5-c-form-control.pf-m-error,
 input[aria-invalid="true"] {
-    border-color: var(--relay-error);
+    border-color: var(--relay-error) !important;
 }
 
 .pf-v5-c-form-control.pf-m-error:focus-within {
-    box-shadow: 0 0 0 3px rgb(220 38 38 / 0.18);
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 0.18) !important;
+}
+
+/* Hide PatternFly's inline status icon (small red badge at the input's
+   right edge). We render a clearer error message under the field, so the
+   icon is redundant and was rendering misaligned. */
+.pf-v5-c-form-control__utilities,
+.pf-v5-c-form-control__icon {
+    display: none !important;
 }
 
 .pf-v5-c-helper-text__item.pf-m-error,
@@ -392,6 +400,13 @@ input[aria-invalid="true"] {
     color: var(--relay-error);
     font-size: 0.8rem;
     margin-top: 0.3rem;
+    display: block;
+}
+
+/* Hide PF's helper-text wrappers when empty so they don't add ghost space. */
+.pf-v5-c-form__helper-text:empty,
+.pf-v5-c-helper-text__item:empty {
+    display: none !important;
 }
 
 /* Input group + password visibility toggle */
@@ -409,6 +424,14 @@ input[aria-invalid="true"] {
 .pf-v5-c-input-group:focus-within {
     border-color: var(--relay-brand-500);
     box-shadow: 0 0 0 3px rgb(99 102 241 / 0.18);
+}
+.pf-v5-c-input-group:has(.pf-m-error),
+.pf-v5-c-input-group:has(input[aria-invalid="true"]) {
+    border-color: var(--relay-error);
+}
+.pf-v5-c-input-group:has(.pf-m-error):focus-within,
+.pf-v5-c-input-group:has(input[aria-invalid="true"]):focus-within {
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 0.18);
 }
 .pf-v5-c-input-group .pf-v5-c-form-control {
     border: 0;
