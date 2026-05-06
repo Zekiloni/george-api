@@ -47,7 +47,9 @@ api:
   base:
     path: /api/v1
   cors:
-    allowed-origins: ${CORS_ALLOWED_ORIGIN:http://localhost:4200}
+    # Comma-separated list. Local dev runs the main portal on :4200 and the
+    # landing/visitor app on :4201; both need to call the API.
+    allowed-origins: ${CORS_ALLOWED_ORIGIN:http://localhost:4200,http://localhost:4201}
 
 # Spring Application Configuration
 spring:
