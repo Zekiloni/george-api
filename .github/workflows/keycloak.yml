@@ -24,7 +24,7 @@ jobs:
 
       - name: Validate theme + Dockerfile
         run: |
-          test -f keycloak/Dockerfile                              || { echo "❌ keycloak/Dockerfile missing"; exit 1; }
+          test -f src/main/resources/keycloak/Dockerfile                  || { echo "❌ keycloak Dockerfile missing"; exit 1; }
           test -f src/main/resources/theme/relay/login/theme.properties   || { echo "❌ login/theme.properties missing"; exit 1; }
           test -f src/main/resources/theme/relay/account/theme.properties || { echo "❌ account/theme.properties missing"; exit 1; }
           echo "✅ Validation passed"
@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: keycloak/Dockerfile
+          file: src/main/resources/keycloak/Dockerfile
           push: true
           tags: |
             ghcr.io/zekiloni/keycloak-george:${{ github.sha }}

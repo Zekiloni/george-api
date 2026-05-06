@@ -7,7 +7,7 @@
 # server picks it up.
 #
 # Build context: repo root (george-api). Build with:
-#   docker build -f keycloak/Dockerfile -t ghcr.io/zekiloni/keycloak-george:dev .
+#   docker build -f src/main/resources/keycloak/Dockerfile -t ghcr.io/zekiloni/keycloak-george:dev .
 FROM quay.io/keycloak/keycloak:26.4
 
 COPY src/main/resources/theme/relay /opt/keycloak/themes/relay
