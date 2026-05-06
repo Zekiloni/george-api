@@ -75,6 +75,36 @@ services:
       timeout: 5s
       retries: 10
 
+  # Auto-mine 1 regtest block per minute. Without this the tip stays static,
+  # bitcoind logs "Potential stale tip detected" forever, and BTCPay's
+  # height-based invoice expiration / nbxplorer's chain index don't progress.
+  # Mainnet/k8s prod has real miners so this sidecar lives in dev only —
+  # mirrored as a CronJob in george-gitops k8s/overlays/dev/.
+  bitcoind-miner:
+    image: bitcoin/bitcoin:30.2
+    container_name: bitcoind-miner
+    depends_on:
+      bitcoind:
+        condition: service_healthy
+    restart: unless-stopped
+    command:
+      - sh
+      - -c
+      - |
+        CLI="bitcoin-cli -regtest -rpcconnect=bitcoind -rpcport=18443 -rpcuser=rpc -rpcpassword=rpc"
+        $$CLI -named createwallet wallet_name=miner descriptors=true 2>/dev/null || true
+        $$CLI loadwallet miner 2>/dev/null || true
+        ADDR=$$($$CLI -rpcwallet=miner getnewaddress 2>/dev/null \
+              || $$CLI -rpcwallet=miner getrawchangeaddress)
+        echo "regtest miner active, address=$$ADDR"
+        while true; do
+          BEFORE=$$($$CLI getblockcount)
+          $$CLI generatetoaddress 1 "$$ADDR" >/dev/null
+          AFTER=$$($$CLI getblockcount)
+          echo "tip $$BEFORE → $$AFTER"
+          sleep 60
+        done
+
   nbxplorer:
     image: nicolasdorier/nbxplorer:2.6.3
     container_name: nbxplorer
