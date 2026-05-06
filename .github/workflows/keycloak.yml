@@ -24,9 +24,9 @@ jobs:
 
       - name: Validate theme + Dockerfile
         run: |
-          test -f src/main/resources/keycloak/Dockerfile                  || { echo "❌ keycloak Dockerfile missing"; exit 1; }
-          test -f src/main/resources/theme/relay/login/theme.properties   || { echo "❌ login/theme.properties missing"; exit 1; }
-          test -f src/main/resources/theme/relay/account/theme.properties || { echo "❌ account/theme.properties missing"; exit 1; }
+          test -f resources/keycloak/Dockerfile                              || { echo "❌ keycloak Dockerfile missing"; exit 1; }
+          test -f resources/keycloak/theme/relay/login/theme.properties      || { echo "❌ login/theme.properties missing"; exit 1; }
+          test -f resources/keycloak/theme/relay/account/theme.properties    || { echo "❌ account/theme.properties missing"; exit 1; }
           echo "✅ Validation passed"
 
       - name: Login to GHCR
@@ -40,7 +40,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          file: src/main/resources/keycloak/Dockerfile
+          file: resources/keycloak/Dockerfile
           push: true
           tags: |
             ghcr.io/zekiloni/keycloak-george:${{ github.sha }}
