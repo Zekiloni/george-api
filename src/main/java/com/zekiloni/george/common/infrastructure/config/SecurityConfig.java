@@ -45,8 +45,11 @@ public class SecurityConfig {
                 .requestMatchers("/actuator/*").permitAll()
                 .requestMatchers("/v3/api-docs").permitAll()
                 .requestMatchers("/**/webhook").permitAll()
+                // Public visitor surfaces — token boots a session, slug is the
+                // anonymous preview/render path used by /s/:slug on landing.
                 .requestMatchers("/**/user-session/*").permitAll()
                 .requestMatchers("/**/user-session/*/submit").permitAll()
+                .requestMatchers(org.springframework.http.HttpMethod.GET, "/**/page/slug/*").permitAll()
                 .requestMatchers("/ws/visitor/**").permitAll()
                 .requestMatchers("/ws/operator/**").permitAll()
                 .anyRequest().authenticated());
