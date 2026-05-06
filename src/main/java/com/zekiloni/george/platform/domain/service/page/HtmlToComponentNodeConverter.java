@@ -48,7 +48,24 @@ public class HtmlToComponentNodeConverter {
         StringBuilder cssBuffer = new StringBuilder();
         List<String> externalStylesheets = new ArrayList<>();
 
-        ComponentNode root = mapElement(doc, cssBuffer, externalStylesheets);
+        // <head> never renders inline — peel its <style>/<link rel=stylesheet>
+        // into globalStyles so the renderer can hoist them, and discard the
+        // rest (title/meta/etc. — page-level metadata lives on Page itself).
+        if (doc.head() != null) {
+            for (Element styleEl : doc.head().select("style")) {
+                cssBuffer.append(styleEl.data()).append('\n');
+            }
+            for (Element linkEl : doc.head().select("link[rel=stylesheet]")) {
+                String href = linkEl.attr("href");
+                if (!href.isBlank()) externalStylesheets.add(href);
+            }
+        }
+
+        // Render root = <body>. Skipping the Document wrapper avoids emitting
+        // a node whose `type` is jsoup's "#root" sentinel, which the frontend
+        // renderer can't resolve.
+        Element bodyEl = doc.body() != null ? doc.body() : doc;
+        ComponentNode root = mapElement(bodyEl, cssBuffer, externalStylesheets);
 
         if (!cssBuffer.isEmpty()) globalStyles.put("css", cssBuffer.toString());
         if (!externalStylesheets.isEmpty()) globalStyles.put("externalStylesheets", externalStylesheets);
