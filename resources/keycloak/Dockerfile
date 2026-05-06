@@ -1,14 +1,22 @@
-# Custom Keycloak image with the "relay" theme baked in.
+# Custom Keycloak image with the "relay" theme + Keywind login provider
+# baked in.
 #
-# Theme source lives at resources/keycloak/theme/relay/{login,account}/ —
-# outside the Java classpath so it doesn't end up in the Spring Boot JAR,
-# but still version-controlled in this repo so realm UI evolves with the
-# auth code.
+#   resources/keycloak/keywind.jar           — Keywind theme provider (login)
+#   resources/keycloak/theme/relay/          — Our theme (parent=keywind for
+#                                              login, parent=keycloak.v3 for
+#                                              account)
 #
 # Build context: repo root (george-api). Build with:
-#   docker build -f resources/keycloak/Dockerfile -t ghcr.io/zekiloni/keycloak-george:dev .
+#   docker build -f resources/keycloak/Dockerfile \
+#                -t ghcr.io/zekiloni/keycloak-george:dev .
 FROM quay.io/keycloak/keycloak:26.4
+
+# Provider JAR — gives us `parent=keywind` resolution. Bumping Keywind:
+# replace this file with a newer release JAR from
+# https://github.com/lukin/keywind/releases and rebuild.
+COPY resources/keycloak/keywind.jar /opt/keycloak/providers/keywind.jar
 
 COPY resources/keycloak/theme/relay /opt/keycloak/themes/relay
 
 ENTRYPOINT ["/opt/keycloak/bin/kc.sh"]
+

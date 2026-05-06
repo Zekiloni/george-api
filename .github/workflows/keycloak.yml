@@ -1,4 +1,4 @@
-name: Keycloak Theme Deployment
+name: Keycloak Deployment
 
 on:
   workflow_dispatch:
