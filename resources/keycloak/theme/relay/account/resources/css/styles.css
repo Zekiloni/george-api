@@ -1,156 +1,187 @@
-/* Relay account console — overrides classic FTL account theme. Branding
-   variables match the login theme so both screens feel like one app. */
+/* Relay account console — overrides keycloak.v2's React/PatternFly SPA via
+   PF v5 design-token variables. Layout structure is locked in by the SPA;
+   we recolor / restyle the surfaces and controls so it visually matches
+   the Relay login screen. */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
 
 :root {
+    --relay-brand-50: #eef2ff;
+    --relay-brand-100: #e0e7ff;
     --relay-brand-500: #6366f1;
     --relay-brand-600: #4f46e5;
     --relay-brand-700: #4338ca;
 
+    --relay-text: #0f172a;
+    --relay-text-muted: #475569;
     --relay-bg: #f8fafc;
     --relay-surface: #ffffff;
     --relay-border: #e2e8f0;
-    --relay-text: #0f172a;
-    --relay-text-muted: #475569;
-    --relay-radius: 12px;
+
+    /* PatternFly v5 design tokens — recolour brand + neutrals so PF
+       components inherit our palette. */
+    --pf-v5-global--FontFamily--text:
+        "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        sans-serif;
+    --pf-v5-global--FontFamily--heading:
+        "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+        sans-serif;
+    --pf-v5-global--FontFamily--monospace:
+        ui-monospace, "SF Mono", Menlo, Monaco, "Cascadia Mono", monospace;
+
+    --pf-v5-global--primary-color--100: var(--relay-brand-600);
+    --pf-v5-global--primary-color--200: var(--relay-brand-700);
+    --pf-v5-global--active-color--100: var(--relay-brand-600);
+    --pf-v5-global--link--Color: var(--relay-brand-600);
+    --pf-v5-global--link--Color--hover: var(--relay-brand-700);
+    --pf-v5-global--link--TextDecoration--hover: underline;
+
+    --pf-v5-global--BackgroundColor--100: var(--relay-surface);
+    --pf-v5-global--BackgroundColor--200: var(--relay-bg);
+    --pf-v5-global--BorderRadius--sm: 8px;
+    --pf-v5-global--BorderRadius--md: 12px;
+    --pf-v5-global--BorderRadius--lg: 16px;
+
+    --pf-v5-global--Color--100: var(--relay-text);
+    --pf-v5-global--Color--200: var(--relay-text-muted);
+    --pf-v5-global--BorderColor--100: var(--relay-border);
 }
 
 html,
-body {
+body,
+#app,
+#main_content {
     background: var(--relay-bg) !important;
-    font-family:
-        "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-        sans-serif !important;
+    font-family: var(--pf-v5-global--FontFamily--text) !important;
     color: var(--relay-text);
 }
 
-.navbar,
-.navbar-pf,
-.navbar-default {
+/* Top navbar / masthead */
+.pf-v5-c-masthead,
+.pf-v5-c-page__header,
+.pf-v5-c-page__main-section.pf-m-light {
     background: var(--relay-surface) !important;
-    border-bottom: 1px solid var(--relay-border) !important;
+    border-bottom: 1px solid var(--relay-border);
     box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04);
 }
 
-.navbar-title,
-.navbar-brand {
+/* Sidebar / nav */
+.pf-v5-c-page__sidebar,
+.pf-v5-c-nav__list {
+    background: var(--relay-surface) !important;
+    border-right: 1px solid var(--relay-border);
+}
+
+.pf-v5-c-nav__link {
+    border-radius: 8px !important;
+    margin: 0.125rem 0.5rem;
+    padding: 0.5rem 0.75rem !important;
+    color: var(--relay-text-muted) !important;
+    font-weight: 500 !important;
+    transition:
+        background-color 0.15s,
+        color 0.15s;
+}
+
+.pf-v5-c-nav__link:hover {
+    background: var(--relay-brand-50) !important;
     color: var(--relay-text) !important;
+}
+
+.pf-v5-c-nav__link.pf-m-current,
+.pf-v5-c-nav__link[aria-current="page"] {
+    background: var(--relay-brand-50) !important;
+    color: var(--relay-brand-700) !important;
     font-weight: 600 !important;
 }
 
-.navbar-utility a {
-    color: var(--relay-text-muted) !important;
-}
-
-.navbar-utility a:hover {
-    color: var(--relay-brand-600) !important;
-}
-
-.bs-sidebar {
+/* Cards / content panels */
+.pf-v5-c-card,
+.pf-v5-c-panel {
     background: var(--relay-surface);
     border: 1px solid var(--relay-border);
-    border-radius: var(--relay-radius);
-    padding: 0.5rem;
-    margin-top: 1.5rem;
-}
-
-.bs-sidebar ul li {
-    list-style: none;
-}
-
-.bs-sidebar ul li a {
-    display: block;
-    padding: 0.5rem 0.75rem;
-    border-radius: 8px;
-    color: var(--relay-text-muted);
-    font-weight: 500;
-    text-decoration: none;
-    transition: background-color 0.15s;
-}
-
-.bs-sidebar ul li a:hover {
-    background: #f1f5f9;
-    color: var(--relay-text);
-}
-
-.bs-sidebar ul li.active a {
-    background: #eef2ff;
-    color: var(--relay-brand-700);
-}
-
-.content-area {
-    background: var(--relay-surface);
-    border: 1px solid var(--relay-border);
-    border-radius: var(--relay-radius);
-    padding: 1.5rem;
-    margin-top: 1.5rem;
+    border-radius: 12px !important;
     box-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04);
 }
 
-label {
-    color: var(--relay-text);
-    font-weight: 500;
+.pf-v5-c-card__title,
+.pf-v5-c-card__title-text {
+    font-weight: 600 !important;
+    letter-spacing: -0.01em;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-input[type="tel"],
-select {
-    border: 1px solid #cbd5e1 !important;
+/* Inputs */
+.pf-v5-c-form-control,
+.pf-v5-c-form-control input {
     border-radius: 8px !important;
-    padding: 0.5rem 0.75rem !important;
+    border-color: #cbd5e1 !important;
     transition:
         border-color 0.15s,
         box-shadow 0.15s !important;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus,
-input[type="tel"]:focus,
-select:focus {
+.pf-v5-c-form-control:focus-within,
+.pf-v5-c-form-control input:focus {
     border-color: var(--relay-brand-500) !important;
     box-shadow: 0 0 0 3px rgb(99 102 241 / 0.18) !important;
     outline: none !important;
 }
 
-button[type="submit"],
-input[type="submit"],
-.btn-primary {
-    background: var(--relay-brand-600) !important;
-    border-color: var(--relay-brand-600) !important;
+/* Buttons */
+.pf-v5-c-button {
     border-radius: 8px !important;
     font-weight: 500 !important;
-    padding: 0.5rem 1rem !important;
+    transition:
+        background-color 0.15s,
+        border-color 0.15s !important;
 }
 
-button[type="submit"]:hover,
-input[type="submit"]:hover,
-.btn-primary:hover {
+.pf-v5-c-button.pf-m-primary {
+    background: var(--relay-brand-600) !important;
+    border-color: var(--relay-brand-600) !important;
+}
+.pf-v5-c-button.pf-m-primary:hover {
     background: var(--relay-brand-700) !important;
     border-color: var(--relay-brand-700) !important;
 }
 
-a,
-a:visited {
-    color: var(--relay-brand-600);
+.pf-v5-c-button.pf-m-secondary {
+    border-color: #cbd5e1 !important;
 }
 
-a:hover {
-    color: var(--relay-brand-700);
+.pf-v5-c-button.pf-m-link {
+    color: var(--relay-brand-600) !important;
+}
+.pf-v5-c-button.pf-m-link:hover {
+    color: var(--relay-brand-700) !important;
 }
 
-.alert-success {
-    background: #ecfdf5;
-    border-color: #a7f3d0;
-    color: #065f46;
-    border-radius: 8px;
+/* Alerts */
+.pf-v5-c-alert {
+    border-radius: 8px !important;
 }
 
-.alert-error,
-.alert-danger {
-    background: #fef2f2;
-    border-color: #fecaca;
-    color: #b91c1c;
-    border-radius: 8px;
+/* Tables (sessions, applications) */
+.pf-v5-c-table {
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+.pf-v5-c-table thead th {
+    background: var(--relay-bg) !important;
+    color: var(--relay-text-muted) !important;
+    font-weight: 600 !important;
+    font-size: 0.8rem !important;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.pf-v5-c-table tbody tr:hover {
+    background: var(--relay-brand-50) !important;
+}
+
+/* Badges */
+.pf-v5-c-label {
+    border-radius: 6px !important;
+    font-weight: 500 !important;
 }

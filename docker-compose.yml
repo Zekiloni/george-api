@@ -40,7 +40,7 @@ services:
       KC_SPI_THEME_CACHE_THEMES: "false"
       KC_SPI_THEME_CACHE_TEMPLATES: "false"
     volumes:
-      - ./resources/keycloak/keywind.jar:/opt/keycloak/providers/keywind.jar
+      - ./resources/keycloak/theme:/opt/keycloak/themes
     command: start-dev
     ports:
       - "8686:8080"

@@ -1,13 +1,15 @@
-/* Relay login theme — overrides keycloak.v2 PatternFly defaults.
-   Edit the brand variables to re-skin; keep the structural rules
-   (border-radius, spacing) so the parent template still lays out cleanly. */
+/* Relay login theme — Keywind-style centered card on a soft brand gradient.
+   Hand-written CSS (no Tailwind compile step) so the Dockerfile stays simple.
+   Variables are at :root; tweak them to re-skin without touching layout. */
 
 :root {
     --relay-brand-50: #eef2ff;
     --relay-brand-100: #e0e7ff;
+    --relay-brand-300: #a5b4fc;
     --relay-brand-500: #6366f1;
     --relay-brand-600: #4f46e5;
     --relay-brand-700: #4338ca;
+    --relay-brand-800: #3730a3;
 
     --relay-bg: #f8fafc;
     --relay-card-bg: #ffffff;
@@ -15,136 +17,598 @@
     --relay-text: #0f172a;
     --relay-text-muted: #475569;
     --relay-input-border: #cbd5e1;
+    --relay-input-bg: #ffffff;
     --relay-error: #dc2626;
+    --relay-success: #16a34a;
+    --relay-radius-sm: 8px;
     --relay-radius: 12px;
+    --relay-radius-lg: 16px;
+    --relay-shadow-sm: 0 1px 2px 0 rgb(15 23 42 / 0.04);
+    --relay-shadow: 0 1px 2px 0 rgb(15 23 42 / 0.04), 0 12px 32px -12px rgb(15 23 42 / 0.10);
+}
 
-    /* Override PatternFly's primary so buttons/links pick up the brand. */
-    --pf-v5-global--primary-color--100: var(--relay-brand-600);
-    --pf-v5-global--primary-color--200: var(--relay-brand-700);
-    --pf-v5-global--link--Color: var(--relay-brand-600);
-    --pf-v5-global--link--Color--hover: var(--relay-brand-700);
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
 }
 
 html,
-body,
-.login-pf {
-    background:
-        radial-gradient(1200px 600px at 50% -10%, var(--relay-brand-100), transparent 60%),
-        var(--relay-bg) !important;
+body {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
     font-family:
         "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
         sans-serif;
     color: var(--relay-text);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
-.login-pf-page {
-    padding-top: 4rem;
+body.relay-body {
+    background:
+        radial-gradient(1100px 600px at 50% -10%, var(--relay-brand-100), transparent 60%),
+        var(--relay-bg);
+    min-height: 100vh;
 }
 
-#kc-header-wrapper {
+/* ============================================================
+   Layout: header → centered card → footer
+   ============================================================ */
+
+.relay-shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.relay-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 1.5rem 0;
+    max-width: 28rem;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.relay-brand {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.625rem;
     color: var(--relay-text);
+    text-decoration: none;
+}
+
+.relay-brand:hover {
+    text-decoration: none;
+}
+
+.relay-brand-mark {
+    display: inline-grid;
+    place-items: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--relay-radius-sm);
+    background: var(--relay-brand-600);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    box-shadow: var(--relay-shadow-sm);
+}
+
+.relay-brand-name {
     font-weight: 600;
+    font-size: 0.95rem;
     letter-spacing: -0.01em;
 }
 
-.card-pf {
-    border: 1px solid var(--relay-card-border) !important;
-    border-radius: var(--relay-radius) !important;
-    background: var(--relay-card-bg) !important;
-    box-shadow:
-        0 1px 2px 0 rgb(15 23 42 / 0.04),
-        0 12px 24px -8px rgb(15 23 42 / 0.08) !important;
-    padding: 2rem !important;
+.relay-locale details {
+    position: relative;
 }
 
-#kc-page-title {
-    font-size: 1.375rem;
-    font-weight: 600;
-    color: var(--relay-text);
-    margin-bottom: 1.25rem;
+.relay-locale summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 0.4rem 0.7rem;
+    border-radius: var(--relay-radius-sm);
+    border: 1px solid var(--relay-card-border);
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(6px);
+    color: var(--relay-text-muted);
+    font-size: 0.8rem;
+    font-weight: 500;
 }
+
+.relay-locale summary::-webkit-details-marker {
+    display: none;
+}
+
+.relay-locale ul {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 0.25rem);
+    margin: 0;
+    padding: 0.25rem 0;
+    list-style: none;
+    background: #fff;
+    border: 1px solid var(--relay-card-border);
+    border-radius: var(--relay-radius-sm);
+    box-shadow: var(--relay-shadow);
+    min-width: 8rem;
+    z-index: 10;
+}
+
+.relay-locale li a {
+    display: block;
+    padding: 0.45rem 0.7rem;
+    font-size: 0.85rem;
+    color: var(--relay-text);
+    text-decoration: none;
+}
+
+.relay-locale li a:hover {
+    background: var(--relay-brand-50);
+}
+
+.relay-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem 1.5rem;
+}
+
+.relay-card {
+    width: 100%;
+    max-width: 28rem;
+    background: var(--relay-card-bg);
+    border: 1px solid var(--relay-card-border);
+    border-radius: var(--relay-radius-lg);
+    padding: 2rem;
+    box-shadow: var(--relay-shadow);
+}
+
+.relay-card-header {
+    margin-bottom: 1.5rem;
+}
+
+.relay-card-header h1,
+#kc-page-title {
+    margin: 0;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--relay-text);
+}
+
+.relay-required-hint {
+    margin: 0.5rem 0 0;
+    font-size: 0.8rem;
+    color: var(--relay-text-muted);
+}
+
+.relay-required {
+    color: var(--relay-error);
+}
+
+.relay-attempted-user {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem;
+    background: var(--relay-brand-50);
+    border-radius: var(--relay-radius-sm);
+    font-size: 0.875rem;
+}
+
+.relay-attempted-user a {
+    font-size: 0.8rem;
+}
+
+.relay-footer {
+    text-align: center;
+    color: var(--relay-text-muted);
+    font-size: 0.75rem;
+    padding: 0.5rem 1rem 1.5rem;
+}
+
+.relay-info {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--relay-card-border);
+    text-align: center;
+    font-size: 0.875rem;
+    color: var(--relay-text-muted);
+}
+
+.relay-try-another {
+    margin-top: 1rem;
+    font-size: 0.875rem;
+}
+
+/* ============================================================
+   Alerts
+   ============================================================ */
+
+.relay-alert {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.625rem;
+    padding: 0.75rem 0.875rem;
+    border-radius: var(--relay-radius-sm);
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+.relay-alert > span[aria-hidden="true"] {
+    display: inline-grid;
+    place-items: center;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.relay-alert-text {
+    line-height: 1.4;
+}
+
+.relay-alert-success {
+    background: #ecfdf5;
+    color: #065f46;
+}
+.relay-alert-success > span[aria-hidden="true"] {
+    background: var(--relay-success);
+    color: #fff;
+}
+.relay-alert-info {
+    background: #eff6ff;
+    color: #1e40af;
+}
+.relay-alert-info > span[aria-hidden="true"] {
+    background: #2563eb;
+    color: #fff;
+}
+.relay-alert-warning {
+    background: #fffbeb;
+    color: #92400e;
+}
+.relay-alert-warning > span[aria-hidden="true"] {
+    background: #d97706;
+    color: #fff;
+}
+.relay-alert-error {
+    background: #fef2f2;
+    color: #991b1b;
+}
+.relay-alert-error > span[aria-hidden="true"] {
+    background: var(--relay-error);
+    color: #fff;
+}
+
+/* ============================================================
+   Forms — restyle PatternFly v5 + our own field markup
+   ============================================================ */
 
 label,
-.control-label {
-    color: var(--relay-text);
-    font-weight: 500;
+.pf-v5-c-form__label,
+.relay-label {
+    display: block;
+    margin-bottom: 0.4rem;
     font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--relay-text);
+}
+
+.pf-v5-c-form__label-required,
+.relay-label .relay-required {
+    margin-left: 0.25rem;
+    color: var(--relay-error);
+}
+
+.pf-v5-c-form__group {
+    margin-bottom: 1rem;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"],
+input[type="number"],
 input[type="tel"],
-select {
-    border: 1px solid var(--relay-input-border) !important;
-    border-radius: 8px !important;
-    padding: 0.625rem 0.75rem !important;
-    font-size: 0.95rem !important;
+input[type="url"],
+select,
+textarea,
+.pf-v5-c-form-control,
+.pf-v5-c-form-control input {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.75rem;
+    font-size: 0.9375rem;
+    line-height: 1.4;
+    color: var(--relay-text);
+    background: var(--relay-input-bg);
+    border: 1px solid var(--relay-input-border);
+    border-radius: var(--relay-radius-sm);
     transition:
-        border-color 0.15s,
-        box-shadow 0.15s !important;
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    box-shadow: var(--relay-shadow-sm);
+    font-family: inherit;
+}
+
+.pf-v5-c-form-control {
+    padding: 0;
+    background: var(--relay-input-bg);
+    border: 1px solid var(--relay-input-border);
+    border-radius: var(--relay-radius-sm);
+}
+
+.pf-v5-c-form-control input {
+    padding: 0.625rem 0.75rem;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    border-radius: var(--relay-radius-sm);
 }
 
 input[type="text"]:focus,
 input[type="email"]:focus,
 input[type="password"]:focus,
+input[type="number"]:focus,
 input[type="tel"]:focus,
-select:focus {
-    border-color: var(--relay-brand-500) !important;
-    box-shadow: 0 0 0 3px rgb(99 102 241 / 0.18) !important;
-    outline: none !important;
+input[type="url"]:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--relay-brand-500);
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 0.18);
+    outline: none;
+}
+
+.pf-v5-c-form-control:focus-within {
+    border-color: var(--relay-brand-500);
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 0.18);
+}
+
+.pf-v5-c-form-control input:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.pf-v5-c-form-control.pf-m-error,
+input[aria-invalid="true"] {
+    border-color: var(--relay-error);
+}
+
+.pf-v5-c-form-control.pf-m-error:focus-within {
+    box-shadow: 0 0 0 3px rgb(220 38 38 / 0.18);
+}
+
+.pf-v5-c-helper-text__item.pf-m-error,
+.kc-feedback-text {
+    color: var(--relay-error);
+    font-size: 0.8rem;
+    margin-top: 0.3rem;
+}
+
+/* Input group + password visibility toggle */
+.pf-v5-c-input-group {
+    display: flex;
+    width: 100%;
+    border: 1px solid var(--relay-input-border);
+    border-radius: var(--relay-radius-sm);
+    background: var(--relay-input-bg);
+    overflow: hidden;
+    transition:
+        border-color 0.15s,
+        box-shadow 0.15s;
+}
+.pf-v5-c-input-group:focus-within {
+    border-color: var(--relay-brand-500);
+    box-shadow: 0 0 0 3px rgb(99 102 241 / 0.18);
+}
+.pf-v5-c-input-group .pf-v5-c-form-control {
+    border: 0;
+    box-shadow: none;
+    border-radius: 0;
+    flex: 1;
+}
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control {
+    border: 0;
+    background: transparent;
+    color: var(--relay-text-muted);
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+}
+.pf-v5-c-input-group .pf-v5-c-button.pf-m-control:hover {
+    color: var(--relay-text);
+}
+
+/* Checkbox */
+.pf-v5-c-check {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+.pf-v5-c-check__input {
+    width: 1rem;
+    height: 1rem;
+    accent-color: var(--relay-brand-600);
+}
+.pf-v5-c-check__label {
+    font-size: 0.875rem;
+    color: var(--relay-text);
+    margin: 0;
+}
+
+/* Buttons */
+button,
+input[type="submit"],
+.pf-v5-c-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.625rem 1rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    font-family: inherit;
+    border: 1px solid transparent;
+    border-radius: var(--relay-radius-sm);
+    cursor: pointer;
+    transition:
+        background-color 0.15s,
+        border-color 0.15s,
+        box-shadow 0.15s,
+        color 0.15s;
+    text-decoration: none;
 }
 
 button[type="submit"],
 input[type="submit"],
-.btn-primary,
-.pf-v5-c-button.pf-m-primary {
-    background: var(--relay-brand-600) !important;
-    border-color: var(--relay-brand-600) !important;
-    border-radius: 8px !important;
-    font-weight: 500 !important;
-    padding: 0.625rem 1rem !important;
-    transition: background-color 0.15s !important;
+.pf-v5-c-button.pf-m-primary,
+.relay-btn-primary {
+    background: var(--relay-brand-600);
+    color: #fff;
+    border-color: var(--relay-brand-600);
+    width: 100%;
+    box-shadow: var(--relay-shadow-sm);
 }
 
 button[type="submit"]:hover,
 input[type="submit"]:hover,
-.btn-primary:hover,
-.pf-v5-c-button.pf-m-primary:hover {
-    background: var(--relay-brand-700) !important;
-    border-color: var(--relay-brand-700) !important;
+.pf-v5-c-button.pf-m-primary:hover,
+.relay-btn-primary:hover {
+    background: var(--relay-brand-700);
+    border-color: var(--relay-brand-700);
 }
 
+button[type="submit"]:focus-visible,
+.pf-v5-c-button.pf-m-primary:focus-visible {
+    outline: 2px solid var(--relay-brand-300);
+    outline-offset: 2px;
+}
+
+.pf-v5-c-button.pf-m-secondary,
+.relay-btn-secondary {
+    background: #fff;
+    color: var(--relay-text);
+    border-color: var(--relay-input-border);
+}
+.pf-v5-c-button.pf-m-secondary:hover,
+.relay-btn-secondary:hover {
+    background: #f8fafc;
+}
+
+.pf-v5-c-button.pf-m-link {
+    background: transparent;
+    border: 0;
+    color: var(--relay-brand-600);
+    padding: 0;
+}
+.pf-v5-c-button.pf-m-link:hover {
+    color: var(--relay-brand-700);
+    text-decoration: underline;
+}
+
+.pf-v5-c-button.pf-m-block {
+    display: flex;
+    width: 100%;
+}
+
+/* Form actions / button rows */
+.pf-v5-c-form__actions,
+#kc-form-buttons {
+    margin-top: 1.25rem;
+}
+
+#kc-form-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0.75rem 0 0;
+    font-size: 0.875rem;
+}
+
+/* Links */
 a,
 a:visited {
     color: var(--relay-brand-600);
     text-decoration: none;
 }
-
 a:hover {
     color: var(--relay-brand-700);
     text-decoration: underline;
 }
 
-.alert-error,
-.pf-v5-c-alert.pf-m-danger {
-    background: #fef2f2 !important;
-    border-color: #fecaca !important;
-    color: var(--relay-error) !important;
-    border-radius: 8px !important;
-}
-
-#kc-form-options,
-#kc-form-buttons {
-    margin-top: 1rem;
-}
-
+/* Social provider list */
+#kc-social-providers,
 .kc-social-links {
-    margin-top: 1.5rem;
+    margin-top: 1.25rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--relay-card-border);
+}
+#kc-social-providers h2 {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--relay-text-muted);
+    font-weight: 500;
+    margin: 0 0 0.5rem;
+    text-align: center;
+}
+.pf-v5-c-login__main-body ul,
+.kc-social-links ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+.kc-social-provider-link,
+.pf-v5-c-login__main-footer-links-item {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.6rem 0.75rem;
+    border: 1px solid var(--relay-input-border);
+    border-radius: var(--relay-radius-sm);
+    background: #fff;
+    color: var(--relay-text);
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: background-color 0.15s;
+}
+.kc-social-provider-link:hover {
+    background: #f8fafc;
 }
 
-#kc-info {
-    text-align: center;
-    color: var(--relay-text-muted);
-    font-size: 0.875rem;
+/* Hide PatternFly's default "login" body wrapper styles that clash */
+.login-pf-page,
+.login-pf body,
+.pf-v5-c-login {
+    background: transparent !important;
+    padding: 0 !important;
+    box-shadow: none !important;
+}
+
+/* Small screens */
+@media (max-width: 480px) {
+    .relay-card {
+        padding: 1.5rem;
+        border-radius: var(--relay-radius);
+    }
+    .relay-header {
+        padding: 1rem 1rem 0;
+    }
 }
