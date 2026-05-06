@@ -32,29 +32,26 @@
 <body class="relay-body ${bodyClass}">
 
 <div class="relay-shell">
-    <header class="relay-header">
-        <a class="relay-brand" href="${url.loginUrl!'#'}">
-            <span class="relay-brand-mark">R</span>
-            <span class="relay-brand-name">${realm.displayName!realm.name}</span>
-        </a>
-
-        <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
-            <div class="relay-locale">
-                <details>
-                    <summary>${locale.current}</summary>
-                    <ul role="menu">
-                        <#list locale.supported as l>
-                            <li><a href="${l.url}">${l.label}</a></li>
-                        </#list>
-                    </ul>
-                </details>
-            </div>
-        </#if>
-    </header>
+    <#if realm.internationalizationEnabled  && locale.supported?size gt 1>
+        <div class="relay-locale-bar">
+            <details class="relay-locale">
+                <summary>${locale.current}</summary>
+                <ul role="menu">
+                    <#list locale.supported as l>
+                        <li><a href="${l.url}">${l.label}</a></li>
+                    </#list>
+                </ul>
+            </details>
+        </div>
+    </#if>
 
     <main class="relay-main">
         <div class="relay-card">
-            <#-- Page title (or attempted-username chip) -->
+            <div class="relay-card-brand">
+                <span class="relay-brand-mark" aria-hidden="true">R</span>
+                <span class="relay-brand-name">${realm.displayName!realm.name}</span>
+            </div>
+
             <div class="relay-card-header">
                 <#if !(auth?has_content && auth.showUsername() && !auth.showResetCredentials())>
                     <h1 id="kc-page-title"><#nested "header"></h1>
@@ -71,7 +68,6 @@
                 </#if>
             </div>
 
-            <#-- Inline messages (errors/info/success/warning) -->
             <#if displayMessage && message?has_content && (message.type != 'warning' || !isAppInitiatedAction??)>
                 <div class="relay-alert relay-alert-${message.type}" role="alert">
                     <#if message.type = 'success'><span aria-hidden="true">✓</span></#if>
@@ -82,7 +78,6 @@
                 </div>
             </#if>
 
-            <#-- Page-supplied content (form, social providers, info) -->
             <div id="kc-content">
                 <div id="kc-content-wrapper">
                     <#nested "form">

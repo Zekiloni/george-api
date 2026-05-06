@@ -61,47 +61,45 @@ body.relay-body {
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    position: relative;
 }
 
-.relay-header {
+/* Brand mark + name lives inside the card now (so the layout stays
+   visually grounded even on tall viewports). */
+.relay-card-brand {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    padding: 1.5rem 1.5rem 0;
-    max-width: 28rem;
-    margin: 0 auto;
-    width: 100%;
-}
-
-.relay-brand {
-    display: inline-flex;
-    align-items: center;
     gap: 0.625rem;
-    color: var(--relay-text);
-    text-decoration: none;
-}
-
-.relay-brand:hover {
-    text-decoration: none;
+    margin-bottom: 1.5rem;
 }
 
 .relay-brand-mark {
     display: inline-grid;
     place-items: center;
-    width: 2rem;
-    height: 2rem;
+    width: 2.25rem;
+    height: 2.25rem;
     border-radius: var(--relay-radius-sm);
     background: var(--relay-brand-600);
     color: #fff;
     font-weight: 700;
-    font-size: 0.95rem;
+    font-size: 1rem;
     box-shadow: var(--relay-shadow-sm);
 }
 
 .relay-brand-name {
     font-weight: 600;
-    font-size: 0.95rem;
+    font-size: 1rem;
     letter-spacing: -0.01em;
+    color: var(--relay-text);
+}
+
+/* Locale switcher pinned top-right of the page (only shown when the realm
+   has multiple languages). */
+.relay-locale-bar {
+    position: absolute;
+    top: 1.25rem;
+    right: 1.25rem;
+    z-index: 5;
 }
 
 .relay-locale details {
