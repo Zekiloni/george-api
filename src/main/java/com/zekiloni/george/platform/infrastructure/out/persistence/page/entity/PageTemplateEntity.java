@@ -35,10 +35,12 @@ public class PageTemplateEntity extends BaseEntity {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "keywords")
+    @Column(name = "keywords", columnDefinition = "TEXT")
     private String keywords;
 
-    @Column(name = "favicon_url")
+    // Stored as TEXT because imported templates often inline the favicon as
+    // a base64 data: URI which blows past varchar(255).
+    @Column(name = "favicon_url", columnDefinition = "TEXT")
     private String faviconUrl;
 
     @Enumerated(EnumType.STRING)
