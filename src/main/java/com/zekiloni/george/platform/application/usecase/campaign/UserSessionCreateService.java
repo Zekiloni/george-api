@@ -1,5 +1,6 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
+import com.zekiloni.george.common.infrastructure.config.tenant.TenantContext;
 import com.zekiloni.george.platform.application.port.in.campaign.UserSessionCreateUseCase;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
@@ -30,14 +31,23 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
     private final CampaignRepositoryPort campaignRepository;
     private final PageRepositoryPort pageRepository;
     private final UserSessionRepositoryPort userSessionRepository;
+    private final TenantContext tenantContext;
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
     @Transactional
     public Result handle(String token, String userAgent, String ipAddress) {
-        Outreach outreach = outreachRepository.findBySessionToken(token)
+        // Anonymous endpoint — no JWT, no tenant context. Resolve the outreach
+        // tenant-agnostically, then pivot the tenant context to its owner so
+        // the rest of the flow (campaign, page, session save) re-engages
+        // Hibernate's @TenantId filter normally.
+        Outreach outreach = outreachRepository.findBySessionTokenAcrossTenants(token)
                 .orElseThrow(() -> new RuntimeException("Outreach not found for token: " + token));
+
+        if (outreach.getTenantId() != null) {
+            tenantContext.setTenantId(outreach.getTenantId());
+        }
 
         Campaign campaign = campaignRepository.findById(outreach.getCampaignId())
                 .orElseThrow(() -> new RuntimeException("Campaign not found: " + outreach.getCampaignId()));

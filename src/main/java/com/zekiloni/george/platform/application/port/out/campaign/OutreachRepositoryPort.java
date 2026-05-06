@@ -13,6 +13,15 @@ public interface OutreachRepositoryPort {
 
     Stream<Outreach> findByCampaignId(String campaignId);
     Optional<Outreach> findBySessionToken(String sessionToken);
+
+    /**
+     * Tenant-agnostic lookup for the anonymous visitor token endpoint.
+     * Use only on the public {@code /user-session/{token}} read path —
+     * after loading, set the tenant context from the outreach's tenant
+     * so subsequent reads (campaign, page) re-engage tenant scoping.
+     */
+    Optional<Outreach> findBySessionTokenAcrossTenants(String sessionToken);
+
     Optional<Outreach> findById(String id);
 
     long countDispatchedSinceByServiceAccessId(String serviceAccessId, OffsetDateTime since);

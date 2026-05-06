@@ -37,6 +37,11 @@ public class PageRepositoryPortAdapter implements PageRepositoryPort {
     }
 
     @Override
+    public Optional<Page> findBySlugAcrossTenants(String slug) {
+        return repository.findBySlugAcrossTenants(slug).map(mapper::toDomain);
+    }
+
+    @Override
     public org.springframework.data.domain.Page<Page> findAll(Pageable pageable) {
         return repository.findAll(pageable).map(mapper::toDomain);
     }

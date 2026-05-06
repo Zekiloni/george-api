@@ -11,6 +11,12 @@ public interface PageRepositoryPort {
     Optional<Page> findById(String id);
     Optional<Page> findBySlug(String slug);
 
+    /**
+     * Tenant-agnostic slug lookup for the anonymous preview/render path.
+     * Use only on read paths the visitor reaches without a JWT.
+     */
+    Optional<Page> findBySlugAcrossTenants(String slug);
+
     org.springframework.data.domain.Page<Page> findAll(Pageable pageable);
 
     void deleteById(String id);

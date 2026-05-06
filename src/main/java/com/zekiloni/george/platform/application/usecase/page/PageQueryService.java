@@ -26,7 +26,10 @@ public class PageQueryService implements PageQueryUseCase {
 
     @Override
     public Optional<Page> findBySlug(String slug) {
-        return repository.findBySlug(slug);
+        // Anonymous preview path — bypasses Hibernate's @TenantId filter so
+        // visitors with no JWT can resolve the page. Slug is globally unique,
+        // so cross-tenant lookup can't return the wrong row.
+        return repository.findBySlugAcrossTenants(slug);
     }
 
     @Override

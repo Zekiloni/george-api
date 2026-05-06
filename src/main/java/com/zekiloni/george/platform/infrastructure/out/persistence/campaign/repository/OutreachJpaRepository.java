@@ -16,6 +16,14 @@ public interface OutreachJpaRepository extends JpaRepository<OutreachEntity, UUI
     Stream<OutreachEntity> streamByCampaignId(UUID campaignId);
     Optional<OutreachEntity> findBySessionToken(String sessionToken);
 
+    /**
+     * Cross-tenant lookup for the anonymous visitor token endpoint
+     * ({@code GET /api/v1/user-session/{token}}). Tokens are randomly
+     * generated per outreach so there's no cross-tenant collision risk.
+     */
+    @Query(value = "SELECT * FROM outreach WHERE session_token = :token LIMIT 1", nativeQuery = true)
+    Optional<OutreachEntity> findBySessionTokenAcrossTenants(@Param("token") String token);
+
     @Query("""
             SELECT COUNT(o) FROM OutreachEntity o
             WHERE o.campaign.serviceAccessId = :serviceAccessId

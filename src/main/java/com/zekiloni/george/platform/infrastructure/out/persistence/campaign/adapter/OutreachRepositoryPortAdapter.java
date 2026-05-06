@@ -40,6 +40,11 @@ public class OutreachRepositoryPortAdapter implements OutreachRepositoryPort {
     }
 
     @Override
+    public Optional<Outreach> findBySessionTokenAcrossTenants(String sessionToken) {
+        return jpaRepository.findBySessionTokenAcrossTenants(sessionToken).map(mapper::toDomain);
+    }
+
+    @Override
     public Optional<Outreach> findById(String id) {
         return jpaRepository.findById(UUID.fromString(id)).map(mapper::toDomain);
     }

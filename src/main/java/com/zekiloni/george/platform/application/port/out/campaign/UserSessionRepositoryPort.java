@@ -10,4 +10,9 @@ public interface UserSessionRepositoryPort {
     Optional<UserSession> findById(String id);
 
     Optional<UserSession> findByWsToken(String wsToken);
+
+    /**
+     * Cross-tenant ws-token lookup for the anonymous submit endpoint.
+     */
+    Optional<UserSession> findByWsTokenAcrossTenants(String wsToken);
 }

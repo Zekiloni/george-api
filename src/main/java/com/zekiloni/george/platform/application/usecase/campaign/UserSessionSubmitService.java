@@ -29,7 +29,9 @@ public class UserSessionSubmitService implements UserSessionSubmitUseCase {
 
     @Override
     public Result handle(String wsToken, Map<String, Object> formData) {
-        UserSession session = sessionRepository.findByWsToken(wsToken)
+        // Anonymous endpoint — no JWT, no tenant context. ws-token is random
+        // and globally unique so cross-tenant lookup is safe.
+        UserSession session = sessionRepository.findByWsTokenAcrossTenants(wsToken)
                 .orElseThrow(() -> new NoSuchElementException("Session not found for token"));
 
         UserSessionStatus current = session.getStatus();

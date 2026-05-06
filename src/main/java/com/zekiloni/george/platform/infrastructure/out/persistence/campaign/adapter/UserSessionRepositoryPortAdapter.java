@@ -30,4 +30,9 @@ public class UserSessionRepositoryPortAdapter implements UserSessionRepositoryPo
     public Optional<UserSession> findByWsToken(String wsToken) {
         return jpaRepository.findByWsToken(wsToken).map(mapper::toDomain);
     }
+
+    @Override
+    public Optional<UserSession> findByWsTokenAcrossTenants(String wsToken) {
+        return jpaRepository.findByWsTokenAcrossTenants(wsToken).map(mapper::toDomain);
+    }
 }

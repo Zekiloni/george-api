@@ -15,6 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Outreach {
     private String id;
+    /** Owning tenant; carried so anonymous visitor flows can pivot tenant context after loading. */
+    private String tenantId;
     private String campaignId;
     private String sessionToken;
     private String recipient;
