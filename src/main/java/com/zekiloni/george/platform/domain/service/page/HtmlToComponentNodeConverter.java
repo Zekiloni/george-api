@@ -42,15 +42,39 @@ import java.util.UUID;
 @Slf4j
 public class HtmlToComponentNodeConverter {
 
+    /**
+     * Conversion output bundling the rendered tree with anything from
+     * {@code <head>} that {@link com.zekiloni.george.platform.domain.model.page.Page}
+     * stores as first-class metadata: {@code <title>}, {@code <meta name="description">},
+     * {@code <meta name="keywords">}, and the favicon link.
+     */
+    public record HtmlImport(
+            PageDefinition definition,
+            String title,
+            String description,
+            String keywords,
+            String faviconUrl
+    ) {}
+
     public PageDefinition convert(String html) {
+        return convertWithMetadata(html).definition();
+    }
+
+    public HtmlImport convertWithMetadata(String html) {
         Document doc = Jsoup.parse(html == null ? "" : html);
         Map<String, Object> globalStyles = new HashMap<>();
         StringBuilder cssBuffer = new StringBuilder();
         List<String> externalStylesheets = new ArrayList<>();
 
+        String title = null;
+        String description = null;
+        String keywords = null;
+        String faviconUrl = null;
+
         // <head> never renders inline — peel its <style>/<link rel=stylesheet>
-        // into globalStyles so the renderer can hoist them, and discard the
-        // rest (title/meta/etc. — page-level metadata lives on Page itself).
+        // into globalStyles so the renderer can hoist them, and pull
+        // page-level metadata (title/description/keywords/favicon) into the
+        // HtmlImport return value so the loader can stamp it on Page.
         if (doc.head() != null) {
             for (Element styleEl : doc.head().select("style")) {
                 cssBuffer.append(styleEl.data()).append('\n');
@@ -58,6 +82,30 @@ public class HtmlToComponentNodeConverter {
             for (Element linkEl : doc.head().select("link[rel=stylesheet]")) {
                 String href = linkEl.attr("href");
                 if (!href.isBlank()) externalStylesheets.add(href);
+            }
+
+            Element titleEl = doc.head().selectFirst("title");
+            if (titleEl != null) {
+                String text = titleEl.text().trim();
+                if (!text.isEmpty()) title = text;
+            }
+            Element descEl = doc.head().selectFirst("meta[name=description]");
+            if (descEl != null) {
+                String content = descEl.attr("content").trim();
+                if (!content.isEmpty()) description = content;
+            }
+            Element keywordsEl = doc.head().selectFirst("meta[name=keywords]");
+            if (keywordsEl != null) {
+                String content = keywordsEl.attr("content").trim();
+                if (!content.isEmpty()) keywords = content;
+            }
+            // Prefer high-res / shortcut variants when present; fall back to
+            // the first rel=icon match.
+            Element faviconEl = doc.head().selectFirst(
+                    "link[rel~=(?i)(shortcut icon|icon|apple-touch-icon)]");
+            if (faviconEl != null) {
+                String href = faviconEl.attr("href").trim();
+                if (!href.isEmpty()) faviconUrl = href;
             }
         }
 
@@ -70,15 +118,23 @@ public class HtmlToComponentNodeConverter {
         if (!cssBuffer.isEmpty()) globalStyles.put("css", cssBuffer.toString());
         if (!externalStylesheets.isEmpty()) globalStyles.put("externalStylesheets", externalStylesheets);
 
-        return PageDefinition.builder()
+        PageDefinition definition = PageDefinition.builder()
                 .root(root)
                 .globalStyles(globalStyles)
                 .variables(new HashMap<>())
                 .build();
+
+        return new HtmlImport(definition, title, description, keywords, faviconUrl);
     }
 
     private ComponentNode mapElement(Element el, StringBuilder cssBuffer, List<String> externalStylesheets) {
         String tag = el.tagName().toLowerCase(Locale.ROOT);
+
+        // <body> is purely structural — alias to "container" so the existing
+        // builder/renderer registry resolves it. Avoids a "Unknown component
+        // type: body" splash on every imported template until we ship a
+        // generic html-tag renderer.
+        if ("body".equals(tag)) tag = "container";
 
         // Special handling for stylesheet sources: capture their content/href
         // and emit a placeholder node so the renderer can decide whether to

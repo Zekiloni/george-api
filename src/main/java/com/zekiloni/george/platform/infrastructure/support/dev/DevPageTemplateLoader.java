@@ -57,16 +57,28 @@ public class DevPageTemplateLoader {
         for (Resource resource : resources) {
             String filename = resource.getFilename();
             if (filename == null) continue;
-            String title = humanizeFilename(filename);
             try (InputStream in = resource.getInputStream()) {
                 String html = new String(in.readAllBytes(), StandardCharsets.UTF_8);
-                PageDefinition definition = converter.convert(html);
+                HtmlToComponentNodeConverter.HtmlImport imported =
+                        converter.convertWithMetadata(html);
+
+                // Prefer the source HTML's own <title>/<meta>; fall back to
+                // the filename so we always have something usable.
+                String title = imported.title() != null
+                        ? imported.title()
+                        : humanizeFilename(filename);
+                String description = imported.description() != null
+                        ? imported.description()
+                        : "Seeded from " + filename;
+
                 PageTemplate template = PageTemplate.builder()
                         .title(title)
                         .slug(slugify(filename))
-                        .description("Seeded from " + filename)
+                        .description(description)
+                        .keywords(imported.keywords())
+                        .faviconUrl(imported.faviconUrl())
                         .source(TemplateSource.BUILTIN)
-                        .definition(definition)
+                        .definition(imported.definition())
                         .build();
                 templateUseCase.upsertBuiltin(title, template);
                 seeded++;
