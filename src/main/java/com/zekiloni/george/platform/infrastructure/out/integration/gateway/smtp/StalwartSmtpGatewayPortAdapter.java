@@ -32,8 +32,8 @@ public class StalwartSmtpGatewayPortAdapter implements SmtpGatewayPort {
     public SmtpAccount createSmtpAccount(SmtpGateway gateway, String username, String password, boolean useTls) {
         Map<String, String> cfg = gateway.getConfig();
         return new SmtpAccount(
-                GatewayConfigKeys.string(cfg, GatewayConfigKeys.HOST),
-                GatewayConfigKeys.intValue(cfg, GatewayConfigKeys.PORT, 25),
+                GatewayConfigKeys.urlHost(cfg),
+                GatewayConfigKeys.urlPort(cfg, 25),
                 username,
                 password,
                 useTls);
@@ -44,8 +44,8 @@ public class StalwartSmtpGatewayPortAdapter implements SmtpGatewayPort {
         if (messages == null || messages.isEmpty()) return List.of();
 
         Map<String, String> cfg = gateway.getConfig();
-        String host = GatewayConfigKeys.string(cfg, GatewayConfigKeys.HOST);
-        int port = GatewayConfigKeys.intValue(cfg, GatewayConfigKeys.PORT, 25);
+        String host = GatewayConfigKeys.urlHost(cfg);
+        int port = GatewayConfigKeys.urlPort(cfg, 25);
         boolean useTls = GatewayConfigKeys.boolValue(cfg, GatewayConfigKeys.USE_TLS, false);
 
         Properties props = new Properties();

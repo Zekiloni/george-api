@@ -93,16 +93,16 @@ public class GatewaySelectionPortAdapter implements GatewaySelectionPort {
             case SmtpGateway smtp -> new GatewayConfig(
                     gateway.getId(),
                     "SMTP",
-                    GatewayConfigKeys.string(smtp.getConfig(), GatewayConfigKeys.HOST),
-                    GatewayConfigKeys.intValue(smtp.getConfig(), GatewayConfigKeys.PORT, 0),
+                    GatewayConfigKeys.urlHost(smtp.getConfig()),
+                    GatewayConfigKeys.urlPort(smtp.getConfig(), 0),
                     smtp.getProvider().name(),
                     GatewayConfigKeys.string(smtp.getConfig(), GatewayConfigKeys.FROM_DOMAIN)
             );
             case GsmGateway gsm -> new GatewayConfig(
                     gateway.getId(),
                     "GSM",
-                    GatewayConfigKeys.string(gsm.getConfig(), GatewayConfigKeys.IP_ADDRESS),
-                    GatewayConfigKeys.intValue(gsm.getConfig(), GatewayConfigKeys.PORT, 0),
+                    GatewayConfigKeys.urlHost(gsm.getConfig()),
+                    GatewayConfigKeys.urlPort(gsm.getConfig(), 0),
                     gsm.getProvider().name(),
                     null
             );

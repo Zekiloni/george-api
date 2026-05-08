@@ -2,6 +2,7 @@ package com.zekiloni.george.platform.infrastructure.in.web.gateway;
 
 import com.zekiloni.george.platform.application.port.in.gateway.GatewayCreateUseCase;
 import com.zekiloni.george.platform.application.port.in.gateway.GatewayQueryUseCase;
+import com.zekiloni.george.platform.application.port.in.gateway.GsmGatewayPortsQueryUseCase;
 import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
@@ -12,6 +13,7 @@ import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGatewayProvide
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayUpdateDto;
+import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GsmPortDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.mapper.GatewayDtoMapper;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +36,7 @@ public class GatewayApiController {
 
     private final GatewayCreateUseCase createUseCase;
     private final GatewayQueryUseCase queryUseCase;
+    private final GsmGatewayPortsQueryUseCase gsmPortsQueryUseCase;
     private final GatewayDtoMapper mapper;
 
     @PostMapping
@@ -110,6 +113,13 @@ public class GatewayApiController {
     @GetMapping("/least-loaded/{type}")
     public ResponseEntity<GatewayDto> getLeastLoadedGateway(@PathVariable GatewayType type) {
         return ResponseEntity.ok(mapper.toDto(queryUseCase.findLeastLoaded(type)));
+    }
+
+    @GetMapping("/{id}/ports")
+    public ResponseEntity<List<GsmPortDto>> getGsmGatewayPorts(@PathVariable String id) {
+        return ResponseEntity.ok(gsmPortsQueryUseCase.fetchPorts(id).stream()
+                .map(mapper::toDto)
+                .toList());
     }
 
     public record ProviderSchema(Set<String> publicKeys, Set<String> secretKeys) {}

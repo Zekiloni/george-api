@@ -1,75 +1,65 @@
 package com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin;
 
-import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.dto.EjoinPort;
+import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.dto.EjoinDevStatus;
 import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.dto.EjoinPortStatusResponse;
-import com.zekiloni.george.platform.infrastructure.out.integration.gsm.ejoin.dto.EjoinPortsBody;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.ParameterizedTypeReference;
-import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
-import org.springframework.web.util.UriComponentsBuilder;
 
-import java.net.URI;
 import java.util.List;
+import java.util.Map;
 
+// EJOIN HTTP API per "EJOIN HTTP DEVELOPMENT SPEC v2.0.012": query-string auth,
+// JSON bodies. Status is normally a push-subscription (GET ?url=callback&period=N
+// makes the device push). Calling /goip_get_status.html WITHOUT a url returns a
+// one-shot snapshot of all ports — that's what we use here.
 @Component
 @RequiredArgsConstructor
 public class EjoinApiClient {
 
-    private RestClient getApiClient(String baseUrl, String username, String password) {
-        return RestClient.builder()
-                .baseUrl(baseUrl)
-                .requestInterceptor((request, body, execution) -> {
-                    URI original = request.getURI();
-                    URI modified = UriComponentsBuilder.fromUri(original)
-                            .queryParam("username", username)
-                            .queryParam("password", password)
-                            .build().toUri();
-                    return execution.execute(new HttpRequestWrapper(request) {
-                        @Override
-                        public URI getURI() { return modified; }
-                    }, body);
-                })
-                .build();
-    }
+    private static final String STATUS_PATH   = "/goip_get_status.html";
+    private static final String SEND_SMS_PATH = "/goip_post_sms.html";
 
-    public EjoinPortStatusResponse getPortSTatus(String baseUrl, String username, String password, Integer port, Integer slot) {
-        return postPortStatus(baseUrl, username, password,
-                new EjoinPortsBody(List.of(new EjoinPort(port, slot)), null))
-                .stream()
-                .findFirst()
-                .orElseThrow(() -> new EjoinValidationException("No status returned for port " + port));
+    public EjoinDevStatus getStatus(String baseUrl, String username, String password) {
+        return client(baseUrl)
+                .get()
+                .uri(uriBuilder -> uriBuilder.path(STATUS_PATH)
+                        .queryParam("username", username)
+                        .queryParam("password", password)
+                        .build())
+                .retrieve()
+                .body(EjoinDevStatus.class);
     }
 
     public List<EjoinPortStatusResponse> getAllPortStatus(String baseUrl, String username, String password) {
-        return postPortStatus(baseUrl, username, password,
-                new EjoinPortsBody(null, "*"));
+        EjoinDevStatus dev = getStatus(baseUrl, username, password);
+        return dev == null || dev.status() == null ? List.of() : dev.status();
     }
 
-    private List<EjoinPortStatusResponse> postPortStatus(String baseUrl, String username, String password, EjoinPortsBody body) {
-        return getApiClient(baseUrl, username, password)
+    public void sendSms(String baseUrl, String username, String password,
+                        String portSpec, String to, String message) {
+        Map<String, Object> body = Map.of(
+                "type", "send-sms",
+                "task_num", 1,
+                "tasks", List.of(Map.of(
+                        "tid", 1,
+                        "from", portSpec,
+                        "to", to,
+                        "sms", message
+                ))
+        );
+        client(baseUrl)
                 .post()
-                .uri("/get_port_status")
+                .uri(uriBuilder -> uriBuilder.path(SEND_SMS_PATH)
+                        .queryParam("username", username)
+                        .queryParam("password", password)
+                        .build())
                 .body(body)
                 .retrieve()
-                .body(new ParameterizedTypeReference<>() {});
+                .toBodilessEntity();
     }
 
-    public void sendSms(String baseUrl, String username, String password, Integer port, Integer slot,
-                       String phoneNumber, String message) {
-        getApiClient(baseUrl, username, password)
-                .post()
-                .uri("/send_sms")
-                .body(new EjoinSmsRequest(port, slot, phoneNumber, message))
-                .retrieve()
-                .toEntity(Void.class);
+    private RestClient client(String baseUrl) {
+        return RestClient.builder().baseUrl(baseUrl).build();
     }
-
-    private record EjoinSmsRequest(
-            Integer port,
-            Integer slot,
-            String phoneNumber,
-            String message
-    ) {}
 }

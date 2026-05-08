@@ -11,6 +11,7 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatu
 import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayType;
 import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmPort;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -58,10 +59,10 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("Unsupported GSM provider: " + gateway.getProvider()));
 
-        List<GsmGatewayPort.PortStatus> availablePorts = selectPorts(port, gateway, serviceAccess);
-        String ip = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.IP_ADDRESS);
+        List<GsmPort> availablePorts = selectPorts(port, gateway, serviceAccess);
+        String url = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.URL);
         if (availablePorts.isEmpty()) {
-            log.error("No GSM ports available for dispatch on gateway {}", ip);
+            log.error("No GSM ports available for dispatch on gateway {}", url);
             throw new RuntimeException("No GSM ports available");
         }
 
@@ -76,18 +77,18 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
         if (granted == 0) return;
 
         log.info("Sending {} outreach messages via GSM gateway {} on {} port(s)",
-                granted, ip, availablePorts.size());
+                granted, url, availablePorts.size());
 
         for (int i = 0; i < granted; i++) {
             Outreach out = outreach.get(i);
-            GsmGatewayPort.PortStatus portStatus = availablePorts.get(i % availablePorts.size());
+            GsmPort gsmPort = availablePorts.get(i % availablePorts.size());
 
             try {
-                sendOutreach(port, gateway, out, portStatus);
+                sendOutreach(port, gateway, out, gsmPort);
                 updateOutreachStatus(out, OutreachStatus.SENT);
             } catch (Exception e) {
                 log.error("Failed to send outreach via GSM: recipient={}, port={}, error={}",
-                        maskRecipient(out.getRecipient()), portStatus.port(), e.getMessage());
+                        maskRecipient(out.getRecipient()), gsmPort.id(), e.getMessage());
                 updateOutreachStatus(out, OutreachStatus.FAILED);
             }
         }
@@ -111,10 +112,9 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
         return (int) Math.min(requested, Math.min(dailyRemaining, lifetimeRemaining));
     }
 
-    private List<GsmGatewayPort.PortStatus> selectPorts(GsmGatewayPort port, GsmGateway gateway, ServiceAccess access) {
-        List<GsmGatewayPort.PortStatus> active = port.getAllPortsStatus(gateway).stream()
-                .filter(GsmGatewayPort.PortStatus::active)
-                .filter(GsmGatewayPort.PortStatus::inserted)
+    private List<GsmPort> selectPorts(GsmGatewayPort port, GsmGateway gateway, ServiceAccess access) {
+        List<GsmPort> active = port.getAllPortsStatus(gateway).stream()
+                .filter(p -> p.status() != null && p.status().readyToSend())
                 .toList();
 
         Integer dedicatedPort = (access instanceof GsmServiceAccess gsm && gsm.getPort() != 0)
@@ -122,13 +122,13 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
 
         if (dedicatedPort != null) {
             return active.stream()
-                    .filter(p -> portNumber(p.port()) == dedicatedPort)
+                    .filter(p -> portNumber(p.id()) == dedicatedPort)
                     .toList();
         }
 
         Set<Integer> taken = inventoryRepository.findAllocatedGsmPorts(gateway.getId());
         return active.stream()
-                .filter(p -> !taken.contains(portNumber(p.port())))
+                .filter(p -> !taken.contains(portNumber(p.id())))
                 .toList();
     }
 
@@ -137,11 +137,11 @@ public class GsmGatewayDispatcherAdapter implements GatewayDispatchPort<GsmGatew
     }
 
     private void sendOutreach(GsmGatewayPort port, GsmGateway gateway, Outreach outreach,
-                              GsmGatewayPort.PortStatus portStatus) {
+                              GsmPort gsmPort) {
         log.debug("Sending SMS via GSM: recipient={}, port={}, signal={}",
-                maskRecipient(outreach.getRecipient()), portStatus.port(), portStatus.signalStrength());
+                maskRecipient(outreach.getRecipient()), gsmPort.id(), gsmPort.signalStrength());
 
-        port.sendSms(gateway, portStatus.port(), outreach.getRecipient(), outreach.getMessage());
+        port.sendSms(gateway, gsmPort.id(), outreach.getRecipient(), outreach.getMessage());
     }
 
     private void updateOutreachStatus(Outreach outreach, OutreachStatus status) {

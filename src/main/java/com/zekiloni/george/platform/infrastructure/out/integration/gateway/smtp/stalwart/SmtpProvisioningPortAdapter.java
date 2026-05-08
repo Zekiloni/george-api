@@ -19,7 +19,7 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
     public void createAccount(String gatewayId, String username, String password, String email) {
         SmtpGateway gateway = loadSmtpGateway(gatewayId);
         stalwartClient.createPrincipal(
-                requireConfig(gateway, GatewayConfigKeys.ADMIN_URL),
+                requireConfig(gateway, GatewayConfigKeys.URL),
                 buildAuthHeader(gateway),
                 username,
                 password,
@@ -30,7 +30,7 @@ public class SmtpProvisioningPortAdapter implements SmtpProvisioningPort {
     public void deleteAccount(String gatewayId, String username) {
         SmtpGateway gateway = loadSmtpGateway(gatewayId);
         stalwartClient.deletePrincipal(
-                requireConfig(gateway, GatewayConfigKeys.ADMIN_URL),
+                requireConfig(gateway, GatewayConfigKeys.URL),
                 buildAuthHeader(gateway),
                 username);
     }

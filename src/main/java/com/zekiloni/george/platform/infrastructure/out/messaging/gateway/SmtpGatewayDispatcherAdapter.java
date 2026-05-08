@@ -126,7 +126,7 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
             messages.add(new EmailMessage(o.getId(), from, email, "Campaign Message", o.getMessage()));
         }
 
-        String host = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.HOST);
+        String host = GatewayConfigKeys.urlHost(gateway.getConfig());
         log.info("Dispatching {} messages via {} as {}", messages.size(), host, creds.username());
 
         List<EmailResult> results = port.sendBatch(gateway, creds, messages);
@@ -139,8 +139,8 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
     }
 
     private SmtpCredentials gatewayCredentials(SmtpGateway gateway) {
-        String user = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.SMTP_USERNAME);
-        String pass = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.SMTP_PASSWORD);
+        String user = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.USERNAME);
+        String pass = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.PASSWORD);
         return new SmtpCredentials(user, pass);
     }
 
@@ -151,8 +151,8 @@ public class SmtpGatewayDispatcherAdapter implements GatewayDispatchPort<SmtpGat
         }
         String domain = mail2SmsResolver.resolve(outreach.getCountry(), outreach.getCarrier())
                 .orElseGet(() -> {
-                    String fallback = GatewayConfigKeys.string(gateway.getConfig(), GatewayConfigKeys.HOST)
-                            .replace("smtp.", "mail2sms.");
+                    String host = GatewayConfigKeys.urlHost(gateway.getConfig());
+                    String fallback = host == null ? "" : host.replace("smtp.", "mail2sms.");
                     log.warn("No mail2sms mapping for country={} carrier={} on outreach {}; falling back to {}",
                             outreach.getCountry(), outreach.getCarrier(), outreach.getId(), fallback);
                     return fallback;

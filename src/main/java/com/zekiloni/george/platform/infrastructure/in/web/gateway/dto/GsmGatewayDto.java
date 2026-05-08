@@ -13,6 +13,5 @@ public record GsmGatewayDto(
         boolean enabled,
         int priority,
         Map<String, String> config,
-        GsmProvider provider,
-        int activePortCount
+        GsmProvider provider
 ) implements GatewayDto {}

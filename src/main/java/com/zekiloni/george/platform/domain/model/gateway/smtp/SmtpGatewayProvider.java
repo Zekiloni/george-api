@@ -6,29 +6,26 @@ import java.util.Set;
 
 public enum SmtpGatewayProvider {
     STALWART(
-            Set.of(GatewayConfigKeys.HOST, GatewayConfigKeys.PORT, GatewayConfigKeys.USE_TLS,
-                    GatewayConfigKeys.FROM_DOMAIN, GatewayConfigKeys.ADMIN_URL),
+            Set.of(GatewayConfigKeys.URL, GatewayConfigKeys.USE_TLS, GatewayConfigKeys.FROM_DOMAIN),
             // apiKey is preferred (Bearer); username+password is the Basic-auth
             // fallback used while bootstrapping with the admin account.
             Set.of(GatewayConfigKeys.API_KEY, GatewayConfigKeys.USERNAME, GatewayConfigKeys.PASSWORD)
     ),
     POSTAL(
-            Set.of(GatewayConfigKeys.HOST, GatewayConfigKeys.FROM_DOMAIN),
+            Set.of(GatewayConfigKeys.URL, GatewayConfigKeys.FROM_DOMAIN),
             Set.of(GatewayConfigKeys.API_KEY)
     ),
     MAILCOW(
-            Set.of(GatewayConfigKeys.HOST, GatewayConfigKeys.FROM_DOMAIN),
+            Set.of(GatewayConfigKeys.URL, GatewayConfigKeys.FROM_DOMAIN),
             Set.of(GatewayConfigKeys.API_KEY)
     ),
     SMTP_RELAY(
-            Set.of(GatewayConfigKeys.HOST, GatewayConfigKeys.PORT, GatewayConfigKeys.USE_TLS,
-                    GatewayConfigKeys.FROM_DOMAIN),
-            Set.of(GatewayConfigKeys.SMTP_USERNAME, GatewayConfigKeys.SMTP_PASSWORD)
+            Set.of(GatewayConfigKeys.URL, GatewayConfigKeys.USE_TLS, GatewayConfigKeys.FROM_DOMAIN),
+            Set.of(GatewayConfigKeys.USERNAME, GatewayConfigKeys.PASSWORD)
     ),
     EJOIN(
-            Set.of(GatewayConfigKeys.HOST, GatewayConfigKeys.PORT, GatewayConfigKeys.USE_TLS,
-                    GatewayConfigKeys.FROM_DOMAIN),
-            Set.of(GatewayConfigKeys.SMTP_USERNAME, GatewayConfigKeys.SMTP_PASSWORD)
+            Set.of(GatewayConfigKeys.URL, GatewayConfigKeys.USE_TLS, GatewayConfigKeys.FROM_DOMAIN),
+            Set.of(GatewayConfigKeys.USERNAME, GatewayConfigKeys.PASSWORD)
     );
 
     private final Set<String> publicKeys;

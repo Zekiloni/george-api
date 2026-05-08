@@ -10,11 +10,7 @@ public enum GsmProvider {
     SYNWAY,
     PORTECH;
 
-    private static final Set<String> PUBLIC_KEYS = Set.of(
-            GatewayConfigKeys.IP_ADDRESS,
-            GatewayConfigKeys.PORT,
-            GatewayConfigKeys.TOTAL_PORT
-    );
+    private static final Set<String> PUBLIC_KEYS = Set.of(GatewayConfigKeys.URL);
     private static final Set<String> SECRET_KEYS = Set.of(
             GatewayConfigKeys.USERNAME,
             GatewayConfigKeys.PASSWORD

@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.application.port.out.gateway.GatewayReposito
 import com.zekiloni.george.platform.application.port.out.gateway.GsmGatewayPort;
 import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmPort;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
@@ -37,11 +38,11 @@ public class GsmProvisioningPortAdapter implements GsmProvisioningPort {
                 .toList();
     }
 
-    private static GsmPortInfo toPortInfo(GsmGatewayPort.PortStatus status) {
-        String[] parts = status.port().split("\\.");
-        int port = Integer.parseInt(parts[0]);
+    private static GsmPortInfo toPortInfo(GsmPort port) {
+        String[] parts = port.id().split("\\.");
+        int portNum = Integer.parseInt(parts[0]);
         int slot = parts.length > 1 ? Integer.parseInt(parts[1]) : 1;
-        boolean available = status.active() && status.inserted() && status.slotActive();
-        return new GsmPortInfo(port, slot, available, status.signalStrength(), status.operator());
+        boolean available = port.status() != null && port.status().readyToSend();
+        return new GsmPortInfo(portNum, slot, available, port.signalStrength(), port.operator());
     }
 }

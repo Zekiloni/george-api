@@ -3,11 +3,13 @@ package com.zekiloni.george.platform.infrastructure.in.web.gateway.mapper;
 import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
 import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmGateway;
+import com.zekiloni.george.platform.domain.model.gateway.gsm.GsmPort;
 import com.zekiloni.george.platform.domain.model.gateway.smtp.SmtpGateway;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GatewayDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GsmGatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GsmGatewayDto;
+import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.GsmPortDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.SmtpGatewayCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.gateway.dto.SmtpGatewayDto;
 import org.mapstruct.Mapper;
@@ -35,6 +37,9 @@ public interface GatewayDtoMapper {
     @Mapping(target = "config", expression = "java(redact(gateway.getConfig(), gateway.getProvider() == null ? java.util.Set.of() : gateway.getProvider().secretKeys()))")
     GsmGatewayDto toDto(GsmGateway gateway);
 
+    @Mapping(target = "port", source = "id")
+    GsmPortDto toDto(GsmPort port);
+
     default Gateway toDomain(GatewayCreateDto dto) {
         return switch (dto) {
             case SmtpGatewayCreateDto smtp -> toDomain(smtp);
@@ -55,7 +60,6 @@ public interface GatewayDtoMapper {
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", ignore = true)
     @Mapping(target = "enabled", constant = "true")
-    @Mapping(target = "slot", ignore = true)
     GsmGateway toDomain(GsmGatewayCreateDto dto);
 
     default Map<String, String> redact(Map<String, String> config, Set<String> secretKeys) {

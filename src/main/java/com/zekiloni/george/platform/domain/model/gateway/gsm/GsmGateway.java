@@ -7,8 +7,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 
-import java.util.List;
-
 @EqualsAndHashCode(callSuper = true)
 @Data
 @SuperBuilder
@@ -16,10 +14,4 @@ import java.util.List;
 @AllArgsConstructor
 public class GsmGateway extends Gateway {
     private GsmProvider provider;
-    private List<GsmGatewaySlot> slot;
-
-    public int getActivePortCount() {
-        if (slot == null) return 0;
-        return (int) slot.stream().filter(GsmGatewaySlot::getActive).count();
-    }
 }
