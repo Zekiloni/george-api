@@ -2,13 +2,16 @@ package com.zekiloni.george.platform.infrastructure.out.persistence.campaign.ada
 
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.mapper.OutreachEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repository.OutreachJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.OffsetDateTime;
+import java.util.EnumMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -52,5 +55,14 @@ public class OutreachRepositoryPortAdapter implements OutreachRepositoryPort {
     @Override
     public long countDispatchedSinceByServiceAccessId(String serviceAccessId, OffsetDateTime since) {
         return jpaRepository.countDispatchedSinceByServiceAccessId(UUID.fromString(serviceAccessId), since);
+    }
+
+    @Override
+    public Map<OutreachStatus, Long> countByCampaignGroupedByStatus(String campaignId) {
+        Map<OutreachStatus, Long> out = new EnumMap<>(OutreachStatus.class);
+        for (Object[] row : jpaRepository.countByCampaignIdGroupedByStatus(UUID.fromString(campaignId))) {
+            out.put((OutreachStatus) row[0], ((Number) row[1]).longValue());
+        }
+        return out;
     }
 }

@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.application.port.in.page.PageDeleteUseCase;
 import com.zekiloni.george.platform.application.port.in.page.PageQueryUseCase;
 import com.zekiloni.george.platform.application.port.in.page.PageUpdateUseCase;
 
+import com.zekiloni.george.platform.domain.service.page.PageRenderer;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageCreateDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageUpdateDto;
@@ -15,9 +16,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @RestController
 @RequestMapping("${api.base.path:/api/v1}/page")
@@ -29,6 +33,7 @@ public class PageApiController {
     private final PageQueryUseCase queryUseCase;
     private final PageUpdateUseCase updateUseCase;
     private final PageDeleteUseCase deleteUseCase;
+    private final PageRenderer pageRenderer;
 
     @PreAuthorize("hasRole('admin') or @serviceAccessQueryUseCase.hasActiveAccess(T(com.zekiloni.george.commerce.domain.catalog.model.ServiceSpecification).PAGE)")
     @PostMapping
@@ -80,5 +85,17 @@ public class PageApiController {
     public ResponseEntity<Void> delete(@PathVariable String id) {
         deleteUseCase.handle(id);
         return ResponseEntity.noContent().build();
+    }
+
+    // Render a saved page to a full HTML document with {{var}} substitution
+    // applied. POST so live-preview clients can pass override variables in
+    // the body without polluting the URL/cache.
+    @PostMapping(value = "/{id}/render", produces = MediaType.TEXT_HTML_VALUE)
+    public ResponseEntity<String> render(@PathVariable String id,
+                                         @RequestBody(required = false) Map<String, String> overrides) {
+        return queryUseCase.findById(id)
+                .map(page -> pageRenderer.render(page.getDefinition(), overrides))
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 }

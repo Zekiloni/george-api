@@ -6,6 +6,8 @@ import com.zekiloni.george.platform.domain.service.campaign.TokenGenerationStrat
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -42,8 +44,12 @@ public class CampaignEntity extends TenantEntity {
     @Column(nullable = false)
     private String baseUrl;
 
-    @Column(name = "page_id")
-    private UUID pageId;
+    // Ordered list of page IDs forming the campaign's visitor flow.
+    // First element is the entry page; subsequent steps are reached by
+    // submitting the previous step's form.
+    @Column(name = "flow_page_ids", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<UUID> flowPageIds = new ArrayList<>();
 
     @Column(name = "service_access_id", nullable = false)
     private UUID serviceAccessId;

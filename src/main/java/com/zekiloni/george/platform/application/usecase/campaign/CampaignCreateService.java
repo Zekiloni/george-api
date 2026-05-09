@@ -114,18 +114,22 @@ public class CampaignCreateService implements CampaignCreateUseCase {
     }
 
     /**
-     * Reject the create early if the user picked a Page or Service Access that
-     * the dispatcher will choke on later. Cheaper than letting the campaign
-     * land in {@code SCHEDULED} and discovering on dispatch that the gateway
-     * isn't a messaging gateway.
+     * Reject the create early if the user picked Pages or a Service Access
+     * that the dispatcher will choke on later. Validates every page in the
+     * flow exists; rejects empty flows.
      */
     private void validateReferences(Campaign campaign) {
-        if (campaign.getPage() == null || campaign.getPage().getId() == null) {
-            throw new IllegalArgumentException("page is required");
+        if (campaign.getFlow() == null || campaign.getFlow().isEmpty()) {
+            throw new IllegalArgumentException("flow must contain at least one page");
         }
-        pageQueryUseCase.findById(campaign.getPage().getId())
-                .orElseThrow(() -> new IllegalArgumentException(
-                        "Page not found: " + campaign.getPage().getId()));
+        for (var pageRef : campaign.getFlow()) {
+            if (pageRef == null || pageRef.getId() == null) {
+                throw new IllegalArgumentException("flow contains a null page reference");
+            }
+            pageQueryUseCase.findById(pageRef.getId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            "Page not found: " + pageRef.getId()));
+        }
 
         if (campaign.getServiceAccess() == null || campaign.getServiceAccess().getId() == null) {
             throw new IllegalArgumentException("serviceAccess is required");

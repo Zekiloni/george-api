@@ -2,9 +2,7 @@ package com.zekiloni.george.platform.infrastructure.in.web.mapper;
 
 import com.zekiloni.george.common.domain.model.Ref;
 import com.zekiloni.george.platform.domain.model.campaign.CampaignStatus;
-import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.service.campaign.TokenGenerationStrategy;
-import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.OutreachDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -26,6 +24,6 @@ public class CampaignDto {
     private CampaignStatus status;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
-    private Ref page;
+    private List<Ref> flow;
     private Ref serviceAccess;
 }

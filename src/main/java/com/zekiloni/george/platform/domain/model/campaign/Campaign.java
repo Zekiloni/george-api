@@ -9,6 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.OffsetDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -22,11 +23,13 @@ public class Campaign {
     private int tokenLength;
     private String messageTemplate;
     private CampaignStatus status;
-    private Ref page;
-    private Ref serviceAccess;  // Changed from gateway to serviceAccess
+    @Builder.Default
+    private List<Ref> flow = new ArrayList<>();
+    private Ref serviceAccess;
     private List<Outreach> outreach;
     private String baseUrl;
     private OffsetDateTime scheduledAt;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+    private String tenantId;
 }

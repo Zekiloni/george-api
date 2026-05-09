@@ -1,5 +1,6 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
+import com.zekiloni.george.common.domain.model.Ref;
 import com.zekiloni.george.common.infrastructure.config.tenant.TenantContext;
 import com.zekiloni.george.platform.application.port.in.campaign.UserSessionCreateUseCase;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
@@ -12,8 +13,8 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatu
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
 import com.zekiloni.george.platform.domain.model.page.Page;
-import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,9 +24,11 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.time.OffsetDateTime;
 import java.util.Base64;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class UserSessionCreateService implements UserSessionCreateUseCase {
     private final OutreachRepositoryPort outreachRepository;
     private final CampaignRepositoryPort campaignRepository;
@@ -40,8 +43,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
     public Result handle(String token, String userAgent, String ipAddress) {
         // Anonymous endpoint — no JWT, no tenant context. Resolve the outreach
         // tenant-agnostically, then pivot the tenant context to its owner so
-        // the rest of the flow (campaign, page, session save) re-engages
-        // Hibernate's @TenantId filter normally.
+        // the rest of the flow re-engages Hibernate's @TenantId filter.
         Outreach outreach = outreachRepository.findBySessionTokenAcrossTenants(token)
                 .orElseThrow(() -> new RuntimeException("Outreach not found for token: " + token));
 
@@ -52,21 +54,20 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         Campaign campaign = campaignRepository.findById(outreach.getCampaignId())
                 .orElseThrow(() -> new RuntimeException("Campaign not found: " + outreach.getCampaignId()));
 
-        Page page = pageRepository.findById(campaign.getPage().getId())
-                .orElseThrow(() -> new RuntimeException("Page not found: " + campaign.getPage().getId()));
+        List<Ref> flow = campaign.getFlow();
+        if (flow == null || flow.isEmpty()) {
+            throw new IllegalStateException("Campaign " + campaign.getId() + " has empty flow");
+        }
 
         String fingerprint = generateFingerprint(token, userAgent, ipAddress);
 
-        UserSession session = UserSession.builder()
-                .wsToken(generateWsToken())
-                .fingerprint(fingerprint)
-                .userAgent(userAgent)
-                .ipAddress(ipAddress)
-                .outreach(outreach)
-                .status(UserSessionStatus.ACTIVE)
-                .viewCount(1)
-                .lastActivityAt(OffsetDateTime.now())
-                .build();
+        // Try to resume an existing non-terminal session for this same visitor
+        // (same outreach + same fingerprint). If found, rotate its ws-token to
+        // invalidate any stale WS connection and bring it back to ACTIVE so
+        // the visitor picks up at the step they left off on.
+        UserSession session = userSessionRepository.findReusable(outreach.getId(), fingerprint)
+                .map(existing -> resume(existing, userAgent, ipAddress))
+                .orElseGet(() -> createFresh(outreach, fingerprint, userAgent, ipAddress));
 
         UserSession saved = userSessionRepository.save(session);
 
@@ -75,7 +76,48 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
             outreachRepository.save(outreach);
         }
 
-        return new Result(saved.getId(), saved.getWsToken(), page.getDefinition());
+        // Resolve the page for the resumed step (clamp to flow bounds in case
+        // the campaign's flow was edited between visits).
+        int currentStep = Math.max(0, Math.min(saved.getCurrentStep(), flow.size() - 1));
+        Ref pageRef = flow.get(currentStep);
+        Page page = pageRepository.findById(pageRef.getId())
+                .orElseThrow(() -> new RuntimeException("Page not found: " + pageRef.getId()));
+
+        return new Result(
+                saved.getId(),
+                saved.getWsToken(),
+                currentStep,
+                flow.size(),
+                page.getDefinition());
+    }
+
+    private UserSession resume(UserSession existing, String userAgent, String ipAddress) {
+        log.info("Resuming session {} (was {}, step {})",
+                existing.getId(), existing.getStatus(), existing.getCurrentStep());
+        existing.setWsToken(generateWsToken());
+        existing.setStatus(UserSessionStatus.ACTIVE);
+        existing.setViewCount(existing.getViewCount() + 1);
+        existing.setLastActivityAt(OffsetDateTime.now());
+        // Refresh UA/IP — they may have rotated since the original visit
+        // (e.g. mobile network handoff). Fingerprint stayed stable enough to
+        // match, so we accept the new values.
+        existing.setUserAgent(userAgent);
+        existing.setIpAddress(ipAddress);
+        return existing;
+    }
+
+    private UserSession createFresh(Outreach outreach, String fingerprint, String userAgent, String ipAddress) {
+        return UserSession.builder()
+                .wsToken(generateWsToken())
+                .fingerprint(fingerprint)
+                .userAgent(userAgent)
+                .ipAddress(ipAddress)
+                .outreach(outreach)
+                .status(UserSessionStatus.ACTIVE)
+                .viewCount(1)
+                .currentStep(0)
+                .lastActivityAt(OffsetDateTime.now())
+                .build();
     }
 
     private String generateWsToken() {

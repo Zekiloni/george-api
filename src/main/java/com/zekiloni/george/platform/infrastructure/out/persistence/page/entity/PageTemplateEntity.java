@@ -3,6 +3,7 @@ package com.zekiloni.george.platform.infrastructure.out.persistence.page.entity;
 import com.zekiloni.george.common.infrastructure.out.persistence.entity.BaseEntity;
 import com.zekiloni.george.platform.domain.model.page.TemplateSource;
 import com.zekiloni.george.platform.domain.model.page.definition.PageDefinition;
+import com.zekiloni.george.platform.domain.model.page.template.TemplateManifest;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
@@ -50,4 +51,8 @@ public class PageTemplateEntity extends BaseEntity {
     @Column(name = "definition", columnDefinition = "jsonb", nullable = false)
     @JdbcTypeCode(SqlTypes.JSON)
     private PageDefinition definition;
+
+    @Column(name = "manifest", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private TemplateManifest manifest;
 }

@@ -20,6 +20,15 @@ public class ConnectedSession {
     @Getter
     private final String sessionId;
 
+    // Stamped at registration so the operator endpoint can filter the in-memory
+    // registry by tenant (avoiding cross-tenant leakage) and by campaign
+    // (powering the campaign-detail "Live sessions" tab).
+    @Getter
+    private final String tenantId;
+
+    @Getter
+    private final String campaignId;
+
     @Getter
     private volatile WebSocketSession visitorSocket;
 
@@ -38,8 +47,10 @@ public class ConnectedSession {
     private final RateLimiter eventRateLimiter = new RateLimiter(20, 50);
     private final RateLimiter commandRateLimiter = new RateLimiter(5, 10);
 
-    public ConnectedSession(String sessionId, WebSocketSession visitorSocket) {
+    public ConnectedSession(String sessionId, String tenantId, String campaignId, WebSocketSession visitorSocket) {
         this.sessionId = sessionId;
+        this.tenantId = tenantId;
+        this.campaignId = campaignId;
         this.visitorSocket = visitorSocket;
     }
 

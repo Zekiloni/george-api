@@ -24,6 +24,7 @@ public class UserSession {
     private Outreach outreach;
     private UserSessionStatus status;
     private int viewCount;
+    private int currentStep;
     private OffsetDateTime lastActivityAt;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;

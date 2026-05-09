@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.application.port.out.campaign.UserSessionRep
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.InteractionType;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserEvent;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
 import com.zekiloni.george.platform.infrastructure.in.ws.bus.SessionEventBus;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.ConnectedSession;
 import com.zekiloni.george.platform.infrastructure.in.ws.session.UserSessionLifecycleService;
@@ -31,6 +32,11 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
     private static final String SESSION_ID_ATTR = "sessionId";
     private static final String SUBSCRIPTION_ATTR = "actionsSubscription";
     private static final CloseStatus AUTH_FAILED = new CloseStatus(4001, "auth failed");
+    // Matches the close code we emit when another tab opens the same session
+    // (UserSessionRegistry.kickOldVisitor). On a kick, the original tab will
+    // see this close — we intentionally do NOT abandon the session because
+    // the new tab is still active.
+    private static final int KICKED_CODE = 4000;
 
     private final UserSessionRepositoryPort sessionRepository;
     private final UserSessionRegistry registry;
@@ -47,15 +53,20 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
             return;
         }
 
-        UserSession session = sessionRepository.findByWsToken(wsToken).orElse(null);
+        // Anonymous WS — no JWT context. Use the cross-tenant lookup so we can
+        // resolve the session, then carry its tenant + campaign into the
+        // ConnectedSession so the operator endpoints can filter on both.
+        UserSession session = sessionRepository.findByWsTokenAcrossTenants(wsToken).orElse(null);
         if (session == null) {
             ws.close(AUTH_FAILED);
             return;
         }
 
         String sessionId = session.getId();
+        String tenantId = session.getTenantId();
+        String campaignId = session.getOutreach() != null ? session.getOutreach().getCampaignId() : null;
         ws.getAttributes().put(SESSION_ID_ATTR, sessionId);
-        registry.registerVisitor(sessionId, ws);
+        registry.registerVisitor(sessionId, tenantId, campaignId, ws);
 
         SessionEventBus.Subscription subscription = eventBus.subscribe(
                 SessionEventBus.actionsChannel(sessionId),
@@ -116,6 +127,19 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
         String sessionId = (String) ws.getAttributes().get(SESSION_ID_ATTR);
         if (sessionId == null) return;
         log.info("Visitor disconnected: sessionId={}, status={}", sessionId, status);
+
+        // Mark ABANDONED immediately on tab close / network drop, unless the
+        // session is already in a terminal state (COMPLETED on submit, KICKED
+        // when another tab took over). Sweep timer is now just a fallback for
+        // when this hook doesn't fire (browser killed, etc.).
+        registry.get(sessionId).ifPresent(connected -> {
+            UserSessionStatus current = connected.getStatus();
+            if (current == UserSessionStatus.ACTIVE || current == UserSessionStatus.IDLE) {
+                if (status.getCode() != KICKED_CODE) {
+                    lifecycleService.markAbandoned(sessionId);
+                }
+            }
+        });
     }
 
     private void deliverActionToVisitor(WebSocketSession ws, String sessionId, String message) {

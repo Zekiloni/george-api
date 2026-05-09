@@ -9,7 +9,7 @@ import java.util.Set;
 public class RequestHeaderUtil {
     public static final String USER_AGENT = "User-Agent";
     public static final Set<String> IP_HEADER_CANDIDATES = Set.of(
-            "X-Forwarded-For", "Proxy-Client-IP", "WL-Proxy-Client-IP",
+            "X-Forwarded-For", "X-Real-IP", "Proxy-Client-IP", "WL-Proxy-Client-IP",
             "HTTP_CLIENT_IP", "HTTP_X_FORWARDED_FOR"
     );
     public static final String UNKNOWN = "unknown";

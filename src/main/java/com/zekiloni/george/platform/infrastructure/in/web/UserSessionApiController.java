@@ -32,6 +32,8 @@ public class UserSessionApiController {
         return ResponseEntity.ok(new UserSessionBootstrapDto(
                 result.sessionId(),
                 result.wsToken(),
+                result.currentStep(),
+                result.totalSteps(),
                 result.pageDefinition()));
     }
 
@@ -40,12 +42,30 @@ public class UserSessionApiController {
                                                     @RequestBody Map<String, Object> formData) {
         UserSessionSubmitUseCase.Result result = submitUseCase.handle(wsToken, formData);
         if (!result.accepted()) {
-            return ResponseEntity.status(409).body(new SubmitResponseDto(result.sessionId(), false));
+            return ResponseEntity.status(409).body(new SubmitResponseDto(
+                    result.sessionId(), false, false, result.currentStep(), result.totalSteps(), null));
         }
-        return ResponseEntity.ok(new SubmitResponseDto(result.sessionId(), true));
+        return ResponseEntity.ok(new SubmitResponseDto(
+                result.sessionId(),
+                true,
+                result.complete(),
+                result.currentStep(),
+                result.totalSteps(),
+                result.nextPageDefinition()));
     }
 
-    public record UserSessionBootstrapDto(String sessionId, String wsToken, PageDefinition pageDefinition) {}
+    public record UserSessionBootstrapDto(
+            String sessionId,
+            String wsToken,
+            int currentStep,
+            int totalSteps,
+            PageDefinition pageDefinition) {}
 
-    public record SubmitResponseDto(String sessionId, boolean accepted) {}
+    public record SubmitResponseDto(
+            String sessionId,
+            boolean accepted,
+            boolean complete,
+            int currentStep,
+            int totalSteps,
+            PageDefinition nextPageDefinition) {}
 }

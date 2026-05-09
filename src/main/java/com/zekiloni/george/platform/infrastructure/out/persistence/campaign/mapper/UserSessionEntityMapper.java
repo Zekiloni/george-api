@@ -11,13 +11,16 @@ import org.mapstruct.Named;
 
 import java.util.UUID;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+// `uses = OutreachEntityMapper` so the embedded outreach is mapped fully
+// (including campaignId derived from the LAZY campaign relation), not just
+// its id. The submit flow needs `outreach.campaignId` to resolve the
+// Campaign and look up its flow for step transitions.
+@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = OutreachEntityMapper.class)
 public interface UserSessionEntityMapper {
 
     @Mapping(source = "outreach.id", target = "outreach", qualifiedByName = "outreachRefToEntity")
     UserSessionEntity toEntity(UserSession session);
 
-    @Mapping(target = "outreach.id", source = "outreach.id")
     UserSession toDomain(UserSessionEntity entity);
 
     @Mapping(source = "outreach.id", target = "outreach", qualifiedByName = "outreachRefToEntity")

@@ -32,4 +32,11 @@ public interface OutreachJpaRepository extends JpaRepository<OutreachEntity, UUI
             """)
     long countDispatchedSinceByServiceAccessId(@Param("serviceAccessId") UUID serviceAccessId,
                                                @Param("since") OffsetDateTime since);
+
+    @Query("""
+            SELECT o.status, COUNT(o) FROM OutreachEntity o
+            WHERE o.campaign.id = :campaignId
+            GROUP BY o.status
+            """)
+    java.util.List<Object[]> countByCampaignIdGroupedByStatus(@Param("campaignId") UUID campaignId);
 }

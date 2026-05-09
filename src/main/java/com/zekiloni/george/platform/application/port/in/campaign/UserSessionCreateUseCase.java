@@ -6,5 +6,10 @@ public interface UserSessionCreateUseCase {
 
     Result handle(String token, String userAgent, String ipAddress);
 
-    record Result(String sessionId, String wsToken, PageDefinition pageDefinition) {}
+    record Result(
+            String sessionId,
+            String wsToken,
+            int currentStep,
+            int totalSteps,
+            PageDefinition pageDefinition) {}
 }

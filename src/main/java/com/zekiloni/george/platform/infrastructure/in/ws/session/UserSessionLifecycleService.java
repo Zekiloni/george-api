@@ -31,8 +31,17 @@ import java.util.Map;
 @Slf4j
 public class UserSessionLifecycleService {
 
+    // Heartbeats arrive every ~10s; we tolerate one missed beat before nudging
+    // ACTIVE→IDLE, then 60s of silence past IDLE before deciding the visitor
+    // truly abandoned. Tab-close detection is immediate via the WS close hook
+    // — these timers only matter if the close handler doesn't fire (network
+    // drop, killed browser, etc.).
     private static final long ACTIVE_TO_IDLE_MS = 30_000;
     private static final long IDLE_TO_ABANDONED_MS = 60_000;
+    // Keep terminal sessions in the registry for a few minutes after they
+    // finish, so operators on the campaign-detail view can still see their
+    // final state instead of the row vanishing the instant the visitor submits.
+    private static final long TERMINAL_GRACE_MS = 5 * 60_000;
 
     private final UserSessionRegistry registry;
     private final UserSessionRepositoryPort sessionRepository;
@@ -44,10 +53,20 @@ public class UserSessionLifecycleService {
     public void sweep() {
         long now = Instant.now().toEpochMilli();
         List<String> toAbandon = new ArrayList<>();
+        List<String> toEvict = new ArrayList<>();
 
         registry.snapshot().forEach(session -> {
-            long sinceHeartbeat = now - session.getLastHeartbeatAt().get();
             UserSessionStatus current = session.getStatus();
+            long sinceHeartbeat = now - session.getLastHeartbeatAt().get();
+
+            if (current == UserSessionStatus.COMPLETED || current == UserSessionStatus.ABANDONED
+                    || current == UserSessionStatus.BLOCKED) {
+                long sinceTerminal = now - session.getLastHeartbeatAt().get();
+                if (sinceTerminal > TERMINAL_GRACE_MS) {
+                    toEvict.add(session.getSessionId());
+                }
+                return;
+            }
 
             if (current == UserSessionStatus.ACTIVE && sinceHeartbeat > ACTIVE_TO_IDLE_MS) {
                 session.setStatus(UserSessionStatus.IDLE);
@@ -57,15 +76,51 @@ public class UserSessionLifecycleService {
             }
         });
 
-        toAbandon.forEach(id -> finalize(id, UserSessionStatus.ABANDONED));
+        toAbandon.forEach(this::markAbandoned);
+        toEvict.forEach(registry::remove);
     }
 
     public void markCompleted(String sessionId) {
         finalize(sessionId, UserSessionStatus.COMPLETED);
     }
 
+    public void markAbandoned(String sessionId) {
+        finalize(sessionId, UserSessionStatus.ABANDONED);
+    }
+
+    /**
+     * Persists the in-memory event buffer to the user_sessions row without
+     * transitioning the session to a terminal status. Called on each step
+     * submit so we don't lose form data if the visitor abandons mid-flow.
+     */
+    public void persistEvents(String sessionId) {
+        ConnectedSession connected = registry.get(sessionId).orElse(null);
+        if (connected == null) return;
+        try {
+            UserSession session = sessionRepository.findById(sessionId).orElse(null);
+            if (session == null) return;
+            session.setEvents(new ArrayList<>(connected.getBuffer()));
+            session.setLastActivityAt(OffsetDateTime.now());
+            sessionRepository.save(session);
+        } catch (Exception e) {
+            log.warn("Failed to persist events for session {}: {}", sessionId, e.getMessage());
+        }
+    }
+
     private void finalize(String sessionId, UserSessionStatus terminalStatus) {
-        ConnectedSession connected = registry.remove(sessionId).orElse(null);
+        // Look up but DON'T remove from registry — operators should still see
+        // the session in its terminal state for TERMINAL_GRACE_MS. The sweep
+        // evicts later.
+        ConnectedSession connected = registry.get(sessionId).orElse(null);
+        if (connected != null) {
+            UserSessionStatus current = connected.getStatus();
+            if (current == UserSessionStatus.COMPLETED || current == UserSessionStatus.BLOCKED) {
+                // Already in a stronger terminal — don't downgrade COMPLETED → ABANDONED.
+                return;
+            }
+            connected.setStatus(terminalStatus);
+            connected.touchHeartbeat(); // reset grace timer so the row persists for the full window
+        }
 
         try {
             UserSession session = sessionRepository.findById(sessionId).orElse(null);
@@ -120,17 +175,25 @@ public class UserSessionLifecycleService {
             String campaignId = outreach != null ? outreach.getCampaignId() : null;
             String pageId = campaignId != null
                     ? campaignRepository.findById(campaignId)
-                    .map(Campaign::getPage)
+                    .map(Campaign::getFlow)
+                    .filter(flow -> flow != null && !flow.isEmpty())
+                    .map(flow -> flow.get(0))
                     .map(p -> p.getId())
                     .orElse(null)
                     : null;
 
-            Map<String, Object> formData = session.getEvents() == null ? Map.of() : session.getEvents().stream()
-                    .filter(e -> e.getType() == InteractionType.SUBMIT)
-                    .reduce((first, second) -> second)
-                    .map(UserEvent::getPayload)
-                    .map(p -> (Map<String, Object>) p)
-                    .orElse(Map.of());
+            // Merge every step's SUBMIT payload — earlier steps would otherwise
+            // be lost if a flow has more than one form. Later step values
+            // overwrite earlier ones on key conflict (intentional — last
+            // wins).
+            Map<String, Object> formData = new java.util.HashMap<>();
+            if (session.getEvents() != null) {
+                for (UserEvent ev : session.getEvents()) {
+                    if (ev.getType() == InteractionType.SUBMIT && ev.getPayload() instanceof Map<?, ?> payload) {
+                        ((Map<String, Object>) payload).forEach(formData::put);
+                    }
+                }
+            }
 
             Conversion conversion = Conversion.builder()
                     .tenantId(session.getTenantId())

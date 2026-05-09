@@ -1,8 +1,10 @@
 package com.zekiloni.george.platform.application.port.out.campaign;
 
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
 
 import java.time.OffsetDateTime;
+import java.util.Map;
 import java.util.Optional;
 import java.util.List;
 import java.util.stream.Stream;
@@ -25,4 +27,10 @@ public interface OutreachRepositoryPort {
     Optional<Outreach> findById(String id);
 
     long countDispatchedSinceByServiceAccessId(String serviceAccessId, OffsetDateTime since);
+
+    /**
+     * Outreach delivery funnel for a campaign: count of recipients per status.
+     * Statuses with zero rows simply aren't in the result map.
+     */
+    Map<OutreachStatus, Long> countByCampaignGroupedByStatus(String campaignId);
 }

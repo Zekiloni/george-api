@@ -17,14 +17,14 @@ public class UserSessionRegistry {
 
     private final Map<String, ConnectedSession> bySessionId = new ConcurrentHashMap<>();
 
-    public ConnectedSession registerVisitor(String sessionId, WebSocketSession ws) {
+    public ConnectedSession registerVisitor(String sessionId, String tenantId, String campaignId, WebSocketSession ws) {
         return bySessionId.compute(sessionId, (id, existing) -> {
             if (existing != null) {
                 kickOldVisitor(existing);
                 existing.replaceVisitorSocket(ws);
                 return existing;
             }
-            return new ConnectedSession(sessionId, ws);
+            return new ConnectedSession(sessionId, tenantId, campaignId, ws);
         });
     }
 
