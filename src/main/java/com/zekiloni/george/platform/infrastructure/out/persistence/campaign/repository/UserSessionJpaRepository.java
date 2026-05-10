@@ -32,16 +32,14 @@ public interface UserSessionJpaRepository extends JpaRepository<UserSessionEntit
             UUID outreachId, String fingerprint, Collection<UserSessionStatus> statuses);
 
     /**
-     * Paginated session list for a campaign, optionally filtered by status.
-     * Goes through the campaign relation on outreach since campaign_id isn't
-     * denormalized onto user_sessions.
+     * Paginated session list for a campaign. Joined through outreach since
+     * campaign_id isn't denormalized onto user_sessions.
      */
-    @Query("""
-            SELECT s FROM UserSessionEntity s
-            WHERE s.outreach.campaign.id = :campaignId
-              AND (:#{#statuses == null || #statuses.isEmpty()} = true OR s.status IN :statuses)
-            """)
-    Page<UserSessionEntity> findByCampaignId(
+    @Query("SELECT s FROM UserSessionEntity s WHERE s.outreach.campaign.id = :campaignId")
+    Page<UserSessionEntity> findByCampaignId(@Param("campaignId") UUID campaignId, Pageable pageable);
+
+    @Query("SELECT s FROM UserSessionEntity s WHERE s.outreach.campaign.id = :campaignId AND s.status IN :statuses")
+    Page<UserSessionEntity> findByCampaignIdAndStatusIn(
             @Param("campaignId") UUID campaignId,
             @Param("statuses") Collection<UserSessionStatus> statuses,
             Pageable pageable);

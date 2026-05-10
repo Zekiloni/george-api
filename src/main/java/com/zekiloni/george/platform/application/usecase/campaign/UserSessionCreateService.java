@@ -16,7 +16,8 @@ import com.zekiloni.george.platform.domain.model.page.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -27,30 +28,30 @@ import java.util.Base64;
 import java.util.List;
 
 @Component
-@RequiredArgsConstructor
 @Slf4j
+@RequiredArgsConstructor
 public class UserSessionCreateService implements UserSessionCreateUseCase {
     private final OutreachRepositoryPort outreachRepository;
     private final CampaignRepositoryPort campaignRepository;
     private final PageRepositoryPort pageRepository;
     private final UserSessionRepositoryPort userSessionRepository;
-    private final TenantContext tenantContext;
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
+
     @Override
-    @Transactional
     public Result handle(String token, String userAgent, String ipAddress) {
-        // Anonymous endpoint — no JWT, no tenant context. Resolve the outreach
-        // tenant-agnostically, then pivot the tenant context to its owner so
-        // the rest of the flow re-engages Hibernate's @TenantId filter.
+        // Step 1 (no surrounding TX): tenant-agnostic native lookup of the
+        // outreach so we can learn who owns this visitor flow.
         Outreach outreach = outreachRepository.findBySessionTokenAcrossTenants(token)
                 .orElseThrow(() -> new RuntimeException("Outreach not found for token: " + token));
 
-        if (outreach.getTenantId() != null) {
-            tenantContext.setTenantId(outreach.getTenantId());
-        }
+        // Step 3: run the rest inside a fresh TX. New Session, new tenant
+        // resolution → INSERTs stamp the right tenant_id, SELECTs filter on it.
+        return doHandle(token, outreach, userAgent, ipAddress);
+    }
 
+    private Result doHandle(String token, Outreach outreach, String userAgent, String ipAddress) {
         Campaign campaign = campaignRepository.findById(outreach.getCampaignId())
                 .orElseThrow(() -> new RuntimeException("Campaign not found: " + outreach.getCampaignId()));
 
@@ -116,6 +117,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
                 .status(UserSessionStatus.ACTIVE)
                 .viewCount(1)
                 .currentStep(0)
+                .tenantId(outreach.getTenantId())
                 .lastActivityAt(OffsetDateTime.now())
                 .build();
     }

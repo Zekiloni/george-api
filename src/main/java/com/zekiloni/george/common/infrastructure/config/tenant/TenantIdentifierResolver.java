@@ -2,9 +2,7 @@ package com.zekiloni.george.common.infrastructure.config.tenant;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.HibernateException;
 import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Component;
 
 @Slf4j

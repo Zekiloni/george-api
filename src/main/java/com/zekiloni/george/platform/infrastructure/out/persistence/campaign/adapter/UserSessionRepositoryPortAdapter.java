@@ -3,6 +3,7 @@ package com.zekiloni.george.platform.infrastructure.out.persistence.campaign.ada
 import com.zekiloni.george.platform.application.port.out.campaign.UserSessionRepositoryPort;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
+import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.entity.UserSessionEntity;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.mapper.UserSessionEntityMapper;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repository.UserSessionJpaRepository;
 import lombok.RequiredArgsConstructor;
@@ -65,8 +66,11 @@ public class UserSessionRepositoryPortAdapter implements UserSessionRepositoryPo
     @Override
     @Transactional(readOnly = true)
     public Page<UserSession> findByCampaignId(String campaignId, Collection<UserSessionStatus> statuses, Pageable pageable) {
-        return jpaRepository.findByCampaignId(UUID.fromString(campaignId), statuses, pageable)
-                .map(mapper::toDomain);
+        UUID id = UUID.fromString(campaignId);
+        Page<UserSessionEntity> page = (statuses == null || statuses.isEmpty())
+                ? jpaRepository.findByCampaignId(id, pageable)
+                : jpaRepository.findByCampaignIdAndStatusIn(id, statuses, pageable);
+        return page.map(mapper::toDomain);
     }
 
     @Override

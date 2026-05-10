@@ -14,6 +14,11 @@ import java.util.stream.Stream;
 public interface OutreachEntityMapper {
     OutreachEntity toEntity(Outreach outreach);
 
+    // tenantId is inherited from TenantEntity (@MappedSuperclass). MapStruct's
+    // auto-mapping of inherited fields is unreliable across versions, so map
+    // it explicitly — losing it here silently breaks the anonymous-visitor
+    // tenant-context pivot in UserSessionCreateService.
+    @Mapping(source = "tenantId", target = "tenantId")
     @Mapping(source = "campaign.id", target = "campaignId")
     Outreach toDomain(OutreachEntity outreach);
 
