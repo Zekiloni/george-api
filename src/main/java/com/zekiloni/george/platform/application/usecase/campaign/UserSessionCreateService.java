@@ -47,7 +47,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
                 .orElseThrow(() -> new RuntimeException("Outreach not found for token: " + token));
 
         // Step 3: run the rest inside a fresh TX. New Session, new tenant
-        // resolution → INSERTs stamp the right tenant_id, SELECTs filter on it.
+        // resolution → INSERTs stamp the right tenant_id, SELECTs fi0lter on it.
         return doHandle(token, outreach, userAgent, ipAddress);
     }
 
