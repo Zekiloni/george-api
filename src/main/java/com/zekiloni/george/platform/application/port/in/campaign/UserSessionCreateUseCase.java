@@ -9,6 +9,9 @@ public interface UserSessionCreateUseCase {
     record Result(
             String sessionId,
             String wsToken,
+            // Base64-encoded AES-256-GCM key. Both ends use it for E2E payload
+            // encryption — server never decrypts visitor↔operator payloads.
+            String sessionKey,
             int currentStep,
             int totalSteps,
             PageDefinition pageDefinition) {}

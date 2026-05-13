@@ -20,7 +20,6 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
-import java.net.URI;
 import java.time.OffsetDateTime;
 import java.util.UUID;
 
@@ -47,7 +46,9 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
 
     @Override
     public void afterConnectionEstablished(WebSocketSession ws) throws Exception {
-        String wsToken = extractWsToken(ws.getUri());
+        // VisitorTokenHandshakeInterceptor populates this from the
+        // Sec-WebSocket-Protocol header (or the legacy ?wsToken= URL fallback).
+        String wsToken = (String) ws.getAttributes().get(VisitorTokenHandshakeInterceptor.WS_TOKEN_ATTR);
         if (wsToken == null) {
             ws.close(AUTH_FAILED);
             return;
@@ -178,15 +179,4 @@ public class VisitorWebSocketHandler extends TextWebSocketHandler {
         event.setUpdatedBy(auditor);
     }
 
-    private String extractWsToken(URI uri) {
-        if (uri == null || uri.getQuery() == null) return null;
-        for (String pair : uri.getQuery().split("&")) {
-            int eq = pair.indexOf('=');
-            if (eq <= 0) continue;
-            if ("wsToken".equals(pair.substring(0, eq))) {
-                return pair.substring(eq + 1);
-            }
-        }
-        return null;
-    }
 }

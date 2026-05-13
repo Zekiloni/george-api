@@ -17,6 +17,8 @@ public class UserSession {
     private String id;
     private String tenantId;
     private String wsToken;
+    /** AES-256-GCM key (base64) used by both ends to encrypt payloads on the wire. */
+    private String sessionKey;
     private String fingerprint;
     private String userAgent;
     private String ipAddress;

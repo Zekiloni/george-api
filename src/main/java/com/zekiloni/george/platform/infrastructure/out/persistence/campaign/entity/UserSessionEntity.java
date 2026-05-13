@@ -25,6 +25,10 @@ public class UserSessionEntity extends TenantEntity {
     @Column(name = "ws_token", unique = true)
     private String wsToken;
 
+    /** AES-256-GCM key, base64-encoded. Server generates + stores; never decrypts payloads. */
+    @Column(name = "session_key", length = 64)
+    private String sessionKey;
+
     @Column(name = "fingerprint")
     private String fingerprint;
 

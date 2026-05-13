@@ -32,6 +32,7 @@ public class UserSessionApiController {
         return ResponseEntity.ok(new UserSessionBootstrapDto(
                 result.sessionId(),
                 result.wsToken(),
+                result.sessionKey(),
                 result.currentStep(),
                 result.totalSteps(),
                 result.pageDefinition()));
@@ -57,6 +58,10 @@ public class UserSessionApiController {
     public record UserSessionBootstrapDto(
             String sessionId,
             String wsToken,
+            // Base64 AES-256-GCM key — visitor client uses this to encrypt
+            // outgoing payloads and decrypt operator commands. Server never
+            // sees plaintext after the bootstrap response.
+            String sessionKey,
             int currentStep,
             int totalSteps,
             PageDefinition pageDefinition) {}

@@ -57,6 +57,14 @@ public class CampaignEntity extends TenantEntity {
     @Column(name = "scheduled_at")
     private OffsetDateTime scheduledAt;
 
+    /** Set when this campaign was cloned from a Template. NULL otherwise. */
+    @Column(name = "source_template_id")
+    private UUID sourceTemplateId;
+
+    /** Template version snapshot — bumped by the template author signals an update is available. */
+    @Column(name = "source_template_version")
+    private Integer sourceTemplateVersion;
+
     @OneToMany(
             mappedBy = "campaign",
             cascade = CascadeType.ALL,

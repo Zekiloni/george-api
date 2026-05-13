@@ -32,4 +32,8 @@ public class Campaign {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
     private String tenantId;
+    /** When this campaign was cloned from a Template, the source template's id is remembered here. */
+    private String sourceTemplateId;
+    /** Version snapshot at clone time — used to detect when an updated template is available. */
+    private Integer sourceTemplateVersion;
 }

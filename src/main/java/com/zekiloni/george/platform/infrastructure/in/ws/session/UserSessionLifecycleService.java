@@ -1,5 +1,6 @@
 package com.zekiloni.george.platform.infrastructure.in.ws.session;
 
+import com.zekiloni.george.common.infrastructure.config.tenant.TenantContext;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.ConversionRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
@@ -48,6 +49,7 @@ public class UserSessionLifecycleService {
     private final OutreachRepositoryPort outreachRepository;
     private final CampaignRepositoryPort campaignRepository;
     private final ConversionRepositoryPort conversionRepository;
+    private final TenantContext tenantContext;
 
     @Scheduled(fixedDelay = 10_000)
     public void sweep() {
@@ -81,11 +83,11 @@ public class UserSessionLifecycleService {
     }
 
     public void markCompleted(String sessionId) {
-        finalize(sessionId, UserSessionStatus.COMPLETED);
+        withTenantOf(sessionId, () -> finalize(sessionId, UserSessionStatus.COMPLETED));
     }
 
     public void markAbandoned(String sessionId) {
-        finalize(sessionId, UserSessionStatus.ABANDONED);
+        withTenantOf(sessionId, () -> finalize(sessionId, UserSessionStatus.ABANDONED));
     }
 
     /**
@@ -94,6 +96,10 @@ public class UserSessionLifecycleService {
      * submit so we don't lose form data if the visitor abandons mid-flow.
      */
     public void persistEvents(String sessionId) {
+        withTenantOf(sessionId, () -> doPersistEvents(sessionId));
+    }
+
+    private void doPersistEvents(String sessionId) {
         ConnectedSession connected = registry.get(sessionId).orElse(null);
         if (connected == null) return;
         try {
@@ -104,6 +110,33 @@ public class UserSessionLifecycleService {
             sessionRepository.save(session);
         } catch (Exception e) {
             log.warn("Failed to persist events for session {}: {}", sessionId, e.getMessage());
+        }
+    }
+
+    /**
+     * Sets {@link TenantContext} to the session's owning tenant for the
+     * duration of the action, then restores the previous value. The scheduled
+     * sweep, WS-triggered terminal transitions, and step-submit persistence
+     * all run without a JWT-derived tenant context — without this wrap they
+     * fall through to {@code TenantContext.SYSTEM} and either silently bypass
+     * the @TenantId filter (root behaviour) or stamp new rows with SYSTEM.
+     * Both outcomes mask cross-tenant bugs, so we set it explicitly.
+     */
+    private void withTenantOf(String sessionId, Runnable action) {
+        String tenantId = registry.get(sessionId)
+                .map(ConnectedSession::getTenantId)
+                .filter(t -> t != null && !t.isBlank())
+                .orElse(null);
+        if (tenantId == null) {
+            action.run();
+            return;
+        }
+        String previous = tenantContext.getTenantId();
+        try {
+            tenantContext.setTenantId(tenantId);
+            action.run();
+        } finally {
+            tenantContext.setTenantId(previous);
         }
     }
 

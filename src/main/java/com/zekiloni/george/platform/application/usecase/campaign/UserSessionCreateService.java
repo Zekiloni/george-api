@@ -1,7 +1,6 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
 import com.zekiloni.george.common.domain.model.Ref;
-import com.zekiloni.george.common.infrastructure.config.tenant.TenantContext;
 import com.zekiloni.george.platform.application.port.in.campaign.UserSessionCreateUseCase;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
@@ -16,8 +15,6 @@ import com.zekiloni.george.platform.domain.model.page.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.support.TransactionTemplate;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -38,20 +35,17 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
 
     private static final SecureRandom RANDOM = new SecureRandom();
 
-
     @Override
     public Result handle(String token, String userAgent, String ipAddress) {
-        // Step 1 (no surrounding TX): tenant-agnostic native lookup of the
-        // outreach so we can learn who owns this visitor flow.
+        // Anonymous endpoint — no JWT, no tenant context. Resolve the outreach
+        // tenant-agnostically; the session is then stamped with the outreach's
+        // tenant_id explicitly on the builder, so the row is owned by the right
+        // tenant even though Hibernate's @TenantId resolver currently returns
+        // SYSTEM (which is treated as root and bypasses the read filter for the
+        // campaign/page lookups below).
         Outreach outreach = outreachRepository.findBySessionTokenAcrossTenants(token)
                 .orElseThrow(() -> new RuntimeException("Outreach not found for token: " + token));
 
-        // Step 3: run the rest inside a fresh TX. New Session, new tenant
-        // resolution → INSERTs stamp the right tenant_id, SELECTs fi0lter on it.
-        return doHandle(token, outreach, userAgent, ipAddress);
-    }
-
-    private Result doHandle(String token, Outreach outreach, String userAgent, String ipAddress) {
         Campaign campaign = campaignRepository.findById(outreach.getCampaignId())
                 .orElseThrow(() -> new RuntimeException("Campaign not found: " + outreach.getCampaignId()));
 
@@ -87,6 +81,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         return new Result(
                 saved.getId(),
                 saved.getWsToken(),
+                saved.getSessionKey(),
                 currentStep,
                 flow.size(),
                 page.getDefinition());
@@ -110,6 +105,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
     private UserSession createFresh(Outreach outreach, String fingerprint, String userAgent, String ipAddress) {
         return UserSession.builder()
                 .wsToken(generateWsToken())
+                .sessionKey(generateSessionKey())
                 .fingerprint(fingerprint)
                 .userAgent(userAgent)
                 .ipAddress(ipAddress)
@@ -126,6 +122,17 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         byte[] bytes = new byte[32];
         RANDOM.nextBytes(bytes);
         return Base64.getUrlEncoder().withoutPadding().encodeToString(bytes);
+    }
+
+    /**
+     * 32 random bytes → base64. Used by both ends as the symmetric AES-256-GCM
+     * key for payload encryption. Server stores it so it can hand it to the
+     * authorized operator later, but never decrypts payloads itself.
+     */
+    private String generateSessionKey() {
+        byte[] bytes = new byte[32];
+        RANDOM.nextBytes(bytes);
+        return Base64.getEncoder().encodeToString(bytes);
     }
 
     private String generateFingerprint(String token, String userAgent, String ipAddress) {

@@ -87,10 +87,11 @@ spring:
       # TODO: Consider using auto commit false for better transaction control, but ensure that transactions are properly managed in the application
       # auto-commit: false # Better for transaction control
 
-  # JPA and Hibernate configuration for automatic schema generation and naming strategies
+  # JPA and Hibernate configuration. Schema is managed by Flyway; Hibernate
+  # only validates that entity mappings line up with the migrated tables.
   jpa:
     hibernate:
-      ddl-auto: none
+      ddl-auto: validate
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
@@ -103,10 +104,13 @@ spring:
         jdbc:
           batch_size: 50
 
-  # Flyway configuration for database migrations
+  # Flyway-managed schema. baseline-on-migrate lets us adopt existing dev
+  # databases (created by previous ddl-auto runs) without erroring; new
+  # changes must arrive as V2__*.sql, V3__*.sql, etc.
   flyway:
-    enabled: false
+    enabled: true
     baseline-on-migrate: true
+    baseline-version: 0
     validate-on-migrate: true
 
   # Servlet multipart file upload settings

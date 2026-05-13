@@ -1,5 +1,6 @@
 package com.zekiloni.george.common.domain.model;
 
+import jakarta.persistence.Embeddable;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -10,6 +11,7 @@ import java.time.OffsetDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Embeddable
 public class TimePeriod {
     private OffsetDateTime startDateTime;
     private OffsetDateTime endDateTime;

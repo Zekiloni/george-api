@@ -1,3 +1,10 @@
+
+## Java Coding Standards and Best Practices
+- Use Java 25 features and follow Java coding conventions.
+- Use functional programming principles where appropriate, leveraging Stream API and Optional.
+- Follow hexagonal architecture principles to separate concerns and improve maintainability.
+- Use design patterns judiciously to solve common problems and improve code clarity.
+
 ## Code Fromatting
 
 - Indentation: 4 spaces.
@@ -194,6 +201,17 @@
 - Method naming could follow snake_case or camelCaset convention for test methods (e.g., `get_user_by_id_ok`, `get_user_by_id_not_found_ko`).
 - Avoid reflection in tests.
 - Avoid business logic in tests; focus on behavior verification.
+
+## API
+
+- Controllers should be thin and delegate to service layer for business logic. (one liner if possible)
+- Use `@RequestMapping` at the class level to define the base path for the controller.
+- Use `@GetMapping`, `@PostMapping`, `@PutMapping`, `@DeleteMapping` for defining endpoint methods.
+- Use `@RequestBody` for request payloads and `@PathVariable` for path parameters.
+- Use `@ResponseStatus` to specify HTTP status codes for responses.
+- Define DTOS for request and response payloads in `infrastructure/in/web/dto/` package.
+- Use MapStruct or static mappers to convert between entities and DTOs.
+
 
 ## Logging
 

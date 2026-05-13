@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.server.HandshakeInterceptor;
 
+import java.util.List;
 import java.util.Map;
 
 @Component
@@ -27,10 +28,12 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     private final JwtDecoder jwtDecoder;
     private final KeycloakRoleConverter roleConverter = new KeycloakRoleConverter();
 
+    private static final String PROTOCOL_PREFIX = "bearer.";
+
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response,
                                    WebSocketHandler wsHandler, Map<String, Object> attributes) {
-        String token = extractToken(request);
+        String token = extractToken(request, response);
         if (token == null) {
             log.debug("WS handshake rejected: missing token");
             return false;
@@ -53,8 +56,32 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
                                WebSocketHandler wsHandler, Exception exception) {
     }
 
-    private String extractToken(ServerHttpRequest request) {
-        if (!(request instanceof ServletServerHttpRequest servletRequest)) return null;
-        return servletRequest.getServletRequest().getParameter("token");
+    /**
+     * Reads the operator's JWT from {@code Sec-WebSocket-Protocol: bearer.<jwt>}.
+     * Falls back to the legacy {@code ?token=} URL form for transitional
+     * compatibility; bearer-in-URL is a real leak through logs/Referer.
+     */
+    private String extractToken(ServerHttpRequest request, ServerHttpResponse response) {
+        List<String> offered = request.getHeaders().get("Sec-WebSocket-Protocol");
+        if (offered != null) {
+            for (String headerValue : offered) {
+                for (String proto : headerValue.split(",")) {
+                    String trimmed = proto.trim();
+                    if (trimmed.startsWith(PROTOCOL_PREFIX) && trimmed.length() > PROTOCOL_PREFIX.length()) {
+                        // Echo back so the browser accepts the upgrade.
+                        response.getHeaders().set("Sec-WebSocket-Protocol", trimmed);
+                        return trimmed.substring(PROTOCOL_PREFIX.length());
+                    }
+                }
+            }
+        }
+        if (request instanceof ServletServerHttpRequest servletRequest) {
+            String legacy = servletRequest.getServletRequest().getParameter("token");
+            if (legacy != null && !legacy.isBlank()) {
+                log.warn("Operator WS used legacy URL token — client should send Sec-WebSocket-Protocol: bearer.<jwt>");
+                return legacy;
+            }
+        }
+        return null;
     }
 }

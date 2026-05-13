@@ -1,0 +1,12 @@
+-- E2E payload encryption support.
+--
+-- Each visitor session gets a per-session AES-256-GCM key generated at
+-- session-create time. The visitor receives it in the bootstrap response;
+-- operators fetch it via GET /api/v1/operator/sessions/{id}/key.
+-- Server stores but never decrypts payloads — the column is just the issuer
+-- of record so the same key reaches both sides over their respective
+-- authenticated channels.
+--
+-- 44 chars = base64(32-byte AES-256 key). VARCHAR(64) leaves room for any
+-- future format prefix without another migration.
+ALTER TABLE user_sessions ADD COLUMN session_key VARCHAR(64);
