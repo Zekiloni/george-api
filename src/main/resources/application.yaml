@@ -58,6 +58,13 @@ spring:
   application:
     name: george-api
 
+  # Redis is used as a pub/sub bus (StringRedisTemplate in RedisSessionEventBus),
+  # not as a data store. Exclude the repositories auto-config so it doesn't try
+  # to classify every JPA repository as Redis-backed and spam the boot log.
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.data.redis.autoconfigure.DataRedisRepositoriesAutoConfiguration
+
   threads:
     virtual:
       enabled: true
