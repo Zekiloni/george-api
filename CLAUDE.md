@@ -249,14 +249,6 @@ Things we've discussed in detail but haven't shipped. Don't re-design these from
 - Step completion / drop-off analytics — `UserSession.currentStep` is tracked; missing piece is the aggregation query.
 - Drag-and-drop template editor (JSON shape is editor-ready).
 
-### Schema work
-- V1 vs current entities drift — Hibernate validate on a fresh DB may fail; write `V{N}__align_*.sql` to reconcile.
-- Backfill SQL for legacy `user_sessions.tenant_id = 'system'` rows:
-  ```sql
-  UPDATE user_sessions s SET tenant_id = o.tenant_id
-  FROM outreach o
-  WHERE s.outreach_id = o.id AND s.tenant_id = 'system' AND o.tenant_id <> 'system';
-  ```
 
 ### Refactors / cleanups outstanding
 - Most MapStruct mappers (20 of 27) missing `@Mapper(componentModel = SPRING)` — works by accident, should be made explicit.
