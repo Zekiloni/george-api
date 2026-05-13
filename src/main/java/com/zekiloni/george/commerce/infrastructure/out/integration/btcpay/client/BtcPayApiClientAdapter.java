@@ -30,11 +30,14 @@ public class BtcPayApiClientAdapter implements ExternalInvoicePort {
     @Value("${btc-pay.api.api-key}")
     private String apiKey;
 
+    @Value("${app.base-url}")
+    private String baseUrl;
+
     @Override
     public ExternalInvoice createInvoice(String orderId, String description, String amount, String currency) {
         BtcPayInvoiceCreateDto.Metadata metadata = new BtcPayInvoiceCreateDto.Metadata(
                 orderId,
-                "https://example.com/orders/" + orderId,
+                String.format("%s/order/%s", baseUrl, orderId),
                 description,
                 null,
                 null
