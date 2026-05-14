@@ -8,6 +8,7 @@ import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.mapp
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.repository.UserSessionJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,5 +82,14 @@ public class UserSessionRepositoryPortAdapter implements UserSessionRepositoryPo
             out.put((UserSessionStatus) row[0], ((Number) row[1]).longValue());
         }
         return out;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserSession> findCompletedByCampaignId(String campaignId, int limit) {
+        return jpaRepository.findCompletedByCampaignId(UUID.fromString(campaignId), PageRequest.of(0, limit))
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
     }
 }

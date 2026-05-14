@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -31,4 +32,12 @@ public interface UserSessionRepositoryPort {
      * matching rows simply aren't in the result map.
      */
     Map<UserSessionStatus, Long> countByCampaignGroupedByStatus(String campaignId);
+
+    /**
+     * Completed sessions for a campaign, newest-first by updatedAt (the
+     * timestamp at which the session was transitioned to COMPLETED), capped
+     * at {@code limit} rows. Events are loaded with the entity (JSONB on the
+     * same row) — caller can walk them to extract SUBMIT payloads.
+     */
+    List<UserSession> findCompletedByCampaignId(String campaignId, int limit);
 }

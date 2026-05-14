@@ -50,4 +50,17 @@ public interface UserSessionJpaRepository extends JpaRepository<UserSessionEntit
             GROUP BY s.status
             """)
     List<Object[]> countByCampaignIdGroupedByStatus(@Param("campaignId") UUID campaignId);
+
+    /**
+     * Completed sessions for a campaign, newest-first by updatedAt (which is
+     * stamped by the audit listener when {@code markCompleted} flips status
+     * to COMPLETED). Limit is applied via Pageable since JPQL has no LIMIT.
+     */
+    @Query("""
+            SELECT s FROM UserSessionEntity s
+            WHERE s.outreach.campaign.id = :campaignId
+              AND s.status = com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus.COMPLETED
+            ORDER BY s.updatedAt DESC
+            """)
+    List<UserSessionEntity> findCompletedByCampaignId(@Param("campaignId") UUID campaignId, Pageable pageable);
 }

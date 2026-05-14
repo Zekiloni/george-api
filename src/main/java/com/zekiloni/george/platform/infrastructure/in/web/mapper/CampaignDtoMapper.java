@@ -1,11 +1,13 @@
 package com.zekiloni.george.platform.infrastructure.in.web.mapper;
 
 import com.zekiloni.george.platform.domain.model.campaign.Campaign;
+import com.zekiloni.george.platform.domain.model.campaign.CampaignResponse;
 import com.zekiloni.george.platform.domain.model.campaign.CampaignStats;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserEvent;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignCreateDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignResponseDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignSessionDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignStatsDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.InteractionSignalDto;
@@ -24,4 +26,6 @@ public interface CampaignDtoMapper {
 
     @Mapping(source = "id", target = "sessionId")
     CampaignSessionDto toSessionDto(UserSession session);
+
+    CampaignResponseDto toResponseDto(CampaignResponse response);
 }

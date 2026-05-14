@@ -5,6 +5,7 @@ import com.zekiloni.george.platform.application.port.in.campaign.CampaignQueryUs
 import com.zekiloni.george.platform.application.port.in.campaign.CampaignUpdateUseCase;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignCreateDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignResponseDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignSessionDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignStatsDto;
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.CampaignDto;
@@ -19,6 +20,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -63,6 +65,11 @@ public class CampaignApiController {
             Pageable pageable
     ) {
         return ResponseEntity.ok(queryUseCase.findSessions(id, status, pageable).map(mapper::toSessionDto));
+    }
+
+    @GetMapping("/{id}/responses")
+    public ResponseEntity<List<CampaignResponseDto>> responses(@PathVariable String id) {
+        return ResponseEntity.ok(queryUseCase.responses(id).stream().map(mapper::toResponseDto).toList());
     }
 
     @PostMapping("/{id}/pause")
