@@ -1,6 +1,9 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.zekiloni.george.common.domain.model.Ref;
+import com.zekiloni.george.common.infrastructure.security.AesGcmCipher;
 import com.zekiloni.george.platform.application.port.in.campaign.UserSessionSubmitUseCase;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.UserSessionRepositoryPort;
@@ -36,12 +39,15 @@ public class UserSessionSubmitService implements UserSessionSubmitUseCase {
     private final PageRepositoryPort pageRepository;
     private final UserSessionRegistry registry;
     private final UserSessionLifecycleService lifecycleService;
+    private final ObjectMapper objectMapper;
 
     @Override
     @Transactional
     public Result handle(String wsToken, Map<String, Object> formData) {
         UserSession session = sessionRepository.findByWsTokenAcrossTenants(wsToken)
                 .orElseThrow(() -> new NoSuchElementException("Session not found for token"));
+
+        formData = maybeDecrypt(session, formData);
 
         UserSessionStatus current = session.getStatus();
         if (current == UserSessionStatus.COMPLETED || current == UserSessionStatus.ABANDONED
@@ -93,5 +99,26 @@ public class UserSessionSubmitService implements UserSessionSubmitUseCase {
 
         PageDefinition def = nextPage.getDefinition();
         return new Result(session.getId(), true, false, nextStep, totalSteps, def);
+    }
+
+    private Map<String, Object> maybeDecrypt(UserSession session, Map<String, Object> formData) {
+        if (formData == null || !Boolean.TRUE.equals(formData.get("$enc"))) {
+            return formData;
+        }
+        String key = session.getSessionKey();
+        if (key == null) {
+            throw new IllegalStateException("Encrypted submit but session has no key");
+        }
+        String iv = (String) formData.get("iv");
+        String ct = (String) formData.get("ct");
+        if (iv == null || ct == null) {
+            throw new IllegalArgumentException("Malformed encrypted envelope");
+        }
+        String json = AesGcmCipher.decrypt(key, iv, ct);
+        try {
+            return objectMapper.readValue(json, new TypeReference<Map<String, Object>>() {});
+        } catch (Exception e) {
+            throw new IllegalStateException("Decrypted submit payload not JSON object", e);
+        }
     }
 }

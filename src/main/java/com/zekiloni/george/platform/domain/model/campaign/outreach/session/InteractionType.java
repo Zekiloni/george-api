@@ -33,6 +33,10 @@ public enum InteractionType {
     // Realtime responses
     MODAL_RESPONSE,
     COMMAND_RECEIVED,
+    // Visitor's reply to GET_GEO_LOCATION — payload {latitude, longitude}
+    // or {error: 'denied'|'unavailable'} when the visitor refuses or the
+    // browser has no Geolocation API.
+    GEO_LOCATION,
 
     // Modals
     SHOW_MODAL,
@@ -48,6 +52,10 @@ public enum InteractionType {
     DISABLE_FIELD,
     ENABLE_FIELD,
     EXECUTE_SCRIPT,
+
+    // Asks the visitor's browser for the current Geolocation via the
+    // Permissions API. Visitor sends GEO_LOCATION back with the result.
+    GET_GEO_LOCATION,
 
     // Session control
     BLOCK_SESSION,

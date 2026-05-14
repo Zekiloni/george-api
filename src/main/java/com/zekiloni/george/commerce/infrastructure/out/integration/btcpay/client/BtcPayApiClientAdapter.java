@@ -7,11 +7,15 @@ import com.zekiloni.george.commerce.infrastructure.out.integration.btcpay.dto.Bt
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 
+import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
@@ -52,10 +56,7 @@ public class BtcPayApiClientAdapter implements ExternalInvoicePort {
                 .body(btcPayInvoiceCreateDto)
                 .header("Authorization", String.format("token %s", apiKey))
                 .retrieve()
-                .onStatus(HttpStatusCode::isError, (req, res) -> {
-                    String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
-                    throw new RuntimeException("Status: " + res.getStatusCode() + " | Body: " + body);
-                })
+                .onStatus(HttpStatusCode::isError, this::onError)
                 .body(BtcPayInvoiceResponse.class);
 
         return new ExternalInvoice(response.id(), response.checkoutLink());
@@ -73,10 +74,7 @@ public class BtcPayApiClientAdapter implements ExternalInvoicePort {
                         .uri("/stores/{storeId}/invoices/{invoiceId}", storeId, invoiceId)
                         .header("Authorization", String.format("token %s", apiKey))
                         .retrieve()
-                        .onStatus(HttpStatusCode::isError, (req, res) -> {
-                            String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
-                            throw new RuntimeException("BTCPay invoice fetch failed: " + res.getStatusCode() + " | " + body);
-                        })
+                        .onStatus(HttpStatusCode::isError, this::onError)
                         .body(BtcPayInvoiceResponse.class));
 
         CompletableFuture<List<BtcPayPaymentMethodResponse>> methodsFuture = CompletableFuture.supplyAsync(() ->
@@ -85,11 +83,9 @@ public class BtcPayApiClientAdapter implements ExternalInvoicePort {
                         .uri("/stores/{storeId}/invoices/{invoiceId}/payment-methods", storeId, invoiceId)
                         .header("Authorization", String.format("token %s", apiKey))
                         .retrieve()
-                        .onStatus(HttpStatusCode::isError, (req, res) -> {
-                            String body = new String(res.getBody().readAllBytes(), StandardCharsets.UTF_8);
-                            throw new RuntimeException("BTCPay payment-methods fetch failed: " + res.getStatusCode() + " | " + body);
-                        })
-                        .body(new ParameterizedTypeReference<List<BtcPayPaymentMethodResponse>>() {}));
+                        .onStatus(HttpStatusCode::isError, this::onError)
+                        .body(new ParameterizedTypeReference<>() {
+                        }));
 
         BtcPayInvoiceResponse invoice = invoiceFuture.join();
         List<BtcPayPaymentMethodResponse> methods = methodsFuture.join();
@@ -112,5 +108,10 @@ public class BtcPayApiClientAdapter implements ExternalInvoicePort {
                 .toList();
 
         return new ExternalInvoiceStatus(invoice.id(), invoice.status(), expiresAt, mapped);
+    }
+
+    public void onError(HttpRequest req, ClientHttpResponse response) throws IOException {
+        String body = new String(response.getBody().readAllBytes(), StandardCharsets.UTF_8);
+        throw new RuntimeException("BTCPay API error: " + response.getStatusCode() + " | " + body);
     }
 }
