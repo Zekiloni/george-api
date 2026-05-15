@@ -14,7 +14,9 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserS
 import com.zekiloni.george.platform.domain.model.page.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
@@ -36,7 +38,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
     private static final SecureRandom RANDOM = new SecureRandom();
 
     @Override
-    public Result handle(String token, String userAgent, String ipAddress) {
+    public Result handle(String token, String userAgent, String ipAddress, Enrichment enrichment) {
         // Anonymous endpoint — no JWT, no tenant context. Resolve the outreach
         // tenant-agnostically; the session is then stamped with the outreach's
         // tenant_id explicitly on the builder, so the row is owned by the right
@@ -48,6 +50,13 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
 
         Campaign campaign = campaignRepository.findById(outreach.getCampaignId())
                 .orElseThrow(() -> new RuntimeException("Campaign not found: " + outreach.getCampaignId()));
+
+        // Geo block — the simulator passes the visitor's resolved country in
+        // enrichment.country. When it matches one of the campaign's blocked
+        // countries we throw 401 here; the controller propagates the status,
+        // the simulator route handler maps it to a 404-style "Link unavailable"
+        // response, and no UserSession row is ever created.
+        rejectIfCountryBlocked(campaign, enrichment);
 
         List<Ref> flow = campaign.getFlow();
         if (flow == null || flow.isEmpty()) {
@@ -61,8 +70,8 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         // invalidate any stale WS connection and bring it back to ACTIVE so
         // the visitor picks up at the step they left off on.
         UserSession session = userSessionRepository.findReusable(outreach.getId(), fingerprint)
-                .map(existing -> resume(existing, userAgent, ipAddress))
-                .orElseGet(() -> createFresh(outreach, fingerprint, userAgent, ipAddress));
+                .map(existing -> resume(existing, userAgent, ipAddress, enrichment))
+                .orElseGet(() -> createFresh(outreach, fingerprint, userAgent, ipAddress, enrichment));
 
         UserSession saved = userSessionRepository.save(session);
 
@@ -87,7 +96,7 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
                 page.getDefinition());
     }
 
-    private UserSession resume(UserSession existing, String userAgent, String ipAddress) {
+    private UserSession resume(UserSession existing, String userAgent, String ipAddress, Enrichment enrichment) {
         log.info("Resuming session {} (was {}, step {})",
                 existing.getId(), existing.getStatus(), existing.getCurrentStep());
         existing.setWsToken(generateWsToken());
@@ -99,11 +108,12 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         // match, so we accept the new values.
         existing.setUserAgent(userAgent);
         existing.setIpAddress(ipAddress);
+        applyEnrichment(existing, enrichment);
         return existing;
     }
 
-    private UserSession createFresh(Outreach outreach, String fingerprint, String userAgent, String ipAddress) {
-        return UserSession.builder()
+    private UserSession createFresh(Outreach outreach, String fingerprint, String userAgent, String ipAddress, Enrichment enrichment) {
+        UserSession session = UserSession.builder()
                 .wsToken(generateWsToken())
                 .sessionKey(generateSessionKey())
                 .fingerprint(fingerprint)
@@ -116,6 +126,36 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
                 .tenantId(outreach.getTenantId())
                 .lastActivityAt(OffsetDateTime.now())
                 .build();
+        applyEnrichment(session, enrichment);
+        return session;
+    }
+
+    private void rejectIfCountryBlocked(Campaign campaign, Enrichment enrichment) {
+        List<String> blocked = campaign.getBlockedCountries();
+        if (blocked == null || blocked.isEmpty()) return;
+        String visitor = enrichment == null ? null : enrichment.country();
+        if (visitor == null) return;
+        String visitorUpper = visitor.toUpperCase();
+        boolean hit = blocked.stream()
+                .filter(c -> c != null && !c.isBlank())
+                .map(String::toUpperCase)
+                .anyMatch(visitorUpper::equals);
+        if (hit) {
+            log.info("Refusing visit to campaign {} from blocked country {}", campaign.getId(), visitorUpper);
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "country_blocked");
+        }
+    }
+
+    private void applyEnrichment(UserSession session, Enrichment enrichment) {
+        if (enrichment == null) return;
+        if (enrichment.flags() != null && !enrichment.flags().isEmpty()) {
+            session.setFlags(enrichment.flags());
+        }
+        if (enrichment.country() != null) session.setCountry(enrichment.country());
+        if (enrichment.city() != null) session.setCity(enrichment.city());
+        if (enrichment.asn() != null) session.setAsn(enrichment.asn());
+        if (enrichment.asnOrg() != null) session.setAsnOrg(enrichment.asnOrg());
+        if (enrichment.riskScore() != null) session.setRiskScore(enrichment.riskScore());
     }
 
     private String generateWsToken() {

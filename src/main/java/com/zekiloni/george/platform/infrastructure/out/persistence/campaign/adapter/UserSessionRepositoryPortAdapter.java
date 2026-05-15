@@ -92,4 +92,13 @@ public class UserSessionRepositoryPortAdapter implements UserSessionRepositoryPo
                 .map(mapper::toDomain)
                 .toList();
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<UserSession> findAllByCampaignId(String campaignId) {
+        return jpaRepository.findAllByCampaignId(UUID.fromString(campaignId))
+                .stream()
+                .map(mapper::toDomain)
+                .toList();
+    }
 }

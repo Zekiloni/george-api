@@ -5,17 +5,13 @@ import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageCreateDto
 import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.page.PageUpdateDto;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.NullValuePropertyMappingStrategy;
 
 /**
  * MapStruct mapper za mapiranje između web layer DTO-a i domenskog Page modela.
  */
-@Mapper(
-    componentModel = MappingConstants.ComponentModel.SPRING,
-    nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE
-)
+@Mapper(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface PageDtoMapper {
 
     /**

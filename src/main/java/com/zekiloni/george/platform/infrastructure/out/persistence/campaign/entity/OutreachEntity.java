@@ -64,4 +64,7 @@ public class OutreachEntity extends TenantEntity {
 
     @Column(length = 500)
     private String failureReason;
+
+    @Column(name = "kick_reason", length = 64)
+    private String kickReason;
 }

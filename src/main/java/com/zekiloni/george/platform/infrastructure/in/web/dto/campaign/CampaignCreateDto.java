@@ -16,5 +16,9 @@ public record CampaignCreateDto(
         int tokenLength,
         String messageTemplate,
         @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) OffsetDateTime scheduledAt,
-        MultipartFile file
+        MultipartFile file,
+        // ISO-3166-1 alpha-2 country codes whose visitors are blocked at the
+        // gate. Empty / null = no geo block. UI multi-selects from the bundled
+        // country list (libs/domain/.../country/countries.ts).
+        List<String> blockedCountries
 ) {}

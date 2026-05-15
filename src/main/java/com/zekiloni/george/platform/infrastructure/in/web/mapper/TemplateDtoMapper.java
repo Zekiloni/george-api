@@ -8,11 +8,10 @@ import com.zekiloni.george.platform.infrastructure.in.web.dto.template.TemplateD
 import com.zekiloni.george.platform.infrastructure.in.web.dto.template.TemplateUpsertDto;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper
 public interface TemplateDtoMapper {
 
     CategoryDto toDto(Category category);

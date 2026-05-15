@@ -63,4 +63,11 @@ public interface UserSessionJpaRepository extends JpaRepository<UserSessionEntit
             ORDER BY s.updatedAt DESC
             """)
     List<UserSessionEntity> findCompletedByCampaignId(@Param("campaignId") UUID campaignId, Pageable pageable);
+
+    @Query("""
+            SELECT s FROM UserSessionEntity s
+            WHERE s.outreach.campaign.id = :campaignId
+            ORDER BY s.createdAt ASC
+            """)
+    List<UserSessionEntity> findAllByCampaignId(@Param("campaignId") UUID campaignId);
 }

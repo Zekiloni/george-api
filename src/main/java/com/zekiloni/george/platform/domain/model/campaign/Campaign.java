@@ -36,4 +36,13 @@ public class Campaign {
     private String sourceTemplateId;
     /** Version snapshot at clone time — used to detect when an updated template is available. */
     private Integer sourceTemplateVersion;
+    /**
+     * ISO-3166-1 alpha-2 country codes whose visitors are refused at the gate.
+     * Empty / null means "no geo block." Checked by UserSessionCreateService
+     * against the simulator-computed enrichment.country — when the visitor's
+     * country is in this set, session creation returns 401 and the page is
+     * never rendered. Case-insensitive match (server normalizes to upper).
+     */
+    @Builder.Default
+    private List<String> blockedCountries = new ArrayList<>();
 }

@@ -26,4 +26,6 @@ public class CampaignDto {
     private OffsetDateTime updatedAt;
     private List<Ref> flow;
     private Ref serviceAccess;
+    /** ISO-3166-1 alpha-2 codes; visitors from these countries are refused at the gate. */
+    private List<String> blockedCountries;
 }

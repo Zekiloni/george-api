@@ -55,4 +55,23 @@ public class UserSessionEntity extends TenantEntity {
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "events", columnDefinition = "jsonb")
     private List<UserEvent> events;
+
+    @JdbcTypeCode(SqlTypes.JSON)
+    @Column(name = "flags", columnDefinition = "jsonb")
+    private List<String> flags;
+
+    @Column(name = "country", length = 2)
+    private String country;
+
+    @Column(name = "city")
+    private String city;
+
+    @Column(name = "asn")
+    private Integer asn;
+
+    @Column(name = "asn_org")
+    private String asnOrg;
+
+    @Column(name = "risk_score")
+    private Integer riskScore;
 }

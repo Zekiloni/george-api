@@ -3,11 +3,10 @@ package com.zekiloni.george.platform.infrastructure.out.persistence.template.map
 import com.zekiloni.george.platform.domain.model.template.Template;
 import com.zekiloni.george.platform.infrastructure.out.persistence.template.entity.TemplateEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
 
 import java.util.List;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper
 public interface TemplateEntityMapper {
 
     Template toDomain(TemplateEntity entity);

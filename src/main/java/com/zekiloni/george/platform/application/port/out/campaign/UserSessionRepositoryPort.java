@@ -40,4 +40,11 @@ public interface UserSessionRepositoryPort {
      * same row) — caller can walk them to extract SUBMIT payloads.
      */
     List<UserSession> findCompletedByCampaignId(String campaignId, int limit);
+
+    /**
+     * All sessions for a campaign, regardless of status. Used by analytics
+     * aggregations that walk every session's events/timestamps. Events JSONB
+     * is loaded with the row.
+     */
+    List<UserSession> findAllByCampaignId(String campaignId);
 }

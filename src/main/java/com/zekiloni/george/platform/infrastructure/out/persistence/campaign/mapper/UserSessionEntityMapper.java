@@ -5,7 +5,6 @@ import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.enti
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.entity.UserSessionEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
@@ -15,7 +14,7 @@ import java.util.UUID;
 // (including campaignId derived from the LAZY campaign relation), not just
 // its id. The submit flow needs `outreach.campaignId` to resolve the
 // Campaign and look up its flow for step transitions.
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING, uses = OutreachEntityMapper.class)
+@Mapper(uses = OutreachEntityMapper.class)
 public interface UserSessionEntityMapper {
 
     @Mapping(source = "outreach.id", target = "outreach", qualifiedByName = "outreachRefToEntity")

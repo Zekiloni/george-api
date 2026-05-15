@@ -5,14 +5,13 @@ import com.zekiloni.george.platform.domain.model.campaign.Campaign;
 import com.zekiloni.george.platform.infrastructure.out.persistence.campaign.entity.CampaignEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 import org.mapstruct.Named;
 
 import java.util.List;
 import java.util.UUID;
 
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper
 public interface CampaignEntityMapper {
 
     @Mapping(source = "flow", target = "flowPageIds", qualifiedByName = "refsToUuids")

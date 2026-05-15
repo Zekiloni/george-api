@@ -5,9 +5,13 @@ import com.zekiloni.george.platform.application.port.in.campaign.CampaignQueryUs
 import com.zekiloni.george.platform.application.port.in.campaign.CampaignUpdateUseCase;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignCreateDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignFieldAnalyticsDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignReferrerDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignResponseDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignSessionDto;
 import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignStatsDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignStepAnalyticsDto;
+import com.zekiloni.george.platform.infrastructure.in.web.dto.campaign.CampaignTimelinePointDto;
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.CampaignDto;
 import com.zekiloni.george.platform.infrastructure.in.web.mapper.CampaignDtoMapper;
 import jakarta.validation.Valid;
@@ -20,6 +24,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Set;
 
@@ -72,6 +77,33 @@ public class CampaignApiController {
         return ResponseEntity.ok(queryUseCase.responses(id).stream().map(mapper::toResponseDto).toList());
     }
 
+    @GetMapping("/{id}/step-analytics")
+    public ResponseEntity<List<CampaignStepAnalyticsDto>> stepAnalytics(@PathVariable String id) {
+        return ResponseEntity.ok(queryUseCase.stepAnalytics(id).stream().map(mapper::toDto).toList());
+    }
+
+    @GetMapping("/{id}/field-analytics")
+    public ResponseEntity<List<CampaignFieldAnalyticsDto>> fieldAnalytics(@PathVariable String id) {
+        return ResponseEntity.ok(queryUseCase.fieldAnalytics(id).stream().map(mapper::toDto).toList());
+    }
+
+    @GetMapping("/{id}/timeline")
+    public ResponseEntity<List<CampaignTimelinePointDto>> timeline(
+            @PathVariable String id,
+            @RequestParam(name = "bucket", defaultValue = "hour") String bucket
+    ) {
+        ChronoUnit unit = switch (bucket.toLowerCase()) {
+            case "day" -> ChronoUnit.DAYS;
+            default -> ChronoUnit.HOURS;
+        };
+        return ResponseEntity.ok(queryUseCase.timeline(id, unit).stream().map(mapper::toDto).toList());
+    }
+
+    @GetMapping("/{id}/referrers")
+    public ResponseEntity<List<CampaignReferrerDto>> referrers(@PathVariable String id) {
+        return ResponseEntity.ok(queryUseCase.referrers(id).stream().map(mapper::toDto).toList());
+    }
+
     @PostMapping("/{id}/pause")
     public ResponseEntity<CampaignDto> pause(@PathVariable String id) {
         return ResponseEntity.ok(mapper.toDto(updateUseCase.pause(id)));
@@ -91,4 +123,15 @@ public class CampaignApiController {
     public ResponseEntity<CampaignDto> complete(@PathVariable String id) {
         return ResponseEntity.ok(mapper.toDto(updateUseCase.complete(id)));
     }
+
+    @PatchMapping("/{id}/blocked-countries")
+    public ResponseEntity<CampaignDto> updateBlockedCountries(
+            @PathVariable String id,
+            @RequestBody BlockedCountriesUpdateDto body
+    ) {
+        return ResponseEntity.ok(mapper.toDto(
+                updateUseCase.updateBlockedCountries(id, body.blockedCountries())));
+    }
+
+    public record BlockedCountriesUpdateDto(List<String> blockedCountries) {}
 }

@@ -3,14 +3,13 @@ package com.zekiloni.george.platform.infrastructure.out.persistence.page.mapper;
 import com.zekiloni.george.platform.domain.model.page.Page;
 import com.zekiloni.george.platform.infrastructure.out.persistence.page.entity.PageEntity;
 import org.mapstruct.Mapper;
-import org.mapstruct.MappingConstants;
 import org.mapstruct.MappingTarget;
 
 /**
  * MapStruct mapper za mapiranje između PageEntity (JPA) i Page (domenski model).
  * Automatski mapira sve polja uključujući PageDefinition kao JSON.
  */
-@Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
+@Mapper
 public interface PageEntityMapper {
 
     /**

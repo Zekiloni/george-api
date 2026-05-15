@@ -65,6 +65,11 @@ public class CampaignEntity extends TenantEntity {
     @Column(name = "source_template_version")
     private Integer sourceTemplateVersion;
 
+    /** Geo block list — ISO-3166-1 alpha-2 codes. JSONB array; empty means no block. */
+    @Column(name = "blocked_countries", columnDefinition = "jsonb")
+    @JdbcTypeCode(SqlTypes.JSON)
+    private List<String> blockedCountries = new ArrayList<>();
+
     @OneToMany(
             mappedBy = "campaign",
             cascade = CascadeType.ALL,

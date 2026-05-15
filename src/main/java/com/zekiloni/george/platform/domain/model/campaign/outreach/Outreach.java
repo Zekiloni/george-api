@@ -36,4 +36,11 @@ public class Outreach {
     private OffsetDateTime complainedAt;
     /** Free-form reason from the provider (DSN status, SMS error code, etc.). */
     private String failureReason;
+    /**
+     * Set by the simulator when a visit was rejected by the bot gate. Null when
+     * the outreach has not been visited or was visited successfully. Values
+     * mirror the simulator-side BotReason enum (UA_DENYLIST, HEADER_GAUNTLET,
+     * JA4_KNOWN_BOT, VELOCITY_TOKEN, VELOCITY_IP, etc.).
+     */
+    private String kickReason;
 }

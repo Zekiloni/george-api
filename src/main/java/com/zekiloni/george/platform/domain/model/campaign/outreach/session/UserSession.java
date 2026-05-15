@@ -30,4 +30,15 @@ public class UserSession {
     private OffsetDateTime lastActivityAt;
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
+
+    /** Risk/quality signals computed at session-create time by the simulator: 'vpn', 'proxy', 'tor', 'datacenter', 'bot', 'replay', 'geo_mismatch', 'velocity', 'headless'. */
+    private List<String> flags;
+    /** ISO-3166-1 alpha-2 of the IP's resolved country. */
+    private String country;
+    private String city;
+    /** Autonomous System Number of the IP — useful to classify hosting/VPN traffic. */
+    private Integer asn;
+    private String asnOrg;
+    /** External IP-reputation provider score (e.g. IPQS 0–100). Null when no provider is configured. */
+    private Integer riskScore;
 }
