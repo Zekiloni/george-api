@@ -1,13 +1,11 @@
 package com.zekiloni.george.commerce.domain.order.model.invoice.event;
 
-import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
 
-/**
- * Apstraktna bazna klasa za sve payment-related evente.
- * Sadrži zajedničke podatke za plaćanje.
- */
-@Data
+@Getter
+@Setter
 @EqualsAndHashCode(callSuper = true)
 public abstract class PaymentEvent extends InvoiceEvent {
     protected boolean afterExpiration;
@@ -31,4 +29,3 @@ public abstract class PaymentEvent extends InvoiceEvent {
         }
     }
 }
-

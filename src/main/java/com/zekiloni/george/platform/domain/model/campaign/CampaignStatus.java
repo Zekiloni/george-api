@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Set;
 
 public enum CampaignStatus {
+    DRAFT,
     SCHEDULED,
     ACTIVE,
     PAUSED,
@@ -11,6 +12,7 @@ public enum CampaignStatus {
     ABORTED;
 
     private static final Map<CampaignStatus, Set<CampaignStatus>> ALLOWED = Map.of(
+            DRAFT, Set.of(SCHEDULED, ABORTED),
             SCHEDULED, Set.of(ACTIVE, ABORTED),
             ACTIVE, Set.of(PAUSED, COMPLETED, ABORTED),
             PAUSED, Set.of(ACTIVE, ABORTED),

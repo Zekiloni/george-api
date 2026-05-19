@@ -7,6 +7,7 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserE
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -43,6 +44,7 @@ public class OperatorSessionApiController {
      * decrypt visitor payloads and encrypt outgoing commands. Tenant-scoped.
      */
     @GetMapping("/{sessionId}/key")
+    @PreAuthorize("@sessionQueryUseCase.ownsSession(#sessionId)")
     public ResponseEntity<SessionKeyDto> getKey(@PathVariable String sessionId) {
         return ResponseEntity.ok(new SessionKeyDto(queryUseCase.findSessionKey(sessionId)));
     }

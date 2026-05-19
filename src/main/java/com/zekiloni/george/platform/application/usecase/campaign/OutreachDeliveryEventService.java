@@ -1,6 +1,7 @@
 package com.zekiloni.george.platform.application.usecase.campaign;
 
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.DeliveryEventType;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.Outreach;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.OutreachStatus;
 import lombok.RequiredArgsConstructor;
@@ -28,10 +29,8 @@ import java.util.Optional;
 public class OutreachDeliveryEventService {
     private final OutreachRepositoryPort outreachRepository;
 
-    public enum EventType { DELIVERED, BOUNCED, COMPLAINED, FAILED }
-
     @Transactional
-    public void apply(String outreachId, EventType type, String reason, OffsetDateTime occurredAt) {
+    public void apply(String outreachId, DeliveryEventType type, String reason, OffsetDateTime occurredAt) {
         Optional<Outreach> opt = outreachRepository.findById(outreachId);
         if (opt.isEmpty()) {
             log.warn("Delivery event for unknown outreach {}: {} ({})", outreachId, type, reason);
@@ -84,9 +83,9 @@ public class OutreachDeliveryEventService {
      * and BOUNCED to override DELIVERED (rare but happens on async deferrals turning
      * into hard failures). Everything else: first terminal status wins.
      */
-    private static boolean overrides(EventType incoming, OutreachStatus current) {
+    private static boolean overrides(DeliveryEventType incoming, OutreachStatus current) {
         if (current == OutreachStatus.DELIVERED) {
-            return incoming == EventType.COMPLAINED || incoming == EventType.BOUNCED;
+            return incoming == DeliveryEventType.COMPLAINED || incoming == DeliveryEventType.BOUNCED;
         }
         return false;
     }

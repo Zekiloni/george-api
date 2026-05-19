@@ -1,21 +1,18 @@
 package com.zekiloni.george.commerce.domain.catalog.model;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 
-/**
- * Step-discount tier on an {@link Offering}: when an order has at least
- * {@code fromUnits}, apply {@code discount} (a fraction in [0, 1)) to the
- * unit-price subtotal.
- *
- * <p>Tiers replace both volume tiers ("buy 1000+ leads, save 10%") and
- * commitment discounts ("commit to 12+ months, save 20%") — once
- * {@code OrderItem.units} is unified, they're the same concept.
- */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
 public class DiscountTier {

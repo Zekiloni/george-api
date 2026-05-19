@@ -23,6 +23,12 @@ public interface SessionQueryUseCase {
      */
     String findSessionKey(String sessionId);
 
+    /**
+     * Returns true when the current authenticated user's tenant owns the
+     * given session. Used by @PreAuthorize on the operator session key endpoint.
+     */
+    boolean ownsSession(String sessionId);
+
     record ActiveSession(
             String sessionId,
             UserSessionStatus status,

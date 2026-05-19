@@ -22,7 +22,6 @@ import java.util.Objects;
 @RequiredArgsConstructor
 public class TenantRequestFilter extends OncePerRequestFilter {
     public static final String X_ADMIN = "X-Admin-Access";
-    public static final String BTCPAY_SIG = "BTCPay-Sig";
 
     private final TenantContext tenantContext;
 
@@ -37,23 +36,18 @@ public class TenantRequestFilter extends OncePerRequestFilter {
 
             if (auth instanceof JwtAuthenticationToken jwtAuth) {
                 Jwt jwt = jwtAuth.getToken();
-
                 String tenantId = isAdminRequest(request, jwtAuth) ? TenantContext.SYSTEM : jwt.getSubject();
                 tenantContext.setTenantId(tenantId);
-            } else {
-                String header = request.getHeader(BTCPAY_SIG);
-                // TODO: This is a temporary workaround to allow BTCPay to access the system tenant. We should implement a proper authentication mechanism for BTCPay and remove this header check.
-                if (header != null) {
-                    tenantContext.setTenantId(TenantContext.SYSTEM);
-                }
             }
+            // No JWT = anonymous path (visitor sessions, webhooks). Multi-tenancy
+            // is resolved downstream — visitor path stamps the outreach's tenant,
+            // webhook path carries its own auth in the controller handler.
 
             filterChain.doFilter(request, response);
         } finally {
             tenantContext.clear();
         }
     }
-
 
     @Override
     protected boolean shouldNotFilterErrorDispatch() {
@@ -81,4 +75,3 @@ public class TenantRequestFilter extends OncePerRequestFilter {
         return true;
     }
 }
-

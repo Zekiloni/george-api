@@ -19,6 +19,8 @@ import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserE
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSession;
 import com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -42,10 +44,23 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CampaignQueryService implements CampaignQueryUseCase {
     private final CampaignRepositoryPort campaignRepository;
     private final OutreachRepositoryPort outreachRepository;
     private final UserSessionRepositoryPort sessionRepository;
+
+    @Value("${app.analytics.session-cap:5000}")
+    private int sessionCap;
+
+    @Value("${app.analytics.responses-cap:500}")
+    private int responsesCap;
+
+    @Value("${app.analytics.referrer-cap:20}")
+    private int referrerCap;
+
+    @Value("${app.analytics.bucket-cap:168}")
+    private int bucketCap;
 
     @Override
     public Optional<Campaign> findById(String id) {
@@ -91,8 +106,7 @@ public class CampaignQueryService implements CampaignQueryUseCase {
 
     @Override
     public List<CampaignResponse> responses(String campaignId) {
-        // TODO: paginate — v1 caps server-side at RESPONSES_CAP rows.
-        List<UserSession> sessions = sessionRepository.findCompletedByCampaignId(campaignId, RESPONSES_CAP);
+        List<UserSession> sessions = sessionRepository.findCompletedByCampaignId(campaignId, responsesCap);
         return sessions.stream().map(CampaignQueryService::toResponse).toList();
     }
 
@@ -104,7 +118,11 @@ public class CampaignQueryService implements CampaignQueryUseCase {
         if (flow.isEmpty()) {
             return List.of();
         }
-        List<UserSession> sessions = sessionRepository.findAllByCampaignId(campaignId);
+        List<UserSession> sessions = sessionRepository.findAllByCampaignIdLimited(campaignId, sessionCap + 1);
+        if (sessions.size() > sessionCap) {
+            log.warn("stepAnalytics truncated to {} sessions for campaign {} ({} total)", sessionCap, campaignId, sessions.size() - 1);
+            sessions = sessions.subList(0, sessionCap);
+        }
 
         // Per-step dwell samples in ms, derived from session.createdAt -> first SUBMIT, then SUBMIT -> SUBMIT.
         // SUBMIT events are the only reliable step-boundary marker today; LOAD events don't carry a step
@@ -167,7 +185,11 @@ public class CampaignQueryService implements CampaignQueryUseCase {
         if (flow.isEmpty()) {
             return List.of();
         }
-        List<UserSession> sessions = sessionRepository.findAllByCampaignId(campaignId);
+        List<UserSession> sessions = sessionRepository.findAllByCampaignIdLimited(campaignId, sessionCap + 1);
+        if (sessions.size() > sessionCap) {
+            log.warn("fieldAnalytics truncated to {} sessions for campaign {} ({} total)", sessionCap, campaignId, sessions.size() - 1);
+            sessions = sessions.subList(0, sessionCap);
+        }
 
         long[] reachedStep = new long[flow.size()];
         // [stepIndex] -> field name -> filled count
@@ -241,7 +263,11 @@ public class CampaignQueryService implements CampaignQueryUseCase {
     @Transactional(readOnly = true)
     public List<CampaignTimelinePoint> timeline(String campaignId, ChronoUnit bucket) {
         ChronoUnit unit = bucket == null ? ChronoUnit.HOURS : bucket;
-        List<UserSession> sessions = sessionRepository.findAllByCampaignId(campaignId);
+        List<UserSession> sessions = sessionRepository.findAllByCampaignIdLimited(campaignId, sessionCap + 1);
+        if (sessions.size() > sessionCap) {
+            log.warn("timeline truncated to {} sessions for campaign {} ({} total)", sessionCap, campaignId, sessions.size() - 1);
+            sessions = sessions.subList(0, sessionCap);
+        }
         List<Outreach> outreach = outreachRepository.findByCampaignId(campaignId).toList();
 
         OffsetDateTime min = null;
@@ -265,15 +291,15 @@ public class CampaignQueryService implements CampaignQueryUseCase {
             return List.of();
         }
 
-        // Cap series length: snap to days if the requested resolution would exceed BUCKET_CAP buckets.
+        // Cap series length: snap to days if the requested resolution would exceed bucketCap buckets.
         ChronoUnit effectiveUnit = unit;
         long span = effectiveUnit.between(truncate(min, effectiveUnit), truncate(max, effectiveUnit)) + 1;
-        if (span > BUCKET_CAP && effectiveUnit == ChronoUnit.HOURS) {
+        if (span > bucketCap && effectiveUnit == ChronoUnit.HOURS) {
             effectiveUnit = ChronoUnit.DAYS;
             span = effectiveUnit.between(truncate(min, effectiveUnit), truncate(max, effectiveUnit)) + 1;
         }
-        if (span > BUCKET_CAP) {
-            span = BUCKET_CAP;
+        if (span > bucketCap) {
+            span = bucketCap;
         }
 
         Map<OffsetDateTime, long[]> buckets = new LinkedHashMap<>();
@@ -307,7 +333,11 @@ public class CampaignQueryService implements CampaignQueryUseCase {
     @Override
     @Transactional(readOnly = true)
     public List<CampaignReferrer> referrers(String campaignId) {
-        List<UserSession> sessions = sessionRepository.findAllByCampaignId(campaignId);
+        List<UserSession> sessions = sessionRepository.findAllByCampaignIdLimited(campaignId, sessionCap + 1);
+        if (sessions.size() > sessionCap) {
+            log.warn("referrers truncated to {} sessions for campaign {} ({} total)", sessionCap, campaignId, sessions.size() - 1);
+            sessions = sessions.subList(0, sessionCap);
+        }
         Map<String, Long> counts = new HashMap<>();
         for (UserSession session : sessions) {
             String host = firstLoadReferrerHost(session);
@@ -318,7 +348,7 @@ public class CampaignQueryService implements CampaignQueryUseCase {
         }
         return counts.entrySet().stream()
                 .sorted(Map.Entry.<String, Long>comparingByValue().reversed())
-                .limit(REFERRER_CAP)
+                .limit(referrerCap)
                 .map(e -> new CampaignReferrer(e.getKey(), e.getValue()))
                 .toList();
     }
@@ -389,10 +419,6 @@ public class CampaignQueryService implements CampaignQueryUseCase {
             default -> utc.truncatedTo(ChronoUnit.HOURS);
         };
     }
-
-    private static final int RESPONSES_CAP = 500;
-    private static final int REFERRER_CAP = 20;
-    private static final int BUCKET_CAP = 168;
 
     private static CampaignResponse toResponse(UserSession session) {
         Outreach outreach = session.getOutreach();

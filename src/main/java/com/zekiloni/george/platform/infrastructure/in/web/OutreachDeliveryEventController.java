@@ -1,7 +1,7 @@
 package com.zekiloni.george.platform.infrastructure.in.web;
 
 import com.zekiloni.george.platform.application.usecase.campaign.OutreachDeliveryEventService;
-import com.zekiloni.george.platform.application.usecase.campaign.OutreachDeliveryEventService.EventType;
+import com.zekiloni.george.platform.domain.model.campaign.outreach.DeliveryEventType;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -70,7 +70,7 @@ public class OutreachDeliveryEventController {
 
     public record DeliveryEventDto(
             @NotBlank String outreachId,
-            @NotNull EventType type,
+            @NotNull DeliveryEventType type,
             String reason,
             OffsetDateTime occurredAt
     ) {}

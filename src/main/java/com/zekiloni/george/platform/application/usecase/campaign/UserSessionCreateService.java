@@ -46,10 +46,12 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         // SYSTEM (which is treated as root and bypasses the read filter for the
         // campaign/page lookups below).
         Outreach outreach = outreachRepository.findBySessionTokenAcrossTenants(token)
-                .orElseThrow(() -> new RuntimeException("Outreach not found for token: " + token));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,
+                        "Outreach not found for token: " + token));
 
         Campaign campaign = campaignRepository.findById(outreach.getCampaignId())
-                .orElseThrow(() -> new RuntimeException("Campaign not found: " + outreach.getCampaignId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Campaign not found: " + outreach.getCampaignId()));
 
         // Geo block — the simulator passes the visitor's resolved country in
         // enrichment.country. When it matches one of the campaign's blocked
@@ -85,7 +87,8 @@ public class UserSessionCreateService implements UserSessionCreateUseCase {
         int currentStep = Math.max(0, Math.min(saved.getCurrentStep(), flow.size() - 1));
         Ref pageRef = flow.get(currentStep);
         Page page = pageRepository.findById(pageRef.getId())
-                .orElseThrow(() -> new RuntimeException("Page not found: " + pageRef.getId()));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Page not found: " + pageRef.getId()));
 
         return new Result(
                 saved.getId(),

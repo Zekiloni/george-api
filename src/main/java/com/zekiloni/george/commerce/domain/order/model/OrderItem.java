@@ -3,17 +3,18 @@ package com.zekiloni.george.commerce.domain.order.model;
 import com.zekiloni.george.common.domain.model.Characteristic;
 import com.zekiloni.george.commerce.domain.catalog.model.Offering;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-/**
- * Represents customer intent only — what offering, how many units, what configuration.
- * Pricing is NOT snapshotted here; the only price snapshot is on
- * {@link com.zekiloni.george.commerce.domain.order.model.invoice.InvoiceItem#getTotalAmount()}.
- */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Builder
 public class OrderItem {
     private String id;

@@ -6,6 +6,11 @@ server:
 
 app:
   base-url: ${APP_BASE_URL:http://localhost:4200}
+  analytics:
+    session-cap: ${APP_ANALYTICS_SESSION_CAP:5000}
+    responses-cap: ${APP_ANALYTICS_RESPONSES_CAP:500}
+    referrer-cap: ${APP_ANALYTICS_REFERRER_CAP:20}
+    bucket-cap: ${APP_ANALYTICS_BUCKET_CAP:168}
   lifecycle:
     renewal-notice-days: ${RENEWAL_NOTICE_DAYS:3}
     grace-period-days: ${GRACE_PERIOD_DAYS:1}
@@ -90,9 +95,6 @@ spring:
       connection-timeout: 20000
       max-lifetime: 1800000
       leak-detection-threshold: 3000
-
-      # TODO: Consider using auto commit false for better transaction control, but ensure that transactions are properly managed in the application
-      # auto-commit: false # Better for transaction control
 
   # JPA and Hibernate configuration. Schema is managed by Flyway; Hibernate
   # only validates that entity mappings line up with the migrated tables.

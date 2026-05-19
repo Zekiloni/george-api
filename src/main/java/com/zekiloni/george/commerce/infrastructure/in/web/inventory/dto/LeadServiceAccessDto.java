@@ -1,6 +1,5 @@
 package com.zekiloni.george.commerce.infrastructure.in.web.inventory.dto;
 
-import com.zekiloni.george.platform.domain.model.lead.Lead;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
@@ -12,6 +11,5 @@ import java.util.List;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class LeadServiceAccessDto extends ServiceAccessDto {
-    private List<Lead> leads;
+    private List<String> leadIds;
 }
-

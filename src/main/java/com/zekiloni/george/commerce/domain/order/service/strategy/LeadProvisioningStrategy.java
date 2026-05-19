@@ -51,7 +51,7 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
                 .serviceSpecification(getType())
                 .validFrom(OffsetDateTime.now())
                 .validTo(getValidTo(orderItem))
-                .leads(leads)
+                .leadIds(leads.stream().map(Lead::getId).toList())
                 .status(ServiceStatus.ACTIVE)
                 .characteristic(orderItem.getCharacteristic())
                 .orderItem(orderItem)
@@ -64,7 +64,7 @@ public class LeadProvisioningStrategy implements ProvisioningStrategy {
     @Override
     public void deprovision(ServiceAccess access) {
         if (access instanceof LeadServiceAccess lead) {
-            lead.setLeads(List.of());
+            lead.setLeadIds(List.of());
         }
     }
 

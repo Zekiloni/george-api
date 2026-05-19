@@ -10,8 +10,11 @@ import com.zekiloni.george.commerce.domain.order.model.OrderItem;
 import com.zekiloni.george.commerce.domain.order.model.invoice.InvoiceType;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.time.OffsetDateTime;
@@ -35,7 +38,10 @@ import java.util.Objects;
  * <p>No grandfathering: customers always renew at the current catalog price. Historical
  * snapshots live on {@code InvoiceItem.totalAmount}.
  */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor

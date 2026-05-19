@@ -6,7 +6,6 @@ import com.zekiloni.george.commerce.domain.inventory.model.ServiceAccess;
 import com.zekiloni.george.commerce.domain.inventory.model.ServiceStatus;
 import com.zekiloni.george.platform.application.port.in.campaign.CampaignCreateUseCase;
 import com.zekiloni.george.platform.application.port.in.page.PageQueryUseCase;
-import com.zekiloni.george.platform.application.port.out.campaign.CampaignDispatcherPort;
 import com.zekiloni.george.platform.application.port.out.campaign.CampaignRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.campaign.OutreachRepositoryPort;
 import com.zekiloni.george.platform.application.port.out.lead.LeadRepositoryPort;
@@ -39,8 +38,6 @@ public class CampaignCreateService implements CampaignCreateUseCase {
     private final CampaignRepositoryPort repository;
     private final OutreachRepositoryPort outreachRepository;
     private final LeadRepositoryPort leadRepository;
-    private final CampaignDispatcherPort dispatcher;
-    private final CampaignStatusTransitionService statusTransitionService;
     private final PageQueryUseCase pageQueryUseCase;
     private final ServiceAccessQueryUseCase serviceAccessQueryUseCase;
 
@@ -48,33 +45,39 @@ public class CampaignCreateService implements CampaignCreateUseCase {
     private String baseUrl;
 
     @Override
-    @Transactional
     public Campaign handle(Campaign campaignCreate, InputStream file) {
         try {
-            validateReferences(campaignCreate);
-            campaignCreate.setBaseUrl(baseUrl);
-            campaignCreate.setStatus(CampaignStatus.SCHEDULED);
-            Campaign campaign = repository.save(campaignCreate);
-            saveOutreachesInBatches(buildOutreaches(file, campaign));
-
-            if (isImmediateDispatch(campaign)) {
-                statusTransitionService.transitionTo(campaign.getId(), CampaignStatus.ACTIVE);
-                dispatcher.dispatch(campaign.getId(), campaign.getServiceAccess().getId());
-            }
-
-            return campaign;
+            return createCampaign(campaignCreate, file);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new IllegalArgumentException("Failed to read phone number file", e);
         }
+    }
+
+    private Campaign createCampaign(Campaign campaignCreate, InputStream file) throws IOException {
+        validateReferences(campaignCreate);
+        campaignCreate.setBaseUrl(baseUrl);
+        campaignCreate.setStatus(CampaignStatus.DRAFT);
+
+        List<Outreach> outreaches = buildOutreaches(file, campaignCreate);
+
+        return persistCampaignAndOutreaches(campaignCreate, outreaches);
+    }
+
+    @Transactional
+    protected Campaign persistCampaignAndOutreaches(Campaign campaignCreate, List<Outreach> outreaches) {
+        Campaign campaign = repository.save(campaignCreate);
+        for (Outreach o : outreaches) {
+            o.setCampaignId(campaign.getId());
+            o.setTenantId(campaign.getTenantId());
+        }
+        saveOutreachesInBatches(outreaches);
+        return campaign;
     }
 
     private List<Outreach> buildOutreaches(InputStream file, Campaign campaign) throws IOException {
         Set<String> phoneNumbers = PhoneNumberFileReader.streamPhoneNumbers(file)
                 .collect(Collectors.toSet());
 
-        // Stamp country/carrier from the customer's lead pool — used by the SMTP
-        // dispatcher to pick the correct mail2sms domain. Phones not in the pool
-        // get null fields and fall back to the gateway default at dispatch.
         Map<String, Lead> leadByPhone = leadRepository.findByPhoneNumberIn(phoneNumbers).stream()
                 .collect(Collectors.toMap(Lead::getPhoneNumber, Function.identity(), (a, b) -> a));
 
@@ -108,16 +111,6 @@ public class CampaignCreateService implements CampaignCreateUseCase {
         return campaign.getMessageTemplate().replace("{token}", url);
     }
 
-    private boolean isImmediateDispatch(Campaign campaign) {
-        return campaign.getScheduledAt() == null ||
-                !campaign.getScheduledAt().isAfter(OffsetDateTime.now());
-    }
-
-    /**
-     * Reject the create early if the user picked Pages or a Service Access
-     * that the dispatcher will choke on later. Validates every page in the
-     * flow exists; rejects empty flows.
-     */
     private void validateReferences(Campaign campaign) {
         if (campaign.getFlow() == null || campaign.getFlow().isEmpty()) {
             throw new IllegalArgumentException("flow must contain at least one page");

@@ -45,9 +45,6 @@ spring:
       max-lifetime: 1800000
       leak-detection-threshold: 60000
 
-      # TODO: Consider using auto commit false for better transaction control, but ensure that transactions are properly managed in the application
-      # auto-commit: false # Better for transaction control
-
   # JPA and Hibernate configuration for automatic schema generation and naming strategies
   jpa:
     hibernate:

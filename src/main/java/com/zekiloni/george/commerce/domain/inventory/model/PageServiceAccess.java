@@ -1,12 +1,9 @@
 package com.zekiloni.george.commerce.domain.inventory.model;
 
-import com.zekiloni.george.platform.domain.model.page.Page;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -15,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class PageServiceAccess extends ServiceAccess {
-    private List<Page> page;
+    @Builder.Default
+    private List<String> pageIds = new ArrayList<>();
     private int maxConcurrent;
 }

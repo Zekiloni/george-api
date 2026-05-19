@@ -27,14 +27,14 @@ public class CampaignScheduler {
             return;
         }
 
-        log.info("Found {} scheduled campaigns ready for dispatch", ready.size());
+        log.info("Found {} scheduled campaigns ready for auto-dispatch", ready.size());
 
         for (Campaign campaign : ready) {
             try {
                 statusTransitionService.transitionTo(campaign.getId(), CampaignStatus.ACTIVE);
                 dispatchService.dispatch(campaign.getId(), campaign.getServiceAccess().getId());
             } catch (Exception e) {
-                log.error("Failed to dispatch scheduled campaign {}: {}", campaign.getId(), e.getMessage(), e);
+                log.error("Failed to auto-dispatch scheduled campaign {}: {}", campaign.getId(), e.getMessage(), e);
             }
         }
     }

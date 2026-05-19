@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -23,6 +24,7 @@ public class OrderApiController {
     private final OrderDtoMapper mapper;
 
     @PostMapping
+    @PreAuthorize("isAuthenticated()")
     public ResponseEntity<OrderDto> createOrder(@RequestBody OrderCreateDto orderCreate) {
         return ResponseEntity.ok(mapper.toDto(createUseCase.create(mapper.toDomain(orderCreate))));
     }

@@ -5,6 +5,8 @@ import com.zekiloni.george.platform.domain.model.campaign.Campaign;
 import java.util.List;
 
 public interface CampaignUpdateUseCase {
+    Campaign schedule(String campaignId);
+    Campaign launch(String campaignId);
     Campaign pause(String campaignId);
     Campaign resume(String campaignId);
     Campaign abort(String campaignId);

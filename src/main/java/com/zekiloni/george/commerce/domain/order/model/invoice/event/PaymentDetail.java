@@ -1,16 +1,19 @@
 package com.zekiloni.george.commerce.domain.order.model.invoice.event;
 
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-/**
- * Vrednostni objekat koji sadrži detalje o plaćanju.
- */
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Builder
 public class PaymentDetail {
     private String id;
-    private long receivedDate; // Unix timestamp
+    private long receivedDate;
     private String value;
     private String fee;
     private PaymentStatus status;
@@ -28,4 +31,3 @@ public class PaymentDetail {
         }
     }
 }
-

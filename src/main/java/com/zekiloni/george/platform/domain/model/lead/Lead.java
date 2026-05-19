@@ -1,14 +1,19 @@
 package com.zekiloni.george.platform.domain.model.lead;
 
-
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -23,4 +28,3 @@ public class Lead {
     private OffsetDateTime createdAt;
     private OffsetDateTime updatedAt;
 }
-

@@ -3,12 +3,18 @@ package com.zekiloni.george.commerce.domain.order.model.invoice;
 import com.zekiloni.george.common.domain.model.Money;
 import com.zekiloni.george.commerce.domain.order.model.Order;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.OffsetDateTime;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
+@ToString
+@EqualsAndHashCode
 @Builder
 public class Invoice {
     private String id;
@@ -19,10 +25,6 @@ public class Invoice {
     @Builder.Default
     private InvoiceType invoiceType = InvoiceType.NEW_PURCHASE;
 
-    /**
-     * For RENEWAL invoices: the {@code ServiceAccess} that gets its {@code validTo}
-     * extended on payment. Null for NEW_PURCHASE invoices.
-     */
     private String serviceAccessId;
 
     private InvoiceStatus status;

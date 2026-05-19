@@ -9,6 +9,7 @@ import org.hibernate.type.SqlTypes;
 
 import java.time.OffsetDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Entity
 @Table(name = "conversions")
@@ -21,16 +22,16 @@ import java.util.Map;
 public class ConversionEntity extends TenantEntity {
 
     @Column(name = "session_id", nullable = false)
-    private String sessionId;
+    private UUID sessionId;
 
     @Column(name = "outreach_id")
-    private String outreachId;
+    private UUID outreachId;
 
     @Column(name = "campaign_id")
-    private String campaignId;
+    private UUID campaignId;
 
     @Column(name = "page_id")
-    private String pageId;
+    private UUID pageId;
 
     @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "form_data", columnDefinition = "jsonb")

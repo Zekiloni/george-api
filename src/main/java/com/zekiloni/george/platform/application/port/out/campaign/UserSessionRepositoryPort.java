@@ -44,7 +44,7 @@ public interface UserSessionRepositoryPort {
     /**
      * All sessions for a campaign, regardless of status. Used by analytics
      * aggregations that walk every session's events/timestamps. Events JSONB
-     * is loaded with the row.
+     * is loaded with the row. Capped at {@code limit} rows to prevent OOM.
      */
-    List<UserSession> findAllByCampaignId(String campaignId);
+    List<UserSession> findAllByCampaignIdLimited(String campaignId, int limit);
 }

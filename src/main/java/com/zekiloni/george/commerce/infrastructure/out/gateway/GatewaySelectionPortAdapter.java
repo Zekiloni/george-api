@@ -1,6 +1,7 @@
 package com.zekiloni.george.commerce.infrastructure.out.gateway;
 
 import com.zekiloni.george.commerce.application.port.out.gateway.GatewaySelectionPort;
+import com.zekiloni.george.commerce.application.service.gateway.GatewayLoadTracker;
 import com.zekiloni.george.platform.application.port.out.gateway.GatewayRepositoryPort;
 import com.zekiloni.george.platform.domain.model.gateway.Gateway;
 import com.zekiloni.george.platform.domain.model.gateway.GatewayConfigKeys;
@@ -13,27 +14,14 @@ import org.springframework.stereotype.Component;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Adapter that implements the commerce gateway selection port
- * by delegating to platform gateway infrastructure.
- */
 @Component
 @RequiredArgsConstructor
 @Slf4j
 public class GatewaySelectionPortAdapter implements GatewaySelectionPort {
 
     private final GatewayRepositoryPort gatewayRepository;
-
-    // Simple in-memory load tracking
-    private final Map<String, AtomicInteger> connectionCounts = new ConcurrentHashMap<>();
-    private final Map<String, AtomicInteger> successCounts = new ConcurrentHashMap<>();
-    private final Map<String, AtomicInteger> failureCounts = new ConcurrentHashMap<>();
-    private final Map<String, Long> responseTimeSum = new ConcurrentHashMap<>();
-    private final Map<String, AtomicInteger> responseTimeCount = new ConcurrentHashMap<>();
+    private final GatewayLoadTracker loadTracker;
 
     @Override
     public String selectLeastLoadedGateway(String gatewayType) {
@@ -45,7 +33,7 @@ public class GatewaySelectionPortAdapter implements GatewaySelectionPort {
         }
 
         Gateway selected = gateways.stream()
-                .min(Comparator.comparingInt(g -> getActiveConnectionCount(g.getId())))
+                .min(Comparator.comparingInt(g -> loadTracker.getActiveConnectionCount(g.getId())))
                 .orElse(gateways.getFirst());
 
         log.info("Selected least loaded gateway: {} for type: {}", selected.getId(), gatewayType);
@@ -71,9 +59,8 @@ public class GatewaySelectionPortAdapter implements GatewaySelectionPort {
 
     @Override
     public boolean hasCapacity(String gatewayId, int requiredCapacity) {
-        int currentLoad = getActiveConnectionCount(gatewayId);
-        // Assume default max capacity of 100 if not configured
-        int maxCapacity = 100;
+        int currentLoad = loadTracker.getActiveConnectionCount(gatewayId);
+        int maxCapacity = loadTracker.getMaxCapacity(gatewayId);
 
         boolean hasCapacity = (currentLoad + requiredCapacity) <= maxCapacity;
 
@@ -112,62 +99,40 @@ public class GatewaySelectionPortAdapter implements GatewaySelectionPort {
 
     @Override
     public void recordSuccess(String gatewayId) {
-        successCounts.computeIfAbsent(gatewayId, k -> new AtomicInteger(0)).incrementAndGet();
+        loadTracker.recordSuccess(gatewayId, 0);
     }
 
     @Override
     public void recordFailure(String gatewayId) {
-        failureCounts.computeIfAbsent(gatewayId, k -> new AtomicInteger(0)).incrementAndGet();
+        loadTracker.recordFailure(gatewayId);
     }
 
     @Override
     public void incrementConnectionCount(String gatewayId) {
-        connectionCounts.computeIfAbsent(gatewayId, k -> new AtomicInteger(0)).incrementAndGet();
+        loadTracker.incrementConnectionCount(gatewayId);
     }
 
     @Override
     public void decrementConnectionCount(String gatewayId) {
-        connectionCounts.computeIfAbsent(gatewayId, k -> new AtomicInteger(0)).decrementAndGet();
+        loadTracker.decrementConnectionCount(gatewayId);
     }
 
     private int compareGatewayPerformance(Gateway g1, Gateway g2) {
-        // Primary: Load (fewer connections is better)
         int loadCompare = Integer.compare(
-                getActiveConnectionCount(g1.getId()),
-                getActiveConnectionCount(g2.getId())
+                loadTracker.getActiveConnectionCount(g1.getId()),
+                loadTracker.getActiveConnectionCount(g2.getId())
         );
         if (loadCompare != 0) return loadCompare;
 
-        // Secondary: Success rate (higher is better)
         int successCompare = Double.compare(
-                getSuccessRate(g2.getId()),
-                getSuccessRate(g1.getId())
+                loadTracker.getSuccessRate(g2.getId()),
+                loadTracker.getSuccessRate(g1.getId())
         );
         if (successCompare != 0) return successCompare;
 
-        // Tertiary: Response time (lower is better)
         return Long.compare(
-                getAverageResponseTime(g1.getId()),
-                getAverageResponseTime(g2.getId())
+                loadTracker.getAverageResponseTime(g1.getId()),
+                loadTracker.getAverageResponseTime(g2.getId())
         );
-    }
-
-    private int getActiveConnectionCount(String gatewayId) {
-        return connectionCounts.getOrDefault(gatewayId, new AtomicInteger(0)).get();
-    }
-
-    private double getSuccessRate(String gatewayId) {
-        int successes = successCounts.getOrDefault(gatewayId, new AtomicInteger(0)).get();
-        int failures = failureCounts.getOrDefault(gatewayId, new AtomicInteger(0)).get();
-        int total = successes + failures;
-
-        return total == 0 ? 1.0 : (double) successes / total;
-    }
-
-    private long getAverageResponseTime(String gatewayId) {
-        Long sum = responseTimeSum.get(gatewayId);
-        Integer count = responseTimeCount.getOrDefault(gatewayId, new AtomicInteger(0)).get();
-
-        return (sum != null && count != null && count > 0) ? sum / count : 0L;
     }
 }

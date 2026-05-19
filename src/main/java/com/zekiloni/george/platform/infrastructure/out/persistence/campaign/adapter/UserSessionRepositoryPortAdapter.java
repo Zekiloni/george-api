@@ -95,8 +95,8 @@ public class UserSessionRepositoryPortAdapter implements UserSessionRepositoryPo
 
     @Override
     @Transactional(readOnly = true)
-    public List<UserSession> findAllByCampaignId(String campaignId) {
-        return jpaRepository.findAllByCampaignId(UUID.fromString(campaignId))
+    public List<UserSession> findAllByCampaignIdLimited(String campaignId, int limit) {
+        return jpaRepository.findAllByCampaignId(UUID.fromString(campaignId), PageRequest.of(0, limit))
                 .stream()
                 .map(mapper::toDomain)
                 .toList();

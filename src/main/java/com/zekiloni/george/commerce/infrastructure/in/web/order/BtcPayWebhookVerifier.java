@@ -9,16 +9,6 @@ import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 
-/**
- * Verifies BTCPay webhook signatures.
- *
- * <p>BTCPay sends {@code BTCPay-Sig: sha256=<hex>} where the digest is HMAC-SHA256
- * of the raw request body using the per-webhook secret configured in BTCPay's UI.
- * Signature comparison is constant-time to prevent timing attacks.
- *
- * <p>If {@code btc-pay.webhook.secret} is unset/blank, verification is skipped and
- * a warning is logged — useful for local dev without BTCPay's secret configured.
- */
 @Component
 @Slf4j
 public class BtcPayWebhookVerifier {
@@ -26,14 +16,16 @@ public class BtcPayWebhookVerifier {
     private static final String HEADER_PREFIX = "sha256=";
 
     private final String webhookSecret;
+    private final boolean hasSecret;
 
     public BtcPayWebhookVerifier(@Value("${btc-pay.webhook.secret:}") String webhookSecret) {
         this.webhookSecret = webhookSecret;
+        this.hasSecret = webhookSecret != null && !webhookSecret.isBlank();
     }
 
     public boolean verify(String signatureHeader, String rawBody) {
-        if (webhookSecret == null || webhookSecret.isBlank()) {
-            log.warn("btc-pay.webhook.secret is not configured — skipping signature verification (dev only)");
+        if (!hasSecret) {
+            log.warn("btc-pay.webhook.secret is not configured — DEV only. Skipping verification.");
             return true;
         }
         if (signatureHeader == null || rawBody == null) return false;

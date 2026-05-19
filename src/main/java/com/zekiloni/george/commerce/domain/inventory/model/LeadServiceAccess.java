@@ -1,12 +1,10 @@
 package com.zekiloni.george.commerce.domain.inventory.model;
 
-import com.zekiloni.george.platform.domain.model.lead.Lead;
 import lombok.*;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Getter
 @Setter
@@ -14,14 +12,14 @@ import java.util.Objects;
 @NoArgsConstructor
 @AllArgsConstructor
 public class LeadServiceAccess extends ServiceAccess {
-    private List<Lead> leads;
+    @Builder.Default
+    private List<String> leadIds = new ArrayList<>();
 
-    public void addLeads(List<String> leadIds) {
-        if (leads == null) leads = new ArrayList<>();
-        leadIds.forEach(leadId -> {
-            if (leads.stream().map(Lead::getId).filter(Objects::nonNull).noneMatch(leadId::equals)) {
-                leads.add(Lead.builder().id(leadId).build());
+    public void addLeads(List<String> newLeadIds) {
+        for (String leadId : newLeadIds) {
+            if (!leadIds.contains(leadId)) {
+                leadIds.add(leadId);
             }
-        });
+        }
     }
 }

@@ -58,6 +58,7 @@ public interface UserSessionJpaRepository extends JpaRepository<UserSessionEntit
      */
     @Query("""
             SELECT s FROM UserSessionEntity s
+            JOIN FETCH s.outreach
             WHERE s.outreach.campaign.id = :campaignId
               AND s.status = com.zekiloni.george.platform.domain.model.campaign.outreach.session.UserSessionStatus.COMPLETED
             ORDER BY s.updatedAt DESC
@@ -69,5 +70,5 @@ public interface UserSessionJpaRepository extends JpaRepository<UserSessionEntit
             WHERE s.outreach.campaign.id = :campaignId
             ORDER BY s.createdAt ASC
             """)
-    List<UserSessionEntity> findAllByCampaignId(@Param("campaignId") UUID campaignId);
+    List<UserSessionEntity> findAllByCampaignId(@Param("campaignId") UUID campaignId, Pageable pageable);
 }

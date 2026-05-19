@@ -57,6 +57,15 @@ public class SessionQueryService implements SessionQueryUseCase {
     }
 
     @Override
+    public boolean ownsSession(String sessionId) {
+        String currentTenant = tenantContext.getTenantId();
+        if (TenantContext.SYSTEM.equals(currentTenant)) return true;
+        return sessionRepository.findById(sessionId)
+                .map(s -> Objects.equals(s.getTenantId(), currentTenant))
+                .orElse(false);
+    }
+
+    @Override
     public List<UserEvent> findEvents(String sessionId) {
         // Live session in the registry — return the in-memory buffer.
         ConnectedSession connected = registry.get(sessionId).orElse(null);

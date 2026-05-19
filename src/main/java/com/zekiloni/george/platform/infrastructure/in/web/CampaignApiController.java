@@ -104,6 +104,16 @@ public class CampaignApiController {
         return ResponseEntity.ok(queryUseCase.referrers(id).stream().map(mapper::toDto).toList());
     }
 
+    @PostMapping("/{id}/schedule")
+    public ResponseEntity<CampaignDto> schedule(@PathVariable String id) {
+        return ResponseEntity.ok(mapper.toDto(updateUseCase.schedule(id)));
+    }
+
+    @PostMapping("/{id}/launch")
+    public ResponseEntity<CampaignDto> launch(@PathVariable String id) {
+        return ResponseEntity.ok(mapper.toDto(updateUseCase.launch(id)));
+    }
+
     @PostMapping("/{id}/pause")
     public ResponseEntity<CampaignDto> pause(@PathVariable String id) {
         return ResponseEntity.ok(mapper.toDto(updateUseCase.pause(id)));
