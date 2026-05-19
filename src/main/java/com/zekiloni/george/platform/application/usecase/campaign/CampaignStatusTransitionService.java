@@ -38,17 +38,13 @@ public class CampaignStatusTransitionService {
     }
 
     private void recordTransition(String campaignId, CampaignStatus from, CampaignStatus to) {
-        String actorId = SecurityContextHolder.getContext().getAuthentication() != null
-                ? SecurityContextHolder.getContext().getAuthentication().getName()
-                : "system";
         CampaignStatusTransitionEntity entity = CampaignStatusTransitionEntity.builder()
                 .campaignId(campaignId)
                 .fromStatus(from)
                 .toStatus(to)
-                .actorId(actorId)
                 .occurredAt(OffsetDateTime.now())
                 .build();
         auditRepository.save(entity);
-        log.info("Campaign {} transitioned {} → {} by {}", campaignId, from, to, actorId);
+        log.info("Campaign {} transitioned {} → {} by {}", campaignId, from, to);
     }
 }

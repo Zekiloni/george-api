@@ -29,9 +29,6 @@ public class CampaignStatusTransitionEntity extends BaseEntity {
     @Column(name = "to_status", nullable = false)
     private CampaignStatus toStatus;
 
-    @Column(name = "actor_id")
-    private String actorId;
-
     @Column(name = "occurred_at", nullable = false)
     private OffsetDateTime occurredAt;
 }

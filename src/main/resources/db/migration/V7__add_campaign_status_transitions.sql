@@ -10,7 +10,6 @@ CREATE TABLE campaign_status_transitions (
     campaign_id VARCHAR(255) NOT NULL,
     from_status VARCHAR(255) NOT NULL,
     to_status   VARCHAR(255) NOT NULL,
-    actor_id    VARCHAR(255),
     occurred_at TIMESTAMP WITHOUT TIME ZONE NOT NULL,
     CONSTRAINT pk_campaign_status_transitions PRIMARY KEY (id)
 );
